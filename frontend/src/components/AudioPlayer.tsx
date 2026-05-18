@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { apiUrl } from '@/constants';
+import Text from '@/components/ui/Text';
+import IconButton from '@/components/ui/IconButton';
+import Slider from '@/components/ui/Slider';
+import Flex from '@/components/ui/layout/Flex';
+import Box from '@/components/ui/layout/Box';
 
 interface Track {
   videoId: string;
@@ -133,12 +138,13 @@ export default function AudioPlayer() {
     setIsMuted(!isMuted);
   };
 
-  // Helper percentage for dynamic styling of range input sliders
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const volumePercent = isMuted ? 0 : volume * 100;
-
   return (
-    <div className={`audio-player-container glass ${videoId ? 'active' : ''}`}>
+    <Flex 
+      align="center"
+      className={`fixed left-6 right-6 h-[84px] z-[999] px-6 rounded-2xl border border-white/8 bg-black/40 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
+        videoId ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
+      }`}
+    >
       {videoId && (
         <audio
           ref={audioRef}
@@ -152,120 +158,147 @@ export default function AudioPlayer() {
         />
       )}
 
-      <div className="player-inner">
+      <Flex justify="between" align="center" gap={6} className="w-full">
         {/* Left: Track Information */}
-        <div className="player-track-info">
-          <div className={`track-visualizer ${isPlaying ? 'playing' : ''}`}>
-            <span className="bar bar-1" />
-            <span className="bar bar-2" />
-            <span className="bar bar-3" />
-            <span className="bar bar-4" />
-          </div>
-          <div className="track-details">
-            <div className="track-title-wrapper">
-              <span className="track-title">{trackTitle}</span>
-            </div>
-            <span className="track-artist">
+        <Flex align="center" gap={4} className="w-[30%] min-w-[220px] overflow-hidden">
+          {/* Animated visualizer bars in Tailwind */}
+          <Flex align="end" gap={1} className="gap-[3px] h-5 w-6 select-none">
+            <span className={`w-[3px] bg-emerald-500 rounded-full transition-all duration-300 ${
+              isPlaying ? 'animate-[bounce-bar_0.8s_ease_infinite_alternate] h-5' : 'h-1'
+            }`} />
+            <span className={`w-[3px] bg-emerald-500 rounded-full transition-all duration-300 ${
+              isPlaying ? 'animate-[bounce-bar_0.5s_ease_infinite_alternate_0.15s] h-5' : 'h-1'
+            }`} />
+            <span className={`w-[3px] bg-emerald-500 rounded-full transition-all duration-300 ${
+              isPlaying ? 'animate-[bounce-bar_0.7s_ease_infinite_alternate_0.3s] h-5' : 'h-1'
+            }`} />
+            <span className={`w-[3px] bg-emerald-500 rounded-full transition-all duration-300 ${
+              isPlaying ? 'animate-[bounce-bar_0.6s_ease_infinite_alternate_0.05s] h-5' : 'h-1'
+            }`} />
+          </Flex>
+          <Flex direction="col" className="min-w-0 select-none">
+            <Box className="overflow-hidden text-ellipsis whitespace-nowrap">
+              <Text variant="body-sm" weight="semibold" color="default" truncate className="text-white">
+                {trackTitle}
+              </Text>
+            </Box>
+            <Text variant="caption" color="muted">
               {isLoading ? 'Streaming from Go API...' : error ? 'Error' : 'YouTube Soundstream'}
-            </span>
-          </div>
-        </div>
+            </Text>
+          </Flex>
+        </Flex>
 
         {/* Center: Playback Controls & Progress Bar */}
-        <div className="player-controls-section">
-          <div className="player-buttons">
-            <button 
-              className="ctrl-btn secondary"
+        <Flex direction="col" align="center" gap={1} className="w-[40%] min-w-[280px]">
+          <Flex align="center" gap={4}>
+            <IconButton 
+              variant="ghost"
+              size="sm"
               aria-label="Shuffle"
               disabled={!videoId}
+              className="text-gray-400 hover:text-white"
             >
               🔀
-            </button>
-            <button 
-              className="ctrl-btn secondary"
+            </IconButton>
+            <IconButton 
+              variant="ghost"
+              size="sm"
               aria-label="Previous track"
               disabled={!videoId}
+              className="text-gray-400 hover:text-white"
             >
               ⏮
-            </button>
-            <button
-              className={`ctrl-btn main-play ${isPlaying ? 'playing' : ''}`}
+            </IconButton>
+            
+            <IconButton
+              variant="primary"
+              size="md"
+              rounded
               onClick={handlePlayPause}
               disabled={!videoId || isLoading}
               aria-label={isPlaying ? 'Pause' : 'Play'}
+              loading={isLoading}
+              className="bg-white text-black hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-md"
             >
-              {isLoading ? (
-                <span className="loader" />
-              ) : isPlaying ? (
-                '⏸'
-              ) : (
-                '▶'
-              )}
-            </button>
-            <button 
-              className="ctrl-btn secondary"
+              {isPlaying ? '⏸' : '▶'}
+            </IconButton>
+
+            <IconButton 
+              variant="ghost"
+              size="sm"
               aria-label="Next track"
               disabled={!videoId}
+              className="text-gray-400 hover:text-white"
             >
               ⏭
-            </button>
-            <button 
-              className="ctrl-btn secondary"
+            </IconButton>
+            <IconButton 
+              variant="ghost"
+              size="sm"
               aria-label="Repeat"
               disabled={!videoId}
+              className="text-gray-400 hover:text-white"
             >
               🔁
-            </button>
-          </div>
+            </IconButton>
+          </Flex>
 
-          <div className="progress-bar-wrapper">
-            <span className="time-display">{formatTime(currentTime)}</span>
-            <div className="slider-container">
-              <input
+          <Flex align="center" gap={3} className="w-full">
+            <Text variant="caption" color="muted" className="w-[35px] text-center font-mono text-[11px] select-none">
+              {formatTime(currentTime)}
+            </Text>
+            <Box className="flex-1">
+              <Slider
                 ref={progressRef}
-                type="range"
-                min="0"
+                size="sm"
+                color="primary"
+                min={0}
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
-                className="progress-slider"
-                style={{ '--percent': `${progressPercent}%` } as React.CSSProperties}
                 disabled={!videoId || isLoading}
+                className="w-full"
               />
-            </div>
-            <span className="time-display">
+            </Box>
+            <Text variant="caption" color="muted" className="w-[35px] text-center font-mono text-[11px] select-none">
               {duration > 0 ? formatTime(duration) : '0:00'}
-            </span>
-          </div>
+            </Text>
+          </Flex>
           
-          {error && <span className="player-error-text">{error}</span>}
-        </div>
+          {error && (
+            <Text variant="small" color="danger" weight="medium" className="text-[11px] -mt-1 select-none">
+              {error}
+            </Text>
+          )}
+        </Flex>
 
         {/* Right: Volume & Utilities */}
-        <div className="player-utilities">
-          <div className="volume-wrapper">
-            <button 
-              className="volume-toggle"
+        <Flex justify="end" align="center" gap={4} className="w-[30%] min-w-[150px]">
+          <Flex align="center" gap={2}>
+            <IconButton 
+              variant="ghost"
+              size="sm"
               onClick={toggleMute}
               disabled={!videoId}
               aria-label={isMuted ? 'Unmute' : 'Mute'}
+              className="text-gray-400 hover:text-white"
             >
               {isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.7 ? '🔉' : '🔊'}
-            </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
+            </IconButton>
+            <Slider
+              size="sm"
+              color="secondary"
+              min={0}
+              max={1}
+              step={0.05}
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
-              className="volume-slider"
-              style={{ '--percent': `${volumePercent}%` } as React.CSSProperties}
               disabled={!videoId}
+              className="w-20"
             />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }
