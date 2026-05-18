@@ -1,9 +1,11 @@
 import Image from "next/image";
+import ServerStatus from "@/components/ServerStatus";
 import "./landing.css";
 
 export default function Home() {
   return (
     <main className="landing">
+      <ServerStatus />
       {/* Hero Section */}
       <section className="hero">
         <Image
@@ -42,7 +44,7 @@ export default function Home() {
             <div className="feature-icon">⚡</div>
             <h3 className="feature-h3">Ultra Fast</h3>
             <p className="feature-p">
-              Leveraging Go's concurrency for lightning-fast audio delivery 
+              Leveraging Go&apos;s concurrency for lightning-fast audio delivery 
               straight to your device.
             </p>
           </div>
