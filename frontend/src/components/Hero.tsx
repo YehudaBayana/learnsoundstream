@@ -16,7 +16,7 @@ export default function Hero({ onStartListening, onExploreTracks }: HeroProps) {
     <Flex as="section" align="center" justify="center" className="relative h-screen overflow-hidden">
       {/* Background Image with Overlay */}
       <Image
-        src="/hero.png"
+        src="/hero.jpg"
         alt="Soundstream Hero"
         fill
         className="absolute top-0 left-0 w-full h-full z-[-1] object-cover brightness-[0.35] saturate-[1.1]"
