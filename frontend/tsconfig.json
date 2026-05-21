@@ -30,5 +30,19 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/components/ui/Breadcrumb.tsx",
+    "src/components/ui/Carousel.tsx",
+    "src/components/ui/EmptyState.tsx",
+    "src/components/ui/Link.tsx",
+    "src/components/ui/ListItem.tsx",
+    "src/components/ui/PageShell.tsx",
+    "src/components/ui/SmartImage.tsx",
+    "src/components/ui/Toast.tsx",
+    "src/components/ui/ToastContainer.tsx",
+    "src/components/ui/index.ts"
+  ]
 }

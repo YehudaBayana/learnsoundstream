@@ -7,16 +7,22 @@ import IconButton from '@/components/ui/IconButton';
 import Slider from '@/components/ui/Slider';
 import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
-
-interface Track {
-  videoId: string;
-  title: string;
-}
+import { usePlayback } from '@/context/PlaybackContext';
 
 export default function AudioPlayer() {
-  const [videoId, setVideoId] = useState<string>('');
-  const [trackTitle, setTrackTitle] = useState<string>('Select a track to play');
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const {
+    currentTrack,
+    isPlaying,
+    queue,
+    shuffleMode,
+    repeatMode,
+    setPlaying,
+    nextTrack,
+    prevTrack,
+    toggleShuffle,
+    toggleRepeat,
+  } = usePlayback();
+
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [volume, setVolume] = useState<number>(0.8);
@@ -27,26 +33,6 @@ export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
 
-  // Decoupled listener: allows any component to trigger a song via window event
-  useEffect(() => {
-    const handlePlaySong = (e: Event) => {
-      const customEvent = e as CustomEvent<Track>;
-      const { videoId, title } = customEvent.detail;
-      if (videoId) {
-        setVideoId(videoId);
-        setTrackTitle(title);
-        setIsPlaying(true);
-        setError(null);
-        setIsLoading(true);
-      }
-    };
-
-    window.addEventListener('play-song', handlePlaySong);
-    return () => {
-      window.removeEventListener('play-song', handlePlaySong);
-    };
-  }, []);
-
   // Sync state with HTML5 audio player
   useEffect(() => {
     if (!audioRef.current) return;
@@ -56,13 +42,13 @@ export default function AudioPlayer() {
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
           console.warn('Audio playback failed or was interrupted:', err);
-          setIsPlaying(false);
+          setPlaying(false);
         });
       }
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, videoId]);
+  }, [isPlaying, currentTrack?.videoId, setPlaying]);
 
   // Handle mute synchronization
   useEffect(() => {
@@ -87,8 +73,8 @@ export default function AudioPlayer() {
   };
 
   const handlePlayPause = () => {
-    if (!videoId) return;
-    setIsPlaying(!isPlaying);
+    if (!currentTrack) return;
+    setPlaying(!isPlaying);
   };
 
   const handleTimeUpdate = () => {
@@ -115,7 +101,7 @@ export default function AudioPlayer() {
   const handleAudioError = () => {
     setIsLoading(false);
     setError('Failed to fetch audio stream from server.');
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,28 +127,28 @@ export default function AudioPlayer() {
   return (
     <Flex 
       align="center"
-      className={`fixed left-6 right-6 h-[84px] z-[999] px-6 rounded-2xl border border-white/8 bg-black/40 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
-        videoId ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
+      className={`fixed left-4 right-4 md:left-[284px] md:right-6 h-[84px] z-[999] px-6 rounded-2xl border border-white/8 bg-black/40 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
+        currentTrack?.videoId ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
       }`}
     >
-      {videoId && (
+      {currentTrack?.videoId && (
         <audio
           ref={audioRef}
-          src={`${apiUrl}/api/stream?v=${videoId}`}
+          src={`${apiUrl}/api/stream?v=${currentTrack.videoId}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
           onCanPlay={handleAudioCanPlay}
           onError={handleAudioError}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={nextTrack}
         />
       )}
 
       <Flex justify="between" align="center" gap={6} className="w-full">
         {/* Left: Track Information */}
-        <Flex align="center" gap={4} className="w-[30%] min-w-[220px] overflow-hidden">
-          {/* Animated visualizer bars in Tailwind */}
-          <Flex align="end" gap={1} className="gap-[3px] h-5 w-6 select-none">
+        <Flex align="center" gap={4} className="w-[30%] min-w-[200px] overflow-hidden">
+          {/* Visualizer bars */}
+          <Flex align="end" gap={1} className="gap-[3px] h-5 w-6 select-none flex-shrink-0">
             <span className={`w-[3px] bg-emerald-500 rounded-full transition-all duration-300 ${
               isPlaying ? 'animate-[bounce-bar_0.8s_ease_infinite_alternate] h-5' : 'h-1'
             }`} />
@@ -179,11 +165,11 @@ export default function AudioPlayer() {
           <Flex direction="col" className="min-w-0 select-none">
             <Box className="overflow-hidden text-ellipsis whitespace-nowrap">
               <Text variant="body-sm" weight="semibold" color="default" truncate className="text-white">
-                {trackTitle}
+                {currentTrack?.title || 'No track playing'}
               </Text>
             </Box>
-            <Text variant="caption" color="muted">
-              {isLoading ? 'Streaming from Go API...' : error ? 'Error' : 'YouTube Soundstream'}
+            <Text variant="caption" color="muted" truncate>
+              {isLoading ? 'Streaming from Go API...' : error ? 'Error' : `${currentTrack?.emoji || '🎵'} YouTube Soundstream`}
             </Text>
           </Flex>
         </Flex>
@@ -191,55 +177,75 @@ export default function AudioPlayer() {
         {/* Center: Playback Controls & Progress Bar */}
         <Flex direction="col" align="center" gap={1} className="w-[40%] min-w-[280px]">
           <Flex align="center" gap={4}>
+            {/* Shuffle Button */}
             <IconButton 
               variant="ghost"
               size="sm"
               aria-label="Shuffle"
-              disabled={!videoId}
-              className="text-gray-400 hover:text-white"
+              disabled={!currentTrack || queue.length <= 1}
+              onClick={toggleShuffle}
+              className={`transition-colors duration-200 ${
+                shuffleMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-500 hover:text-white'
+              }`}
             >
-              🔀
+              <span>🔀</span>
             </IconButton>
+
+            {/* Previous Button */}
             <IconButton 
               variant="ghost"
               size="sm"
               aria-label="Previous track"
-              disabled={!videoId}
-              className="text-gray-400 hover:text-white"
+              disabled={!currentTrack || queue.length <= 1}
+              onClick={prevTrack}
+              className="text-gray-400 hover:text-white transition-colors duration-200"
             >
-              ⏮
+              <span>⏮</span>
             </IconButton>
             
+            {/* Play / Pause Button */}
             <IconButton
               variant="primary"
               size="md"
               rounded
               onClick={handlePlayPause}
-              disabled={!videoId || isLoading}
+              disabled={!currentTrack || isLoading}
               aria-label={isPlaying ? 'Pause' : 'Play'}
               loading={isLoading}
-              className="bg-white text-black hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-md"
+              className="bg-white text-black hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-md scale-105 active:scale-95"
             >
-              {isPlaying ? '⏸' : '▶'}
+              <span>{isPlaying ? '⏸' : '▶'}</span>
             </IconButton>
 
+            {/* Next Button */}
             <IconButton 
               variant="ghost"
               size="sm"
               aria-label="Next track"
-              disabled={!videoId}
-              className="text-gray-400 hover:text-white"
+              disabled={!currentTrack || queue.length <= 1}
+              onClick={nextTrack}
+              className="text-gray-400 hover:text-white transition-colors duration-200"
             >
-              ⏭
+              <span>⏭</span>
             </IconButton>
+
+            {/* Repeat Button */}
             <IconButton 
               variant="ghost"
               size="sm"
               aria-label="Repeat"
-              disabled={!videoId}
-              className="text-gray-400 hover:text-white"
+              disabled={!currentTrack}
+              onClick={toggleRepeat}
+              className={`transition-colors duration-200 relative ${
+                repeatMode !== 'none' ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-500 hover:text-white'
+              }`}
             >
-              🔁
+              <span>🔁</span>
+              {repeatMode === 'one' && (
+                <span className="absolute -top-1 -right-1 text-[7px] bg-emerald-500 text-black font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center border border-black scale-90 select-none">
+                  1
+                </span>
+              )}
             </IconButton>
           </Flex>
 
@@ -256,7 +262,7 @@ export default function AudioPlayer() {
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
-                disabled={!videoId || isLoading}
+                disabled={!currentTrack || isLoading}
                 className="w-full"
               />
             </Box>
@@ -279,11 +285,11 @@ export default function AudioPlayer() {
               variant="ghost"
               size="sm"
               onClick={toggleMute}
-              disabled={!videoId}
+              disabled={!currentTrack}
               aria-label={isMuted ? 'Unmute' : 'Mute'}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
             >
-              {isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.7 ? '🔉' : '🔊'}
+              <span>{isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.7 ? '🔉' : '🔊'}</span>
             </IconButton>
             <Slider
               size="sm"
@@ -293,7 +299,7 @@ export default function AudioPlayer() {
               step={0.05}
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
-              disabled={!videoId}
+              disabled={!currentTrack}
               className="w-20"
             />
           </Flex>
