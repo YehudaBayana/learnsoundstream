@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Input from '@/components/ui/Input';
@@ -8,29 +8,155 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback, Track, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { apiUrl } from '@/constants';
+
+interface SearchApiResult {
+  videoId: string;
+  title: string;
+  channel: string;
+  duration: string;
+  durationSeconds: number;
+  thumbnail: string;
+}
+
+interface SearchApiResponse {
+  results: SearchApiResult[];
+  query: string;
+  count: number;
+}
+
+const SKELETON_WIDTHS = [
+  { title: '72%', subtitle: '50%' },
+  { title: '64%', subtitle: '40%' },
+  { title: '78%', subtitle: '52%' },
+  { title: '70%', subtitle: '45%' },
+  { title: '66%', subtitle: '48%' },
+];
+
+/** Convert an API search result into a Track object compatible with the playback system */
+function toTrack(result: SearchApiResult): Track {
+  return {
+    videoId: result.videoId,
+    title: result.title,
+    desc: result.channel,
+    duration: result.duration,
+    emoji: '🎵',
+    category: 'YouTube',
+  };
+}
 
 export default function SearchView() {
   const { searchQuery, setSearchQuery } = usePlayback();
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
+  // API search state
+  const [searchResults, setSearchResults] = useState<Track[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Debounce ref
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // AbortController ref for cancelling in-flight requests
+  const abortRef = useRef<AbortController | null>(null);
+
+  const performSearch = useCallback(async (query: string) => {
+    // Cancel any in-flight request
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsLoading(false);
+      setError(null);
+      setHasSearched(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setIsLoading(true);
+    setError(null);
+    setHasSearched(true);
+
+    try {
+      const response = await fetch(
+        `${apiUrl}/api/search?q=${encodeURIComponent(query.trim())}`,
+        { signal: controller.signal }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.error || `Search failed (${response.status})`);
+      }
+
+      const data: SearchApiResponse = await response.json();
+      setSearchResults(data.results.map(toTrack));
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return; // Request was cancelled, ignore
+      }
+      console.error('Search error:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to search. Is the backend server running?'
+      );
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setLocalQuery(val);
     setSearchQuery(val);
+
+    // Debounce API calls — wait 500ms after user stops typing
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      performSearch(val);
+    }, 500);
   };
 
-  const filteredTracks = TRACK_DATABASE.filter((track) => {
-    const query = localQuery.toLowerCase().trim();
-    if (!query) return true; // Show all if query is empty
-    return (
-      track.title.toLowerCase().includes(query) ||
-      track.desc.toLowerCase().includes(query) ||
-      track.category.toLowerCase().includes(query)
-    );
-  });
+  const handleClear = () => {
+    setLocalQuery('');
+    setSearchQuery('');
+    setSearchResults([]);
+    setError(null);
+    setHasSearched(false);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+  };
 
-  // Unique categories for recommendation widgets
+  const handleCategoryClick = (category: string) => {
+    setLocalQuery(category);
+    setSearchQuery(category);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    performSearch(category);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
+
+  // Unique categories from local database for category pills
   const categories = Array.from(new Set(TRACK_DATABASE.map((t) => t.category)));
 
   return (
@@ -39,12 +165,15 @@ export default function SearchView() {
       <Box className="w-full bg-white/[0.015] border border-white/5 p-6 rounded-2xl">
         <Flex direction="col" gap={3}>
           <Heading level={2} size="md" className="font-semibold text-white">
-            Search songs, categories or moods
+            Search YouTube
           </Heading>
+          <Text variant="body-sm" color="muted" className="text-[13px] -mt-1">
+            Search real YouTube videos powered by the Go backend
+          </Text>
           <Box className="relative w-full">
             <Input
               type="text"
-              placeholder="What do you want to listen to? (e.g. Synthwave, Lofi, Pop...)"
+              placeholder="Search for any song, artist, or genre..."
               value={localQuery}
               onChange={handleSearchChange}
               className="w-full pl-12 pr-4 py-3 bg-slate-900 border-slate-700 text-white rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200"
@@ -55,10 +184,7 @@ export default function SearchView() {
             </span>
             {localQuery && (
               <button
-                onClick={() => {
-                  setLocalQuery('');
-                  setSearchQuery('');
-                }}
+                onClick={handleClear}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer text-xs bg-white/5 hover:bg-white/10 px-1.5 py-0.5 rounded-md"
               >
                 Clear
@@ -70,56 +196,128 @@ export default function SearchView() {
 
       {/* Results View */}
       <Flex direction="col" gap={4}>
-        <Heading level={3} size="sm" className="font-semibold text-white px-1">
-          {localQuery ? `Search Results (${filteredTracks.length})` : 'All Available Tracks'}
-        </Heading>
-
-        {filteredTracks.length === 0 ? (
-          <Box className="w-full text-center py-16 rounded-2xl bg-white/[0.01] border border-dashed border-white/5">
-            <span className="text-4xl mb-4 block">🎧</span>
-            <Heading level={4} size="sm" className="text-white font-semibold mb-1">
-              No results found for &quot;{localQuery}&quot;
-            </Heading>
-            <Text variant="body-sm" color="muted">
-              Try checking the spelling or searching for another keyword.
-            </Text>
-          </Box>
-        ) : (
-          <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
-            {filteredTracks.map((track, idx) => (
-              <TrackItem
-                key={track.videoId}
-                track={track}
-                index={idx}
-                contextQueue={filteredTracks}
-              />
+        {/* Loading State */}
+        {isLoading && (
+          <Flex direction="col" gap={3} className="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+            <Flex align="center" gap={3} className="px-1">
+              <Box className="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+              <Text variant="body-sm" color="muted">
+                Searching YouTube for &quot;{localQuery}&quot;...
+              </Text>
+            </Flex>
+            {/* Skeleton Rows */}
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Flex
+                key={i}
+                align="center"
+                gap={4}
+                className="w-full p-3 rounded-xl animate-pulse"
+              >
+                <Box className="w-10 h-10 rounded-lg bg-white/[0.04] flex-shrink-0" />
+                <Flex direction="col" gap={2} className="flex-1 min-w-0">
+                  <Box
+                    className="h-3.5 rounded-md bg-white/[0.06]"
+                    style={{ width: SKELETON_WIDTHS[i].title }}
+                  />
+                  <Box
+                    className="h-2.5 rounded-md bg-white/[0.03]"
+                    style={{ width: SKELETON_WIDTHS[i].subtitle }}
+                  />
+                </Flex>
+                <Box className="w-10 h-3 rounded-md bg-white/[0.04] flex-shrink-0" />
+              </Flex>
             ))}
           </Flex>
         )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <Box className="w-full text-center py-12 rounded-2xl bg-red-500/[0.03] border border-red-500/10">
+            <span className="text-4xl mb-4 block">⚠️</span>
+            <Heading level={4} size="sm" className="text-white font-semibold mb-2">
+              Search Failed
+            </Heading>
+            <Text variant="body-sm" color="muted" className="max-w-[400px] mx-auto">
+              {error}
+            </Text>
+            <button
+              onClick={() => performSearch(localQuery)}
+              className="mt-4 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer bg-emerald-500/10 hover:bg-emerald-500/20 px-4 py-2 rounded-full"
+            >
+              Retry Search
+            </button>
+          </Box>
+        )}
+
+        {/* Results */}
+        {!isLoading && !error && hasSearched && (
+          <>
+            <Heading level={3} size="sm" className="font-semibold text-white px-1">
+              Search Results ({searchResults.length})
+            </Heading>
+
+            {searchResults.length === 0 ? (
+              <Box className="w-full text-center py-16 rounded-2xl bg-white/[0.01] border border-dashed border-white/5">
+                <span className="text-4xl mb-4 block">🎧</span>
+                <Heading level={4} size="sm" className="text-white font-semibold mb-1">
+                  No results found for &quot;{localQuery}&quot;
+                </Heading>
+                <Text variant="body-sm" color="muted">
+                  Try checking the spelling or searching for another keyword.
+                </Text>
+              </Box>
+            ) : (
+              <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
+                {searchResults.map((track, idx) => (
+                  <TrackItem
+                    key={track.videoId}
+                    track={track}
+                    index={idx}
+                    contextQueue={searchResults}
+                  />
+                ))}
+              </Flex>
+            )}
+          </>
+        )}
+
+        {/* Default state — no query entered yet */}
+        {!isLoading && !error && !hasSearched && (
+          <>
+            <Heading level={3} size="sm" className="font-semibold text-white px-1">
+              All Available Tracks
+            </Heading>
+            <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
+              {TRACK_DATABASE.map((track, idx) => (
+                <TrackItem
+                  key={track.videoId}
+                  track={track}
+                  index={idx}
+                  contextQueue={TRACK_DATABASE}
+                />
+              ))}
+            </Flex>
+          </>
+        )}
       </Flex>
 
-      {/* Recommended Category Pills (only visible when not searching) */}
-      {!localQuery && (
-        <Flex direction="col" gap={3} className="pt-4">
-          <Heading level={3} size="sm" className="font-semibold text-white px-1">
-            Browse Categories
-          </Heading>
-          <Flex gap={3} wrap="wrap">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setLocalQuery(cat);
-                  setSearchQuery(cat);
-                }}
-                className="px-5 py-2.5 rounded-full text-sm font-semibold border border-white/5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] text-gray-300 hover:text-emerald-400 hover:border-emerald-500 hover:bg-white/[0.06] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
-              >
-                #{cat}
-              </button>
-            ))}
-          </Flex>
+      {/* Category Pills (always visible) */}
+      <Flex direction="col" gap={3} className="pt-4">
+        <Heading level={3} size="sm" className="font-semibold text-white px-1">
+          Quick Search
+        </Heading>
+        <Flex gap={3} wrap="wrap">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryClick(cat)}
+              className="px-5 py-2.5 rounded-full text-sm font-semibold border border-white/5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] text-gray-300 hover:text-emerald-400 hover:border-emerald-500 hover:bg-white/[0.06] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
+            >
+              #{cat}
+            </button>
+          ))}
         </Flex>
-      )}
+      </Flex>
     </Container>
   );
 }

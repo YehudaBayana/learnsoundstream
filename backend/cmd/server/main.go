@@ -32,6 +32,7 @@ func main() {
 	mux.HandleFunc("GET /health", handlers.HealthHandler)
 	mux.HandleFunc("GET /api/health", handlers.HealthHandler)
 	mux.HandleFunc("GET /api/stream", handlers.StreamHandler)
+	mux.HandleFunc("GET /api/search", handlers.SearchHandler)
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)

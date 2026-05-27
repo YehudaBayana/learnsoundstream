@@ -4,7 +4,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 	"os/exec"
 	"regexp"
 	"time"
@@ -33,15 +32,8 @@ func StreamHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Warn("Failed to clear write deadline, streaming might time out", "error", err)
 	}
 
-	// Safely resolve the absolute path to yt-dlp, falling back to typical installation directories
-	ytDlpPath := "yt-dlp"
-	if p, err := exec.LookPath("yt-dlp"); err == nil {
-		ytDlpPath = p
-	} else if _, err := os.Stat("/opt/homebrew/bin/yt-dlp"); err == nil {
-		ytDlpPath = "/opt/homebrew/bin/yt-dlp"
-	} else if _, err := os.Stat("/usr/local/bin/yt-dlp"); err == nil {
-		ytDlpPath = "/usr/local/bin/yt-dlp"
-	}
+	// Resolve the yt-dlp binary path using the shared helper
+	ytDlpPath := resolveYtDlpPath()
 
 	videoURL := "https://www.youtube.com/watch?v=" + videoID
 
