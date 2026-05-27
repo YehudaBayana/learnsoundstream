@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -24,7 +26,22 @@ func StreamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Info("Starting audio stream", "video_id", videoID)
+	ss := r.URL.Query().Get("ss")
+	var startOffset float64
+	if ss != "" {
+		parsedOffset, err := strconv.ParseFloat(ss, 64)
+		if err != nil || parsedOffset < 0 {
+			http.Error(w, "Invalid 'ss' parameter", http.StatusBadRequest)
+			return
+		}
+		startOffset = parsedOffset
+	}
+
+	if startOffset > 0 {
+		slog.Info("Starting audio stream", "video_id", videoID, "start_offset", startOffset)
+	} else {
+		slog.Info("Starting audio stream", "video_id", videoID)
+	}
 
 	// In Go 1.20+, we can dynamically bypass the server's WriteTimeout for this long-lived streaming connection.
 	rc := http.NewResponseController(w)
@@ -37,13 +54,18 @@ func StreamHandler(w http.ResponseWriter, r *http.Request) {
 
 	videoURL := "https://www.youtube.com/watch?v=" + videoID
 
-	// Create command to run yt-dlp and extract audio to stdout (-)
-	// We use the request context so Go automatically signals and terminates the command on client disconnect!
-	cmd := exec.CommandContext(r.Context(), ytDlpPath,
+	args := []string{
 		"-f", "bestaudio",
 		"-o", "-",
-		videoURL,
-	)
+	}
+	if startOffset > 0 {
+		args = append(args, "--download-sections", fmt.Sprintf("*%f-inf", startOffset))
+	}
+	args = append(args, videoURL)
+
+	// Create command to run yt-dlp and extract audio to stdout (-)
+	// We use the request context so Go automatically signals and terminates the command on client disconnect!
+	cmd := exec.CommandContext(r.Context(), ytDlpPath, args...)
 
 	// Get stdout pipe to stream the audio data
 	stdout, err := cmd.StdoutPipe()

@@ -9,6 +9,19 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import { usePlayback } from '@/context/PlaybackContext';
 
+// Helper to convert "M:SS", "MM:SS" or "H:MM:SS" into seconds
+const parseDurationString = (durStr?: string): number => {
+  if (!durStr) return 0;
+  const parts = durStr.split(':');
+  if (parts.length === 2) {
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }
+  if (parts.length === 3) {
+    return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseInt(parts[2], 10);
+  }
+  return parseFloat(durStr) || 0;
+};
+
 export default function AudioPlayer() {
   const {
     currentTrack,
@@ -30,8 +43,20 @@ export default function AudioPlayer() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Seek position tracking
+  const [seekTime, setSeekTime] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
+
+  const trackDuration = currentTrack ? parseDurationString(currentTrack.duration) : 0;
+
+  // Reset seek and current time when track changes
+  useEffect(() => {
+    setSeekTime(0);
+    setCurrentTime(0);
+  }, [currentTrack?.videoId]);
 
   // Sync state with HTML5 audio player
   useEffect(() => {
@@ -48,7 +73,7 @@ export default function AudioPlayer() {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentTrack?.videoId, setPlaying]);
+  }, [isPlaying, currentTrack?.videoId, seekTime, setPlaying]);
 
   // Handle mute synchronization
   useEffect(() => {
@@ -78,8 +103,8 @@ export default function AudioPlayer() {
   };
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
+    if (audioRef.current && !isDragging) {
+      setCurrentTime(seekTime + audioRef.current.currentTime);
     }
   };
 
@@ -104,11 +129,28 @@ export default function AudioPlayer() {
     setPlaying(false);
   };
 
+  const performSeek = (newTime: number) => {
+    setSeekTime(newTime);
+    setCurrentTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    performSeek(currentTime);
+  };
+
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     setCurrentTime(newTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
+    if (!isDragging) {
+      performSeek(newTime);
     }
   };
 
@@ -134,7 +176,7 @@ export default function AudioPlayer() {
       {currentTrack?.videoId && (
         <audio
           ref={audioRef}
-          src={`${apiUrl}/api/stream?v=${currentTrack.videoId}`}
+          src={`${apiUrl}/api/stream?v=${currentTrack.videoId}${seekTime > 0 ? `&ss=${seekTime}` : ''}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
@@ -259,15 +301,19 @@ export default function AudioPlayer() {
                 size="sm"
                 color="primary"
                 min={0}
-                max={duration || 100}
+                max={trackDuration || duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
+                onMouseDown={handleDragStart}
+                onTouchStart={handleDragStart}
+                onMouseUp={handleDragEnd}
+                onTouchEnd={handleDragEnd}
                 disabled={!currentTrack || isLoading}
                 className="w-full"
               />
             </Box>
             <Text variant="caption" color="muted" className="w-[35px] text-center font-mono text-[11px] select-none">
-              {duration > 0 ? formatTime(duration) : '0:00'}
+              {trackDuration > 0 ? formatTime(trackDuration) : duration > 0 ? formatTime(duration) : '0:00'}
             </Text>
           </Flex>
           
