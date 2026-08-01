@@ -8,7 +8,7 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, Track, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback, Track } from '@/context/PlaybackContext';
 import { apiUrl } from '@/constants';
 
 interface SearchApiResult {
@@ -45,30 +45,7 @@ export default function LikedSongsView() {
       return;
     }
 
-    // 1. Instantly check standard TRACK_DATABASE cache
-    const localMap = new Map<string, Track>();
-    TRACK_DATABASE.forEach((t) => localMap.set(t.videoId, t));
-
-    const foundLocalTracks: Track[] = [];
-    const missingIds: string[] = [];
-
-    likedTrackIds.forEach((id) => {
-      if (localMap.has(id)) {
-        foundLocalTracks.push(localMap.get(id)!);
-      } else {
-        missingIds.push(id);
-      }
-    });
-
-    // If all liked tracks are present locally, set them immediately
-    if (missingIds.length === 0) {
-      setLikedTracks(foundLocalTracks);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
-
-    // 2. Fetch missing tracks from backend /api/videos
+    // Fetch missing tracks from backend /api/videos
     let isCancelled = false;
     setIsLoading(true);
     setError(null);
@@ -81,20 +58,13 @@ export default function LikedSongsView() {
       .then((data: { results: SearchApiResult[] }) => {
         if (isCancelled) return;
         const fetchedTracks = data.results.map(toTrack);
-        // Maintain likedTrackIds order
-        const fetchedMap = new Map(fetchedTracks.map((t) => [t.videoId, t]));
-        const orderedTracks = likedTrackIds
-          .map((id) => localMap.get(id) || fetchedMap.get(id))
-          .filter((t): t is Track => !!t);
-
-        setLikedTracks(orderedTracks);
+        setLikedTracks(fetchedTracks);
       })
       .catch((err) => {
         if (isCancelled) return;
         console.error('Failed to fetch batch videos for LikedSongsView:', err);
         setError(err.message || 'Failed to load liked tracks');
-        // Fallback to whatever local tracks we have
-        setLikedTracks(foundLocalTracks);
+        setLikedTracks([]);
       })
       .finally(() => {
         if (!isCancelled) setIsLoading(false);

@@ -11,7 +11,7 @@ import Container from '@/components/ui/layout/Container';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
-import { usePlayback, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback } from '@/context/PlaybackContext';
 
 export default function PlaylistsView() {
   const { playlists, setCurrentView, playAll, createPlaylist } = usePlayback();
@@ -38,10 +38,6 @@ export default function PlaylistsView() {
   const handlePlayPlaylist = (e: React.MouseEvent, playlistId: string, trackIds: string[]) => {
     e.stopPropagation(); // Prevent navigating to detail page
     if (trackIds.length === 0) return;
-    const tracksToPlay = trackIds
-      .map((id) => TRACK_DATABASE.find((t) => t.videoId === id))
-      .filter((t): t is typeof TRACK_DATABASE[0] => !!t);
-    playAll(tracksToPlay);
   };
 
   return (

@@ -8,7 +8,7 @@ import Flex from '@/components/ui/layout/Flex';
 import ServerStatus from '@/components/ServerStatus';
 import Footer from '@/components/Footer';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback } from '@/context/PlaybackContext';
 
 export default function HomeView() {
   const { playTrack, history } = usePlayback();

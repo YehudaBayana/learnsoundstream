@@ -17,32 +17,7 @@ export interface Track {
   category: string;
 }
 
-export const FEATURED_TRACKS: Track[] = [
-  {
-    videoId: "e-U1lj57pv8",
-    title: "Never Gonna Give You Up",
-    desc: "The absolute classic, perfect for validating high-fidelity audio pipe streaming.",
-    duration: "3:32",
-    emoji: "🕺",
-    category: "Classic Pop",
-  },
-  {
-    videoId: "jfKfPfyJRdk",
-    title: "Lofi Study Beats",
-    desc: "Chill, high-fidelity atmospheric beats to code and pair-program to.",
-    duration: "3:05",
-    emoji: "📚",
-    category: "Chill Lofi",
-  },
-  {
-    videoId: "4xDzrJKXOOY",
-    title: "Retro Synthwave",
-    desc: "Outrun synth tracks, perfect for late night hacking and coding sessions.",
-    duration: "3:47",
-    emoji: "🚗",
-    category: "Synthwave",
-  },
-];
+export const FEATURED_TRACKS: Track[] = [];
 
 interface TrackShowcaseProps {
   onPlayTrack: (videoId: string, title: string) => void;

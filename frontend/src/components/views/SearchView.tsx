@@ -8,7 +8,7 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, Track, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback, Track } from '@/context/PlaybackContext';
 import { apiUrl } from '@/constants';
 
 interface SearchApiResult {
@@ -156,8 +156,7 @@ export default function SearchView() {
     };
   }, []);
 
-  // Unique categories from local database for category pills
-  const categories = Array.from(new Set(TRACK_DATABASE.map((t) => t.category)));
+  const categories: string[] = [];
 
   return (
     <Container className="px-6 py-8 max-w-[1000px] space-y-8 animate-[fadeIn_0.4s_ease_forwards]">
@@ -281,43 +280,27 @@ export default function SearchView() {
           </>
         )}
 
-        {/* Default state — no query entered yet */}
-        {!isLoading && !error && !hasSearched && (
-          <>
-            <Heading level={3} size="sm" className="font-semibold text-white px-1">
-              All Available Tracks
-            </Heading>
-            <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
-              {TRACK_DATABASE.map((track, idx) => (
-                <TrackItem
-                  key={track.videoId}
-                  track={track}
-                  index={idx}
-                  contextQueue={TRACK_DATABASE}
-                />
-              ))}
-            </Flex>
-          </>
-        )}
       </Flex>
 
-      {/* Category Pills (always visible) */}
-      <Flex direction="col" gap={3} className="pt-4">
-        <Heading level={3} size="sm" className="font-semibold text-white px-1">
-          Quick Search
-        </Heading>
-        <Flex gap={3} wrap="wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className="px-5 py-2.5 rounded-full text-sm font-semibold border border-white/5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] text-gray-300 hover:text-emerald-400 hover:border-emerald-500 hover:bg-white/[0.06] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
-            >
-              #{cat}
-            </button>
-          ))}
+      {/* Category Pills (rendered only when server categories exist) */}
+      {categories.length > 0 && (
+        <Flex direction="col" gap={3} className="pt-4">
+          <Heading level={3} size="sm" className="font-semibold text-white px-1">
+            Quick Search
+          </Heading>
+          <Flex gap={3} wrap="wrap">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className="px-5 py-2.5 rounded-full text-sm font-semibold border border-white/5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] text-gray-300 hover:text-emerald-400 hover:border-emerald-500 hover:bg-white/[0.06] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
+              >
+                #{cat}
+              </button>
+            ))}
+          </Flex>
         </Flex>
-      </Flex>
+      )}
     </Container>
   );
 }
