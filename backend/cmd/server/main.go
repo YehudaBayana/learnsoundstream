@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"backend/internal/database"
 	"backend/internal/handlers"
 	"backend/internal/middleware"
 )
@@ -25,14 +26,33 @@ func main() {
 		port = "8080"
 	}
 
+	// Get DB connection string (use default for local development via Docker)
+	dbConnStr := os.Getenv("DATABASE_URL")
+	if dbConnStr == "" {
+		dbConnStr = "postgres://soundstream:password123@localhost:5432/soundstream?sslmode=disable"
+	}
+
+	// Initialize database
+	db, err := database.InitDB(dbConnStr)
+	if err != nil {
+		slog.Error("Failed to initialize database", "error", err)
+		// We could exit here, but let's allow the app to start without DB for resilience
+	}
+	if db != nil {
+		defer db.Close()
+	}
+
+	// Create App instance with dependencies
+	app := handlers.NewApp(db)
+
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
 	// Register handlers from internal/handlers
-	mux.HandleFunc("GET /health", handlers.HealthHandler)
-	mux.HandleFunc("GET /api/health", handlers.HealthHandler)
-	mux.HandleFunc("GET /api/stream", handlers.StreamHandler)
-	mux.HandleFunc("GET /api/search", handlers.SearchHandler)
+	mux.HandleFunc("GET /health", app.HealthHandler)
+	mux.HandleFunc("GET /api/health", app.HealthHandler)
+	mux.HandleFunc("GET /api/stream", app.StreamHandler)
+	mux.HandleFunc("GET /api/search", app.SearchHandler)
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)

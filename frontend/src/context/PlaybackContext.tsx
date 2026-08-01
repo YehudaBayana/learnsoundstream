@@ -20,104 +20,7 @@ export interface Playlist {
   createdAt: string;
 }
 
-export const TRACK_DATABASE: Track[] = [
-  {
-    videoId: "e-U1lj57pv8",
-    title: "Never Gonna Give You Up",
-    desc: "The absolute classic, perfect for validating high-fidelity audio pipe streaming.",
-    duration: "3:32",
-    emoji: "🕺",
-    category: "Classic Pop",
-  },
-  {
-    videoId: "jfKfPfyJRdk",
-    title: "Lofi Study Beats",
-    desc: "Chill, high-fidelity atmospheric beats to code and pair-program to.",
-    duration: "3:05",
-    emoji: "📚",
-    category: "Chill Lofi",
-  },
-  {
-    videoId: "4xDzrJKXOOY",
-    title: "Retro Synthwave",
-    desc: "Outrun synth tracks, perfect for late night hacking and coding sessions.",
-    duration: "3:47",
-    emoji: "🚗",
-    category: "Synthwave",
-  },
-  {
-    videoId: "5qap5aO4i9A",
-    title: "Lofi Hip Hop Radio",
-    desc: "Relaxing beats to study, code, or chill to. Smooth jazz and boom bap elements.",
-    duration: "4:15",
-    emoji: "☕",
-    category: "Chill Lofi",
-  },
-  {
-    videoId: "t3217H8Jpp0",
-    title: "Beethoven Symphony No. 9",
-    desc: "The legendary Choral Symphony. Dynamic range testing for audio streaming.",
-    duration: "6:20",
-    emoji: "🎻",
-    category: "Classical",
-  },
-  {
-    videoId: "9E6b3swbnWg",
-    title: "Chopin Nocturne Op. 9 No. 2",
-    desc: "Beautiful piano nocturne, ideal for peaceful study or winding down.",
-    duration: "4:30",
-    emoji: "🎹",
-    category: "Classical",
-  },
-  {
-    videoId: "8GW6sLrK40k",
-    title: "Resonance",
-    desc: "Electronic synthwave classic. Rich synth layers and analog vibes.",
-    duration: "3:30",
-    emoji: "🌌",
-    category: "Synthwave",
-  },
-  {
-    videoId: "4NRXx6U8ABQ",
-    title: "Blinding Lights",
-    desc: "High energy synthpop anthem with nostalgic 80s influence.",
-    duration: "3:20",
-    emoji: "⚡",
-    category: "Synthpop",
-  },
-  {
-    videoId: "djV11Xbc914",
-    title: "Take On Me",
-    desc: "Upbeat synth-pop classic with iconic keyboard hooks.",
-    duration: "3:45",
-    emoji: "🖍️",
-    category: "Classic Pop",
-  },
-  {
-    videoId: "DyDfgMOUjCI",
-    title: "Bad Guy",
-    desc: "Dark pop bassline masterclass, excellent for low frequency response tests.",
-    duration: "3:14",
-    emoji: "🕷️",
-    category: "Alt Pop",
-  },
-  {
-    videoId: "fJ9rUzIMcZQ",
-    title: "Bohemian Rhapsody",
-    desc: "Epic rock suite with complex multi-part harmonies and instrument shifts.",
-    duration: "5:55",
-    emoji: "👑",
-    category: "Rock",
-  },
-  {
-    videoId: "QkF3oxziUI4",
-    title: "Stairway to Heaven",
-    desc: "Classic acoustic to electric progressive rock build-up.",
-    duration: "8:02",
-    emoji: "🪜",
-    category: "Rock",
-  }
-];
+export const TRACK_DATABASE: Track[] = [];
 
 export type AppView = 'home' | 'search' | 'playlists' | 'playlist-detail' | 'liked-songs' | 'history';
 
@@ -158,24 +61,7 @@ interface PlaybackContextProps {
 
 const PlaybackContext = createContext<PlaybackContextProps | undefined>(undefined);
 
-const DEFAULT_PLAYLISTS: Playlist[] = [
-  {
-    id: 'lofi-focus',
-    name: 'Coding & Focus',
-    description: 'Chilled beats and synthscapes to zone out and hack to.',
-    trackIds: ['jfKfPfyJRdk', '4xDzrJKXOOY', '5qap5aO4i9A', '8GW6sLrK40k'],
-    emoji: '💻',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'classical-study',
-    name: 'Deep Thinking',
-    description: 'Masterpieces from Vivaldi, Chopin, and Beethoven.',
-    trackIds: ['t3217H8Jpp0', '9E6b3swbnWg'],
-    emoji: '🧠',
-    createdAt: new Date().toISOString(),
-  }
-];
+const DEFAULT_PLAYLISTS: Playlist[] = [];
 
 export function PlaybackProvider({ children }: { children: React.ReactNode }) {
   // Views & Routing State

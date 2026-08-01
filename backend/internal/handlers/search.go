@@ -40,7 +40,7 @@ type ytDlpEntry struct {
 
 // SearchHandler handles GET /api/search?q=<query>
 // It invokes yt-dlp to search YouTube and returns structured JSON results.
-func SearchHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (app *App) SearchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	query := strings.TrimSpace(request.URL.Query().Get("q"))
 	if query == "" {
 		http.Error(responseWriter, `{"error":"Missing 'q' query parameter"}`, http.StatusBadRequest)

@@ -12,7 +12,7 @@ import (
 )
 
 // StreamHandler pipes the audio stream of a YouTube video using yt-dlp
-func StreamHandler(w http.ResponseWriter, r *http.Request) {
+func (app *App) StreamHandler(w http.ResponseWriter, r *http.Request) {
 	videoID := r.URL.Query().Get("v")
 	if videoID == "" {
 		http.Error(w, "Missing 'v' parameter", http.StatusBadRequest)
@@ -41,6 +41,29 @@ func StreamHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Info("Starting audio stream", "video_id", videoID, "start_offset", startOffset)
 	} else {
 		slog.Info("Starting audio stream", "video_id", videoID)
+	}
+
+	// Async DB Insert/Update (Upsert) for playback history
+	// We run this in a goroutine so it doesn't block the stream startup
+	if app.DB != nil {
+		go func(vid string) {
+			query := `
+				INSERT INTO playback_history (user_id, video_id, play_count, last_played_at) 
+				VALUES ($1, $2, 1, CURRENT_TIMESTAMP)
+				ON CONFLICT (user_id, video_id) 
+				DO UPDATE SET 
+					play_count = playback_history.play_count + 1,
+					last_played_at = CURRENT_TIMESTAMP;
+			`
+			// Hardcoded user_id as "1" for now until Authentication is implemented
+			userID := "1"
+			_, err := app.DB.Exec(query, userID, vid)
+			if err != nil {
+				slog.Error("Failed to upsert playback history", "error", err, "video_id", vid)
+			} else {
+				slog.Debug("Playback history updated successfully", "video_id", vid)
+			}
+		}(videoID)
 	}
 
 	// In Go 1.20+, we can dynamically bypass the server's WriteTimeout for this long-lived streaming connection.

@@ -28,14 +28,21 @@ type Services struct {
 }
 
 // HealthHandler handles GET /health and GET /api/health
-func HealthHandler(w http.ResponseWriter, r *http.Request) {
+func (app *App) HealthHandler(w http.ResponseWriter, r *http.Request) {
+	dbStatus := "disconnected"
+	if app.DB != nil {
+		if err := app.DB.Ping(); err == nil {
+			dbStatus = "connected"
+		}
+	}
+
 	resp := HealthResponse{
 		Status:    "OK",
 		Version:   Version,
 		Uptime:    time.Since(StartTime).Round(time.Second).String(),
 		Timestamp: time.Now(),
 		Services: Services{
-			Database: "disconnected (not configured)",
+			Database: dbStatus,
 			Cache:    "disconnected (not configured)",
 		},
 	}

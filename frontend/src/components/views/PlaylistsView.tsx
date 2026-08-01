@@ -91,7 +91,7 @@ export default function PlaylistsView() {
         {playlists.map((pl) => (
           <Box
             key={pl.id}
-            onClick={() => setCurrentView('playlist-detail', pl.id)}
+            // onClick={() => setCurrentView('playlist-detail', pl.id)}
             className="flex flex-col justify-between h-60 rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.015] to-white/[0.005] hover:bg-white/[0.035] hover:border-white/10 hover:shadow-xl transition-all duration-300 p-6 cursor-pointer relative group"
           >
             <Box>
