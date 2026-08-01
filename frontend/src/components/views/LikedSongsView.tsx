@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import Button from '@/components/ui/Button';
@@ -7,15 +8,102 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { usePlayback, Track, TRACK_DATABASE } from '@/context/PlaybackContext';
+import { apiUrl } from '@/constants';
+
+interface SearchApiResult {
+  videoId: string;
+  title: string;
+  channel: string;
+  duration: string;
+  durationSeconds: number;
+  thumbnail: string;
+}
+
+function toTrack(result: SearchApiResult): Track {
+  return {
+    videoId: result.videoId,
+    title: result.title,
+    desc: result.channel,
+    duration: result.duration,
+    emoji: '🎵',
+    category: 'YouTube',
+  };
+}
 
 export default function LikedSongsView() {
   const { likedTrackIds, playAll, setCurrentView } = usePlayback();
+  const [likedTracks, setLikedTracks] = useState<Track[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Resolve Track objects from likedTrackIds
-  const likedTracks = likedTrackIds
-    .map((id) => TRACK_DATABASE.find((t) => t.videoId === id))
-    .filter((t): t is typeof TRACK_DATABASE[0] => !!t);
+  useEffect(() => {
+    if (likedTrackIds.length === 0) {
+      setLikedTracks([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
+    // 1. Instantly check standard TRACK_DATABASE cache
+    const localMap = new Map<string, Track>();
+    TRACK_DATABASE.forEach((t) => localMap.set(t.videoId, t));
+
+    const foundLocalTracks: Track[] = [];
+    const missingIds: string[] = [];
+
+    likedTrackIds.forEach((id) => {
+      if (localMap.has(id)) {
+        foundLocalTracks.push(localMap.get(id)!);
+      } else {
+        missingIds.push(id);
+      }
+    });
+
+    // If all liked tracks are present locally, set them immediately
+    if (missingIds.length === 0) {
+      setLikedTracks(foundLocalTracks);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
+    // 2. Fetch missing tracks from backend /api/videos
+    let isCancelled = false;
+    setIsLoading(true);
+    setError(null);
+
+    fetch(`${apiUrl}/api/videos?ids=${encodeURIComponent(likedTrackIds.join(','))}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch liked videos (${res.status})`);
+        return res.json();
+      })
+      .then((data: { results: SearchApiResult[] }) => {
+        if (isCancelled) return;
+        const fetchedTracks = data.results.map(toTrack);
+        // Maintain likedTrackIds order
+        const fetchedMap = new Map(fetchedTracks.map((t) => [t.videoId, t]));
+        const orderedTracks = likedTrackIds
+          .map((id) => localMap.get(id) || fetchedMap.get(id))
+          .filter((t): t is Track => !!t);
+
+        setLikedTracks(orderedTracks);
+      })
+      .catch((err) => {
+        if (isCancelled) return;
+        console.error('Failed to fetch batch videos for LikedSongsView:', err);
+        setError(err.message || 'Failed to load liked tracks');
+        // Fallback to whatever local tracks we have
+        setLikedTracks(foundLocalTracks);
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [likedTrackIds]);
 
   const handlePlayAll = () => {
     if (likedTracks.length === 0) return;
@@ -40,7 +128,7 @@ export default function LikedSongsView() {
             Your personal collection of favorite tracks, synced across sessions.
           </Text>
           <Text variant="caption" color="muted" className="text-xs">
-            {likedTracks.length} {likedTracks.length === 1 ? 'song' : 'songs'}
+            {likedTrackIds.length} {likedTrackIds.length === 1 ? 'song' : 'songs'}
           </Text>
         </Flex>
       </Flex>
@@ -49,13 +137,13 @@ export default function LikedSongsView() {
       <Flex justify="between" align="center" className="pb-2 border-b border-white/5">
         <Button
           variant="primary"
-          disabled={likedTracks.length === 0}
+          disabled={likedTracks.length === 0 || isLoading}
           onClick={handlePlayAll}
           leftIcon={<span>▶</span>}
           className="rounded-full bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500 font-semibold px-6 py-2.5 text-xs shadow-md shadow-emerald-500/10"
         >
           Play All
-          </Button>
+        </Button>
         <Button
           variant="ghost"
           onClick={() => setCurrentView('home')}
@@ -67,7 +155,22 @@ export default function LikedSongsView() {
 
       {/* Track List */}
       <Flex direction="col" gap={4}>
-        {likedTracks.length === 0 ? (
+        {isLoading ? (
+          <Flex direction="col" gap={3} className="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+            <Flex align="center" gap={3} className="px-1">
+              <Box className="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+              <Text variant="body-sm" color="muted">
+                Fetching details for your liked songs...
+              </Text>
+            </Flex>
+          </Flex>
+        ) : error ? (
+          <Box className="w-full text-center py-8 rounded-2xl bg-red-500/[0.03] border border-red-500/10">
+            <Text variant="body-sm" color="muted">
+              {error}
+            </Text>
+          </Box>
+        ) : likedTracks.length === 0 ? (
           <Box className="w-full text-center py-16 rounded-2xl bg-white/[0.01] border border-dashed border-white/5">
             <span className="text-4xl mb-4 block">🤍</span>
             <Heading level={3} size="sm" className="text-white font-semibold mb-1">
