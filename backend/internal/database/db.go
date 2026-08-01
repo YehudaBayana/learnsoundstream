@@ -2,10 +2,14 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 )
 
@@ -29,29 +33,34 @@ func InitDB(connStr string) (*sql.DB, error) {
 	slog.Info("Successfully connected to the database")
 
 	// Run auto-migrations (create tables)
-	if err := migrate(db); err != nil {
+	if err := runMigrations(db); err != nil {
 		return nil, fmt.Errorf("error running migrations: %w", err)
 	}
 
 	return db, nil
 }
 
-func migrate(db *sql.DB) error {
+func runMigrations(db *sql.DB) error {
 	slog.Info("Running database migrations...")
 
-	query := `
-	CREATE TABLE IF NOT EXISTS playback_history (
-		user_id VARCHAR(50),
-		video_id VARCHAR(50),
-		play_count INT DEFAULT 1,
-		last_played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		PRIMARY KEY (user_id, video_id)
-	);
-	`
-
-	_, err := db.Exec(query)
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
-		return err
+		return fmt.Errorf("could not create database driver: %w", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres", driver)
+	if err != nil {
+		return fmt.Errorf("failed to initialize migrate instance: %w", err)
+	}
+
+	if err := m.Up(); err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			slog.Info("Database migrations are up to date")
+			return nil
+		}
+		return fmt.Errorf("failed to run migrations: %w", err)
 	}
 
 	slog.Info("Database migrations completed successfully")
