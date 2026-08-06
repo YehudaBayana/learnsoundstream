@@ -55,8 +55,8 @@ export default function TrackItem({
       align="center"
       justify="between"
       gap={4}
-      className={`group w-full p-3 rounded-xl border border-transparent transition-all duration-200 select-none hover:bg-white/[0.03] hover:border-white/5 ${
-        isCurrent ? 'bg-white/[0.015] border-white/5' : ''
+      className={`group w-full p-3 rounded-xl border border-transparent transition-all duration-200 select-none hover:bg-[var(--bg-surface-hover)] hover:border-[var(--border-default)] ${
+        isCurrent ? 'bg-[var(--bg-surface)] border-[var(--border-default)]' : ''
       }`}
     >
       {/* Left Part: Play/Index, Cover, Title */}
@@ -103,7 +103,7 @@ export default function TrackItem({
             className={`w-10 h-10 rounded-lg flex-shrink-0 text-xl bg-gradient-to-br transition-all duration-300 ${
               isCurrent
                 ? 'from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rotate-[-2deg] scale-105 shadow-[0_4px_12px_rgba(16,185,129,0.15)]'
-                : 'from-white/[0.04] to-white/[0.01] border border-white/5 group-hover:from-white/[0.08] group-hover:rotate-[-2deg] group-hover:scale-105'
+                : 'from-[var(--bg-surface-hover)] to-[var(--bg-surface)] border border-[var(--border-default)] group-hover:from-[var(--bg-surface-active)] group-hover:rotate-[-2deg] group-hover:scale-105'
             }`}
           >
             {track.emoji}
@@ -117,7 +117,7 @@ export default function TrackItem({
             weight={isCurrent ? 'semibold' : 'medium'}
             truncate
             className={`transition-colors duration-200 ${
-              isCurrent ? 'text-emerald-400' : 'text-white group-hover:text-emerald-400'
+              isCurrent ? 'text-emerald-400' : 'text-[var(--text-primary)] group-hover:text-emerald-400'
             }`}
           >
             {track.title}
@@ -137,7 +137,7 @@ export default function TrackItem({
               variant="default"
               outlined
               size="sm"
-              className="border-white/10 text-gray-400 bg-white/[0.01] rounded-full"
+              className="border-[var(--border-default)] text-[var(--text-secondary)] bg-[var(--bg-surface)] rounded-full"
             >
               {track.category}
             </Badge>
@@ -161,7 +161,7 @@ export default function TrackItem({
           className={`transition-colors duration-200 ${
             isLiked
               ? 'text-emerald-500 hover:text-emerald-400'
-              : 'text-gray-500 hover:text-white opacity-0 group-hover:opacity-100'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100'
           }`}
           icon={<span>{isLiked ? '❤️' : '🤍'}</span>}
         />
@@ -174,7 +174,7 @@ export default function TrackItem({
               size="sm"
               variant="ghost"
               aria-label="Track options"
-              className="text-gray-500 hover:text-white opacity-0 group-hover:opacity-100"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100"
               icon={<span>⋮</span>}
             />
           }

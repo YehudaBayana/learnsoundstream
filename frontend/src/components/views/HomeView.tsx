@@ -26,7 +26,7 @@ export default function HomeView() {
         {/* Featured Tracks Showcase (Using unified TrackItem) */}
         <Flex direction="col" gap={4}>
           <Flex align="center" justify="between" className="px-1">
-            <Heading level={3} size="md" className="font-bold text-white">
+            <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
               Featured Showcase
             </Heading>
             <Text variant="caption" color="muted">
@@ -38,7 +38,7 @@ export default function HomeView() {
         {/* Recently Played */}
         <Flex direction="col" gap={4}>
           <Flex align="center" justify="between" className="px-1">
-            <Heading level={3} size="md" className="font-bold text-white">
+            <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
               Recently Played
             </Heading>
             {history.length > 0 && (
@@ -48,7 +48,7 @@ export default function HomeView() {
             )}
           </Flex>
 
-          <Flex direction="col" gap={2} className="bg-white/[0.015] border border-white/5 p-4 rounded-2xl justify-center min-h-[220px]">
+          <Flex direction="col" gap={2} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl justify-center min-h-[220px]">
             {history.length === 0 ? (
               <Flex direction="col" align="center" justify="center" className="text-center py-8">
                 <span className="text-3xl mb-3 opacity-60">🕰️</span>

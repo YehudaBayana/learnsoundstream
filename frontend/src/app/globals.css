@@ -30,28 +30,61 @@
   }
 }
 
+/* ----------------------------------------------------------------
+   Theme CSS Custom Properties (defaults = dark theme)
+   These are set dynamically by ThemeContext at runtime, but we
+   define defaults here so the page doesn't flash unstyled colors.
+   ---------------------------------------------------------------- */
+:root {
+  --bg-primary: #050505;
+  --bg-secondary: rgba(0, 0, 0, 0.4);
+  --bg-surface: rgba(255, 255, 255, 0.015);
+  --bg-surface-hover: rgba(255, 255, 255, 0.03);
+  --bg-surface-active: rgba(255, 255, 255, 0.04);
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --bg-player: rgba(0, 0, 0, 0.4);
+  --bg-input: #0f172a;
+
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #6b7280;
+
+  --border-default: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --scrollbar-track: #050505;
+  --scrollbar-thumb: #262626;
+  --scrollbar-thumb-hover: #71717a;
+
+  --shadow-player: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-dropdown: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  --bg-status-panel: rgba(15, 15, 15, 0.92);
+}
+
 body {
-  background-color: #050505;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Scrollbar Customization using vanilla CSS */
+/* Scrollbar Customization using theme variables */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #71717a;
+  background: var(--scrollbar-thumb-hover);
 }

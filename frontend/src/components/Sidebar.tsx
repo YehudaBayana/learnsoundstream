@@ -51,10 +51,10 @@ export default function Sidebar() {
   return (
     <Flex
       direction="col"
-      className="w-64 h-full bg-black/40 border-r border-white/5 backdrop-blur-2xl flex-shrink-0 relative overflow-hidden select-none"
+      className="w-64 h-full bg-[var(--bg-secondary)] border-r border-[var(--border-default)] backdrop-blur-2xl flex-shrink-0 relative overflow-hidden select-none transition-colors duration-300"
     >
       {/* Brand Header */}
-      <Flex align="center" gap={3} className="p-6 border-b border-white/5">
+      <Flex align="center" gap={3} className="p-6 border-b border-[var(--border-default)]">
         <Flex
           align="center"
           justify="center"
@@ -63,7 +63,7 @@ export default function Sidebar() {
           <span>🎵</span>
         </Flex>
         <Flex direction="col">
-          <Heading level={1} size="md" className="font-extrabold tracking-wide text-white">
+          <Heading level={1} size="md" className="font-extrabold tracking-wide text-[var(--text-primary)]">
             SOUNDSTREAM
           </Heading>
           <Text variant="caption" className="text-[10px] tracking-wider text-emerald-400 font-semibold -mt-0.5">
@@ -73,7 +73,7 @@ export default function Sidebar() {
       </Flex>
 
       {/* Navigation */}
-      <Flex direction="col" gap={1} className="px-3 py-4 border-b border-white/5">
+      <Flex direction="col" gap={1} className="px-3 py-4 border-b border-[var(--border-default)]">
         {navItems.map((item) => {
           const isActive = currentView === item.view && selectedPlaylistId === null;
           return (
@@ -82,8 +82,8 @@ export default function Sidebar() {
               onClick={() => setCurrentView(item.view)}
               className={`relative w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-white/[0.04] text-emerald-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-                  : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
+                  ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
               }`}
             >
               {isActive && (
@@ -107,7 +107,7 @@ export default function Sidebar() {
             variant="ghost"
             onClick={() => setIsModalOpen(true)}
             aria-label="Create playlist"
-            className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] rounded-full"
             icon={<span>＋</span>}
           />
         </Flex>
@@ -115,7 +115,7 @@ export default function Sidebar() {
         {/* Playlists List */}
         <Box className="flex-1 overflow-y-auto pr-1 space-y-1">
           {playlists.length === 0 ? (
-            <Box className="px-4 py-3 text-center rounded-xl bg-white/[0.01] border border-dashed border-white/5">
+            <Box className="px-4 py-3 text-center rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
               <Text variant="caption" color="muted" className="text-[11px]">
                 Create a playlist to start collecting.
               </Text>
@@ -129,15 +129,15 @@ export default function Sidebar() {
                   onClick={() => setCurrentView('playlist-detail', pl.id)}
                   className={`relative w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-white/[0.04] text-emerald-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
+                      ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
                   }`}
                 >
                   <Flex align="center" gap={3} className="min-w-0">
                     <span className="text-base flex-shrink-0">{pl.emoji}</span>
                     <span className="truncate">{pl.name}</span>
                   </Flex>
-                  <Text variant="caption" color="muted" className="text-[10px] font-mono flex-shrink-0 ml-2 bg-white/5 px-1.5 py-0.5 rounded-md">
+                  <Text variant="caption" color="muted" className="text-[10px] font-mono flex-shrink-0 ml-2 bg-[var(--bg-surface-hover)] px-1.5 py-0.5 rounded-md">
                     {pl.trackIds.length}
                   </Text>
                 </button>
@@ -148,17 +148,17 @@ export default function Sidebar() {
       </Flex>
 
       {/* Bottom Profile/Watermark */}
-      <Box className="p-4 border-t border-white/5 bg-black/10 select-none">
+      <Box className="p-4 border-t border-[var(--border-default)] bg-[var(--bg-surface)] select-none">
         <Flex align="center" gap={3}>
           <Flex
             align="center"
             justify="center"
-            className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 font-bold text-xs text-white"
+            className="w-8 h-8 rounded-full bg-slate-700 border border-[var(--border-subtle)] font-bold text-xs text-white"
           >
             YB
           </Flex>
           <Flex direction="col" className="min-w-0 flex-1">
-            <Text variant="body-sm" weight="semibold" truncate className="text-white text-xs">
+            <Text variant="body-sm" weight="semibold" truncate className="text-[var(--text-primary)] text-xs">
               Yehuda Bayana
             </Text>
             <Text variant="caption" color="muted" className="text-[10px]">
@@ -183,7 +183,7 @@ export default function Sidebar() {
               </Box>
             )}
             <Box className="space-y-1">
-              <Text variant="body-sm" weight="semibold" className="text-gray-300">
+              <Text variant="body-sm" weight="semibold" className="text-[var(--text-secondary)]">
                 Playlist Name
               </Text>
               <Input
@@ -193,19 +193,19 @@ export default function Sidebar() {
                   setPlaylistName(e.target.value);
                   setError('');
                 }}
-                className="w-full text-white bg-slate-900 border-slate-700 focus:border-emerald-500"
+                className="w-full text-[var(--text-primary)] bg-[var(--bg-input)] border-[var(--border-subtle)] focus:border-emerald-500"
                 autoFocus
               />
             </Box>
             <Box className="space-y-1">
-              <Text variant="body-sm" weight="semibold" className="text-gray-300">
+              <Text variant="body-sm" weight="semibold" className="text-[var(--text-secondary)]">
                 Description (Optional)
               </Text>
               <TextArea
                 placeholder="Give your playlist a cool description..."
                 value={playlistDesc}
                 onChange={(e) => setPlaylistDesc(e.target.value)}
-                className="w-full text-white bg-slate-900 border-slate-700 focus:border-emerald-500 h-20 resize-none"
+                className="w-full text-[var(--text-primary)] bg-[var(--bg-input)] border-[var(--border-subtle)] focus:border-emerald-500 h-20 resize-none"
               />
             </Box>
           </Modal.Body>
@@ -218,7 +218,7 @@ export default function Sidebar() {
                 setPlaylistDesc('');
                 setError('');
               }}
-              className="text-gray-300 hover:text-white"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               Cancel
             </Button>

@@ -161,9 +161,9 @@ export default function SearchView() {
   return (
     <Container className="px-6 py-8 max-w-[1000px] space-y-8 animate-[fadeIn_0.4s_ease_forwards]">
       {/* Search Header Container */}
-      <Box className="w-full bg-white/[0.015] border border-white/5 p-6 rounded-2xl">
+      <Box className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl">
         <Flex direction="col" gap={3}>
-          <Heading level={2} size="md" className="font-semibold text-white">
+          <Heading level={2} size="md" className="font-semibold text-[var(--text-primary)]">
             Search YouTube
           </Heading>
           <Text variant="body-sm" color="muted" className="text-[13px] -mt-1">
@@ -175,16 +175,16 @@ export default function SearchView() {
               placeholder="Search for any song, artist, or genre..."
               value={localQuery}
               onChange={handleSearchChange}
-              className="w-full pl-12 pr-4 py-3 bg-slate-900 border-slate-700 text-white rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-primary)] rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all duration-200"
             />
             {/* Search Icon */}
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg select-none pointer-events-none">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-lg select-none pointer-events-none">
               🔍
             </span>
             {localQuery && (
               <button
                 onClick={handleClear}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer text-xs bg-white/5 hover:bg-white/10 px-1.5 py-0.5 rounded-md"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer text-xs bg-[var(--bg-surface-hover)] hover:bg-[var(--bg-surface-active)] px-1.5 py-0.5 rounded-md"
               >
                 Clear
               </button>
@@ -197,7 +197,7 @@ export default function SearchView() {
       <Flex direction="col" gap={4}>
         {/* Loading State */}
         {isLoading && (
-          <Flex direction="col" gap={3} className="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+          <Flex direction="col" gap={3} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl">
             <Flex align="center" gap={3} className="px-1">
               <Box className="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
               <Text variant="body-sm" color="muted">
@@ -212,18 +212,18 @@ export default function SearchView() {
                 gap={4}
                 className="w-full p-3 rounded-xl animate-pulse"
               >
-                <Box className="w-10 h-10 rounded-lg bg-white/[0.04] flex-shrink-0" />
+                <Box className="w-10 h-10 rounded-lg bg-[var(--bg-surface-hover)] flex-shrink-0" />
                 <Flex direction="col" gap={2} className="flex-1 min-w-0">
                   <Box
-                    className="h-3.5 rounded-md bg-white/[0.06]"
+                    className="h-3.5 rounded-md bg-[var(--bg-surface-active)]"
                     style={{ width: SKELETON_WIDTHS[i].title }}
                   />
                   <Box
-                    className="h-2.5 rounded-md bg-white/[0.03]"
+                    className="h-2.5 rounded-md bg-[var(--bg-surface-hover)]"
                     style={{ width: SKELETON_WIDTHS[i].subtitle }}
                   />
                 </Flex>
-                <Box className="w-10 h-3 rounded-md bg-white/[0.04] flex-shrink-0" />
+                <Box className="w-10 h-3 rounded-md bg-[var(--bg-surface-hover)] flex-shrink-0" />
               </Flex>
             ))}
           </Flex>
@@ -233,7 +233,7 @@ export default function SearchView() {
         {error && !isLoading && (
           <Box className="w-full text-center py-12 rounded-2xl bg-red-500/[0.03] border border-red-500/10">
             <span className="text-4xl mb-4 block">⚠️</span>
-            <Heading level={4} size="sm" className="text-white font-semibold mb-2">
+            <Heading level={4} size="sm" className="text-[var(--text-primary)] font-semibold mb-2">
               Search Failed
             </Heading>
             <Text variant="body-sm" color="muted" className="max-w-[400px] mx-auto">
@@ -251,14 +251,14 @@ export default function SearchView() {
         {/* Results */}
         {!isLoading && !error && hasSearched && (
           <>
-            <Heading level={3} size="sm" className="font-semibold text-white px-1">
+            <Heading level={3} size="sm" className="font-semibold text-[var(--text-primary)] px-1">
               Search Results ({searchResults.length})
             </Heading>
 
             {searchResults.length === 0 ? (
-              <Box className="w-full text-center py-16 rounded-2xl bg-white/[0.01] border border-dashed border-white/5">
+              <Box className="w-full text-center py-16 rounded-2xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
                 <span className="text-4xl mb-4 block">🎧</span>
-                <Heading level={4} size="sm" className="text-white font-semibold mb-1">
+                <Heading level={4} size="sm" className="text-[var(--text-primary)] font-semibold mb-1">
                   No results found for &quot;{localQuery}&quot;
                 </Heading>
                 <Text variant="body-sm" color="muted">
@@ -266,7 +266,7 @@ export default function SearchView() {
                 </Text>
               </Box>
             ) : (
-              <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
+              <Flex direction="col" gap={2} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl">
                 {searchResults.map((track, idx) => (
                   <TrackItem
                     key={track.videoId}
@@ -285,7 +285,7 @@ export default function SearchView() {
       {/* Category Pills (rendered only when server categories exist) */}
       {categories.length > 0 && (
         <Flex direction="col" gap={3} className="pt-4">
-          <Heading level={3} size="sm" className="font-semibold text-white px-1">
+          <Heading level={3} size="sm" className="font-semibold text-[var(--text-primary)] px-1">
             Quick Search
           </Heading>
           <Flex gap={3} wrap="wrap">
@@ -293,7 +293,7 @@ export default function SearchView() {
               <button
                 key={cat}
                 onClick={() => handleCategoryClick(cat)}
-                className="px-5 py-2.5 rounded-full text-sm font-semibold border border-white/5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] text-gray-300 hover:text-emerald-400 hover:border-emerald-500 hover:bg-white/[0.06] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
+                className="px-5 py-2.5 rounded-full text-sm font-semibold border border-[var(--border-default)] bg-gradient-to-br from-[var(--bg-surface-hover)] to-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-emerald-400 hover:border-emerald-500 hover:bg-[var(--bg-surface-active)] transition-all duration-300 cursor-pointer shadow-sm hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)]"
               >
                 #{cat}
               </button>

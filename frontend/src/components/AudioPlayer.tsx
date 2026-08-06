@@ -169,7 +169,7 @@ export default function AudioPlayer() {
   return (
     <Flex 
       align="center"
-      className={`fixed left-4 right-4 md:left-[284px] md:right-6 h-[84px] z-[999] px-6 rounded-2xl border border-white/8 bg-black/40 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
+      className={`fixed left-4 right-4 md:left-[284px] md:right-6 h-[84px] z-[999] px-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-player)] backdrop-blur-xl shadow-[var(--shadow-player)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
         currentTrack?.videoId ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
       }`}
     >
@@ -206,7 +206,7 @@ export default function AudioPlayer() {
           </Flex>
           <Flex direction="col" className="min-w-0 select-none">
             <Box className="overflow-hidden text-ellipsis whitespace-nowrap">
-              <Text variant="body-sm" weight="semibold" color="default" truncate className="text-white">
+              <Text variant="body-sm" weight="semibold" color="default" truncate className="text-[var(--text-primary)]">
                 {currentTrack?.title || 'No track playing'}
               </Text>
             </Box>
@@ -227,7 +227,7 @@ export default function AudioPlayer() {
               disabled={!currentTrack || queue.length <= 1}
               onClick={toggleShuffle}
               className={`transition-colors duration-200 ${
-                shuffleMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-500 hover:text-white'
+                shuffleMode ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
               <span>🔀</span>
@@ -240,7 +240,7 @@ export default function AudioPlayer() {
               aria-label="Previous track"
               disabled={!currentTrack || queue.length <= 1}
               onClick={prevTrack}
-              className="text-gray-400 hover:text-white transition-colors duration-200"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
             >
               <span>⏮</span>
             </IconButton>
@@ -254,7 +254,7 @@ export default function AudioPlayer() {
               disabled={!currentTrack || isLoading}
               aria-label={isPlaying ? 'Pause' : 'Play'}
               loading={isLoading}
-              className="bg-white text-black hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-md scale-105 active:scale-95"
+              className="bg-[var(--text-primary)] text-[var(--bg-primary)] hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-md scale-105 active:scale-95"
             >
               <span>{isPlaying ? '⏸' : '▶'}</span>
             </IconButton>
@@ -266,7 +266,7 @@ export default function AudioPlayer() {
               aria-label="Next track"
               disabled={!currentTrack || queue.length <= 1}
               onClick={nextTrack}
-              className="text-gray-400 hover:text-white transition-colors duration-200"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
             >
               <span>⏭</span>
             </IconButton>
@@ -279,7 +279,7 @@ export default function AudioPlayer() {
               disabled={!currentTrack}
               onClick={toggleRepeat}
               className={`transition-colors duration-200 relative ${
-                repeatMode !== 'none' ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-500 hover:text-white'
+                repeatMode !== 'none' ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
               <span>🔁</span>
@@ -333,7 +333,7 @@ export default function AudioPlayer() {
               onClick={toggleMute}
               disabled={!currentTrack}
               aria-label={isMuted ? 'Unmute' : 'Mute'}
-              className="text-gray-400 hover:text-white transition-colors duration-200"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
             >
               <span>{isMuted || volume === 0 ? '🔇' : volume < 0.4 ? '🔈' : volume < 0.7 ? '🔉' : '🔊'}</span>
             </IconButton>

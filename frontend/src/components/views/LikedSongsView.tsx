@@ -83,7 +83,7 @@ export default function LikedSongsView() {
   return (
     <Container className="px-6 py-8 max-w-[1000px] space-y-8 animate-[fadeIn_0.4s_ease_forwards]">
       {/* Header Banner */}
-      <Flex direction="col" align="center" gap={6} className="bg-gradient-to-br from-emerald-950/20 via-neutral-900/60 to-black border border-white/5 p-6 sm:p-8 rounded-3xl select-none sm:flex-row">
+      <Flex direction="col" align="center" gap={6} className="bg-gradient-to-br from-emerald-950/20 via-[var(--bg-surface)] to-[var(--bg-primary)] border border-[var(--border-default)] p-6 sm:p-8 rounded-3xl select-none sm:flex-row">
         <Box className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-5xl shadow-lg shadow-emerald-500/25 flex-shrink-0 animate-pulse">
           ❤️
         </Box>
@@ -91,7 +91,7 @@ export default function LikedSongsView() {
           <Text variant="caption" weight="bold" className="uppercase tracking-wider text-[10px] text-emerald-400">
             PLAYLIST
           </Text>
-          <Heading level={2} size="xl" className="font-extrabold text-white mt-1 mb-2">
+          <Heading level={2} size="xl" className="font-extrabold text-[var(--text-primary)] mt-1 mb-2">
             Liked Songs
           </Heading>
           <Text variant="body-sm" color="muted" className="leading-relaxed mb-4 text-[13px]">
@@ -104,7 +104,7 @@ export default function LikedSongsView() {
       </Flex>
 
       {/* Toolbar */}
-      <Flex justify="between" align="center" className="pb-2 border-b border-white/5">
+      <Flex justify="between" align="center" className="pb-2 border-b border-[var(--border-default)]">
         <Button
           variant="primary"
           disabled={likedTracks.length === 0 || isLoading}
@@ -117,7 +117,7 @@ export default function LikedSongsView() {
         <Button
           variant="ghost"
           onClick={() => setCurrentView('home')}
-          className="text-gray-400 hover:text-white text-xs font-semibold px-4 py-2"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold px-4 py-2"
         >
           Back to Home
         </Button>
@@ -126,7 +126,7 @@ export default function LikedSongsView() {
       {/* Track List */}
       <Flex direction="col" gap={4}>
         {isLoading ? (
-          <Flex direction="col" gap={3} className="bg-white/[0.01] border border-white/5 p-6 rounded-2xl">
+          <Flex direction="col" gap={3} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl">
             <Flex align="center" gap={3} className="px-1">
               <Box className="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
               <Text variant="body-sm" color="muted">
@@ -141,9 +141,9 @@ export default function LikedSongsView() {
             </Text>
           </Box>
         ) : likedTracks.length === 0 ? (
-          <Box className="w-full text-center py-16 rounded-2xl bg-white/[0.01] border border-dashed border-white/5">
+          <Box className="w-full text-center py-16 rounded-2xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
             <span className="text-4xl mb-4 block">🤍</span>
-            <Heading level={3} size="sm" className="text-white font-semibold mb-1">
+            <Heading level={3} size="sm" className="text-[var(--text-primary)] font-semibold mb-1">
               No liked songs yet
             </Heading>
             <Text variant="body-sm" color="muted" className="mb-6">
@@ -158,7 +158,7 @@ export default function LikedSongsView() {
             </Button>
           </Box>
         ) : (
-          <Flex direction="col" gap={2} className="bg-white/[0.01] border border-white/5 p-4 rounded-2xl">
+          <Flex direction="col" gap={2} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl">
             {likedTracks.map((track, idx) => (
               <TrackItem
                 key={`liked-track-${track.videoId}-${idx}`}

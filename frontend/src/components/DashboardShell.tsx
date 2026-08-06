@@ -7,6 +7,7 @@ import IconButton from '@/components/ui/IconButton';
 import Text from '@/components/ui/Text';
 import Sidebar from '@/components/Sidebar';
 import { usePlayback } from '@/context/PlaybackContext';
+import { useTheme } from '@/context/ThemeContext';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface DashboardShellProps {
 export default function DashboardShell({ children }: DashboardShellProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const { currentView, selectedPlaylistId, playlists } = usePlayback();
+  const { themeDefinition, toggleTheme } = useTheme();
 
   // Helper to resolve title in the top bar
   const getHeaderTitle = () => {
@@ -38,11 +40,11 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   };
 
   return (
-    <Flex className="w-screen h-screen bg-[#050505] text-white overflow-hidden relative">
+    <Flex className="w-screen h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden relative transition-colors duration-300">
       {/* Mobile Drawer Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <Box
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-all duration-300"
+          className="fixed inset-0 bg-[var(--bg-overlay)] backdrop-blur-sm z-40 md:hidden transition-all duration-300"
           onClick={() => setIsMobileSidebarOpen(false)}
         />
       )}
@@ -62,7 +64,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         <Flex
           align="center"
           justify="between"
-          className="w-full h-16 px-6 border-b border-white/5 bg-black/20 backdrop-blur-md z-30 flex-shrink-0"
+          className="w-full h-16 px-6 border-b border-[var(--border-default)] bg-[var(--bg-secondary)] backdrop-blur-md z-30 flex-shrink-0 transition-colors duration-300"
         >
           {/* Left: Mobile Toggle & View Title */}
           <Flex align="center" gap={3}>
@@ -71,20 +73,38 @@ export default function DashboardShell({ children }: DashboardShellProps) {
               variant="ghost"
               onClick={() => setIsMobileSidebarOpen(true)}
               aria-label="Open menu"
-              className="md:hidden text-gray-400 hover:text-white hover:bg-white/5 rounded-lg"
+              className="md:hidden text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] rounded-lg"
               icon={<span>☰</span>}
             />
-            <Text variant="body" weight="bold" className="text-white text-base font-semibold md:text-lg select-none">
+            <Text variant="body" weight="bold" className="text-[var(--text-primary)] text-base font-semibold md:text-lg select-none">
               {getHeaderTitle()}
             </Text>
           </Flex>
 
-          {/* Right: Server indicator badge */}
-          <Flex align="center" gap={2} className="select-none bg-white/[0.03] border border-white/5 px-3 py-1.5 rounded-full">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
-            <Text variant="small" weight="medium" color="default" className="text-[11px] text-gray-300">
-              Live Connection
-            </Text>
+          {/* Right: Theme Toggle + Server indicator badge */}
+          <Flex align="center" gap={3}>
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)] hover:border-[var(--border-subtle)] transition-all duration-200 cursor-pointer select-none group"
+              aria-label={`Switch theme (current: ${themeDefinition.label})`}
+              title={`Switch to next theme`}
+            >
+              <span className="text-sm transition-transform duration-300 group-hover:rotate-45">
+                {themeDefinition.icon}
+              </span>
+              <Text variant="small" weight="medium" className="text-[11px] text-[var(--text-secondary)]">
+                {themeDefinition.label}
+              </Text>
+            </button>
+
+            {/* Server indicator badge */}
+            <Flex align="center" gap={2} className="select-none bg-[var(--bg-surface)] border border-[var(--border-default)] px-3 py-1.5 rounded-full">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+              <Text variant="small" weight="medium" color="default" className="text-[11px] text-[var(--text-secondary)]">
+                Live Connection
+              </Text>
+            </Flex>
           </Flex>
         </Flex>
 
