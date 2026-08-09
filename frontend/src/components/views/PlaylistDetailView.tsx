@@ -1,5 +1,7 @@
+"use client"
 import React, { useEffect, useState } from 'react'
 import { usePlayback } from '@/context/PlaybackContext'
+import { useParams } from 'next/navigation'
 import Container from '@/components/ui/layout/Container'
 import Flex from '@/components/ui/layout/Flex'
 import Box from '@/components/ui/layout/Box'
@@ -13,7 +15,9 @@ import { apiUrl } from '@/constants'
 import { PlaylistTrack, PlaylistTracksApiResponse, Track } from '@/types'
 
 const PlaylistDetailView = () => {
-  const { playlists, selectedPlaylistId } = usePlayback()
+  const { playlists } = usePlayback()
+  const params = useParams()
+  const selectedPlaylistId = params?.id as string
   const [tracks, setTracks] = useState<PlaylistTrack[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)

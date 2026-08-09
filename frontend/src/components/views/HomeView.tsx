@@ -15,11 +15,13 @@ import ServerStatus from '@/components/ServerStatus';
 import Footer from '@/components/Footer';
 import TrackItem from '@/components/TrackItem';
 import { usePlayback } from '@/context/PlaybackContext';
+import { useRouter } from 'next/navigation';
 import { apiUrl } from '@/constants';
 import { Playlist, PlaylistsApiResponse } from '@/types';
 
 export default function HomeView() {
-  const { history, setCurrentView, setPlaylists } = usePlayback();
+  const { history, setPlaylists } = usePlayback();
+  const router = useRouter();
   const [popularPlaylists, setPopularPlaylists] = useState<Playlist[]>([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState<boolean>(true);
   const [playlistsError, setPlaylistsError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export default function HomeView() {
 
   const handlePlaylistClick = (playlist: Playlist) => {
     setPlaylists([playlist]);
-    setCurrentView('playlists');
+    router.push('/playlists');
   };
 
   return (

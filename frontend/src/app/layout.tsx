@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AudioPlayer from "@/components/AudioPlayer";
+import DashboardShell from "@/components/DashboardShell";
 import { PlaybackProvider } from "@/context/PlaybackContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body>
         <PlaybackProvider>
           <ThemeProvider>
-            {children}
+            <DashboardShell>
+              {children}
+            </DashboardShell>
             <AudioPlayer />
           </ThemeProvider>
         </PlaybackProvider>

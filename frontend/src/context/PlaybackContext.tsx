@@ -6,8 +6,6 @@ import type { Playlist, Track } from '@/types';
 export type AppView = 'home' | 'search' | 'playlists' | 'playlist-detail' | 'liked-songs' | 'history';
 
 interface PlaybackContextProps {
-  currentView: AppView;
-  selectedPlaylistId: string | null;
   currentTrack: Track | null;
   isPlaying: boolean;
   queue: Track[];
@@ -20,7 +18,6 @@ interface PlaybackContextProps {
   repeatMode: 'none' | 'all' | 'one';
   
   // Navigation / Views
-  setCurrentView: (view: AppView, playlistId?: string | null) => void;
   setSearchQuery: (query: string) => void;
   setPlaylists: (playlists: Playlist[]) => void;
   
@@ -43,8 +40,6 @@ const DEFAULT_PLAYLISTS: Playlist[] = [];
 
 export function PlaybackProvider({ children }: { children: React.ReactNode }) {
   // Views & Routing State
-  const [currentView, setView] = useState<AppView>('home');
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Audio Playback State
@@ -110,11 +105,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('soundstream_history', JSON.stringify(history));
     }
   }, [history, isLoaded]);
-
-  const setCurrentView = (view: AppView, playlistId: string | null = null) => {
-    setView(view);
-    setSelectedPlaylistId(playlistId);
-  };
 
   const playTrack = (track: Track, customQueue?: Track[]) => {
     setCurrentTrack(track);
@@ -253,8 +243,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
   return (
     <PlaybackContext.Provider
       value={{
-        currentView,
-        selectedPlaylistId,
         currentTrack,
         isPlaying,
         queue,
@@ -265,7 +253,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
         searchQuery,
         shuffleMode,
         repeatMode,
-        setCurrentView,
         setPlaylists,
         setSearchQuery,
         playTrack,

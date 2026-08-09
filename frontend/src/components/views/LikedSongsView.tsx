@@ -11,6 +11,7 @@ import TrackItem from '@/components/TrackItem';
 import { usePlayback } from '@/context/PlaybackContext';
 import { apiUrl } from '@/constants';
 import { Track } from '@/types';
+import { useRouter } from 'next/navigation';
 
 interface SearchApiResult {
   videoId: string;
@@ -33,7 +34,8 @@ function toTrack(result: SearchApiResult): Track {
 }
 
 export default function LikedSongsView() {
-  const { likedTrackIds, playAll, setCurrentView } = usePlayback();
+  const { likedTrackIds, playAll } = usePlayback();
+  const router = useRouter();
   const [likedTracks, setLikedTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export default function LikedSongsView() {
         </Button>
         <Button
           variant="ghost"
-          onClick={() => setCurrentView('home')}
+          onClick={() => router.push('/')}
           className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold px-4 py-2"
         >
           Back to Home
@@ -152,7 +154,7 @@ export default function LikedSongsView() {
             </Text>
             <Button
               variant="primary"
-              onClick={() => setCurrentView('search')}
+              onClick={() => router.push('/search')}
               className="rounded-full bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500 text-xs px-5 py-2"
             >
               Discover Tracks

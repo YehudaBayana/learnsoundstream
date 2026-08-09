@@ -12,9 +12,11 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
 import { usePlayback } from '@/context/PlaybackContext';
+import { useRouter } from 'next/navigation';
 
 export default function PlaylistsView() {
-  const { playlists ,setCurrentView} = usePlayback();
+  const { playlists } = usePlayback();
+  const router = useRouter();
 
   // Create playlist modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,8 +25,8 @@ export default function PlaylistsView() {
   const [error, setError] = useState('');
 
   const handlePlayPlaylist = (e: React.MouseEvent, playlistId: string) => {
-    e.stopPropagation(); // Prevent navigating to detail page
-    setCurrentView('playlist-detail', playlistId);
+    e.stopPropagation();
+    router.push(`/playlists/${playlistId}`);
   };
 
   return (

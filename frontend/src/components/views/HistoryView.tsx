@@ -8,9 +8,11 @@ import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
 import { usePlayback } from '@/context/PlaybackContext';
+import { useRouter } from 'next/navigation';
 
 export default function HistoryView() {
-  const { history, playAll, setCurrentView } = usePlayback();
+  const { history, playAll } = usePlayback();
+  const router = useRouter();
 
   const handlePlayAll = () => {
     if (history.length === 0) return;
@@ -53,7 +55,7 @@ export default function HistoryView() {
         </Button>
         <Button
           variant="ghost"
-          onClick={setCurrentView ? () => setCurrentView('home') : undefined}
+          onClick={() => router.push('/')}
           className="text-gray-400 hover:text-white text-xs font-semibold px-4 py-2"
         >
           Back to Home
@@ -73,7 +75,7 @@ export default function HistoryView() {
             </Text>
             <Button
               variant="primary"
-              onClick={() => setCurrentView('search')}
+              onClick={() => router.push('/search')}
               className="rounded-full bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500 text-xs px-5 py-2"
             >
               Start Streaming

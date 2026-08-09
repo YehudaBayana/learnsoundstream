@@ -10,15 +10,15 @@ import Box from '@/components/ui/layout/Box';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import TextArea from '@/components/ui/TextArea';
-import { usePlayback, AppView } from '@/context/PlaybackContext';
+import { usePlayback } from '@/context/PlaybackContext';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
   const {
-    currentView,
-    selectedPlaylistId,
     playlists,
-    setCurrentView,
   } = usePlayback();
+  const pathname = usePathname();
 
   // Create playlist modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +27,11 @@ export default function Sidebar() {
   const [error, setError] = useState('');
 
   const navItems = [
-    { view: 'home' as AppView, label: 'Home', icon: '🏠' },
-    { view: 'search' as AppView, label: 'Search', icon: '🔍' },
-    { view: 'playlists' as AppView, label: 'Playlists', icon: '💿' },
-    { view: 'liked-songs' as AppView, label: 'Liked Songs', icon: '❤️' },
-    { view: 'history' as AppView, label: 'History', icon: '🕰️' },
+    { href: '/', label: 'Home', icon: '🏠' },
+    { href: '/search', label: 'Search', icon: '🔍' },
+    { href: '/playlists', label: 'Playlists', icon: '💿' },
+    { href: '/liked-songs', label: 'Liked Songs', icon: '❤️' },
+    { href: '/history', label: 'History', icon: '🕰️' },
   ];
 
   return (
@@ -61,11 +61,11 @@ export default function Sidebar() {
       {/* Navigation */}
       <Flex direction="col" gap={1} className="px-3 py-4 border-b border-[var(--border-default)]">
         {navItems.map((item) => {
-          const isActive = currentView === item.view && selectedPlaylistId === null;
+          const isActive = pathname === item.href;
           return (
-            <button
-              key={item.view}
-              onClick={() => setCurrentView(item.view)}
+            <Link
+              key={item.href}
+              href={item.href}
               className={`relative w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                 isActive
                   ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
@@ -77,7 +77,7 @@ export default function Sidebar() {
               )}
               <span className="text-base">{item.icon}</span>
               <span>{item.label}</span>
-            </button>
+            </Link>
           );
         })}
       </Flex>
@@ -108,11 +108,12 @@ export default function Sidebar() {
             </Box>
           ) : (
             playlists.map((pl) => {
-              const isActive = currentView === 'playlist-detail' && selectedPlaylistId === pl.id;
+              const href = `/playlists/${pl.id}`;
+              const isActive = pathname === href;
               return (
-                <button
+                <Link
                   key={pl.id}
-                  onClick={() => setCurrentView('playlist-detail', pl.id)}
+                  href={href}
                   className={`relative w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
@@ -122,7 +123,7 @@ export default function Sidebar() {
                   <Flex align="center" gap={3} className="min-w-0">
                     <span className="truncate">{pl.title}</span>
                   </Flex>
-                </button>
+                </Link>
               );
             })
           )}

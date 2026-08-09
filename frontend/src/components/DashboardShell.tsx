@@ -6,6 +6,7 @@ import Box from '@/components/ui/layout/Box';
 import IconButton from '@/components/ui/IconButton';
 import Text from '@/components/ui/Text';
 import Sidebar from '@/components/Sidebar';
+import { usePathname } from 'next/navigation';
 import { usePlayback } from '@/context/PlaybackContext';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -15,28 +16,23 @@ interface DashboardShellProps {
 
 export default function DashboardShell({ children }: DashboardShellProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const { currentView, selectedPlaylistId, playlists } = usePlayback();
+  const pathname = usePathname();
+  const { playlists } = usePlayback();
   const { themeDefinition, toggleTheme } = useTheme();
 
   // Helper to resolve title in the top bar
   const getHeaderTitle = () => {
-    switch (currentView) {
-      case 'home':
-        return 'Home';
-      case 'search':
-        return 'Search Tracks';
-      case 'playlists':
-        return 'Playlists';
-      case 'liked-songs':
-        return 'Liked Songs';
-      case 'history':
-        return 'Recently Played';
-      case 'playlist-detail':
-        const playlist = playlists.find((p) => p.id === selectedPlaylistId);
-        return playlist ? playlist.title : 'Playlist Details';
-      default:
-        return 'Soundstream';
+    if (pathname === '/') return 'Home';
+    if (pathname === '/search') return 'Search Tracks';
+    if (pathname === '/playlists') return 'Playlists';
+    if (pathname === '/liked-songs') return 'Liked Songs';
+    if (pathname === '/history') return 'Recently Played';
+    if (pathname?.startsWith('/playlists/')) {
+      const playlistId = pathname.split('/').pop();
+      const playlist = playlists.find((p) => p.id === playlistId);
+      return playlist ? playlist.title : 'Playlist Details';
     }
+    return 'Soundstream';
   };
 
   return (
