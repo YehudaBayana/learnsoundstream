@@ -8,6 +8,8 @@ import LikedSongsView from '@/components/views/LikedSongsView';
 import HistoryView from '@/components/views/HistoryView';
 import { usePlayback } from '@/context/PlaybackContext';
 
+import PlaylistDetailView from '@/components/views/PlaylistDetailView';
+
 export default function Home() {
   const { currentView } = usePlayback();
 
@@ -19,6 +21,8 @@ export default function Home() {
         return <SearchView />;
       case 'playlists':
         return <PlaylistsView />;
+      case 'playlist-detail':
+        return <PlaylistDetailView />;
       case 'liked-songs':
         return <LikedSongsView />;
       case 'history':

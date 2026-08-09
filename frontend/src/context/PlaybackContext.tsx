@@ -1,26 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-export interface Track {
-  videoId: string;
-  title: string;
-  desc: string;
-  duration: string;
-  emoji: string;
-  category: string;
-}
-
-export interface Playlist {
-  id: string;
-  name: string;
-  description?: string;
-  trackIds: string[];
-  emoji: string;
-  createdAt: string;
-}
-
-export const TRACK_DATABASE: Track[] = [];
+import type { Playlist, Track } from '@/types';
 
 export type AppView = 'home' | 'search' | 'playlists' | 'playlist-detail' | 'liked-songs' | 'history';
 
@@ -41,6 +22,7 @@ interface PlaybackContextProps {
   // Navigation / Views
   setCurrentView: (view: AppView, playlistId?: string | null) => void;
   setSearchQuery: (query: string) => void;
+  setPlaylists: (playlists: Playlist[]) => void;
   
   // Playback Operations
   playTrack: (track: Track, customQueue?: Track[]) => void;
@@ -53,10 +35,6 @@ interface PlaybackContextProps {
   
   // Custom Library Actions
   toggleLike: (trackId: string) => void;
-  createPlaylist: (name: string, description?: string) => void;
-  deletePlaylist: (playlistId: string) => void;
-  addTrackToPlaylist: (playlistId: string, trackId: string) => void;
-  removeTrackFromPlaylist: (playlistId: string, trackId: string) => void;
 }
 
 const PlaybackContext = createContext<PlaybackContextProps | undefined>(undefined);
@@ -169,12 +147,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
       setQueue(fallbackQueue);
       setCurrentTrackIndex(0);
     }
-
-    // Trigger standard legacy window event for any components that still listen to it
-    const event = new CustomEvent('play-song', {
-      detail: { videoId: track.videoId, title: track.title }
-    });
-    window.dispatchEvent(event);
   };
 
   const playAll = (tracks: Track[]) => {
@@ -268,56 +240,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const createPlaylist = (name: string, description?: string) => {
-    const emojis = ['🎵', '🎧', '🔥', '✨', '💿', '🎸', '🎹', '⚡', '🌙', '🍂', '🍕', '🚗'];
-    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-    const newPlaylist: Playlist = {
-      id: `playlist-${Date.now()}`,
-      name,
-      description,
-      trackIds: [],
-      emoji: randomEmoji,
-      createdAt: new Date().toISOString(),
-    };
-    setPlaylists((prev) => [...prev, newPlaylist]);
-  };
-
-  const deletePlaylist = (playlistId: string) => {
-    setPlaylists((prev) => prev.filter((pl) => pl.id !== playlistId));
-    if (selectedPlaylistId === playlistId) {
-      setCurrentView('playlists');
-    }
-  };
-
-  const addTrackToPlaylist = (playlistId: string, trackId: string) => {
-    setPlaylists((prev) =>
-      prev.map((pl) => {
-        if (pl.id === playlistId) {
-          if (pl.trackIds.includes(trackId)) return pl; // Avoid duplicates
-          return {
-            ...pl,
-            trackIds: [...pl.trackIds, trackId],
-          };
-        }
-        return pl;
-      })
-    );
-  };
-
-  const removeTrackFromPlaylist = (playlistId: string, trackId: string) => {
-    setPlaylists((prev) =>
-      prev.map((pl) => {
-        if (pl.id === playlistId) {
-          return {
-            ...pl,
-            trackIds: pl.trackIds.filter((id) => id !== trackId),
-          };
-        }
-        return pl;
-      })
-    );
-  };
-
   // Helper shuffle function (Fisher-Yates)
   const shuffleArray = (array: Track[]): Track[] => {
     const copy = [...array];
@@ -344,6 +266,7 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
         shuffleMode,
         repeatMode,
         setCurrentView,
+        setPlaylists,
         setSearchQuery,
         playTrack,
         playAll,
@@ -353,10 +276,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
         toggleShuffle,
         toggleRepeat,
         toggleLike,
-        createPlaylist,
-        deletePlaylist,
-        addTrackToPlaylist,
-        removeTrackFromPlaylist,
       }}
     >
       {children}

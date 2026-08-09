@@ -18,7 +18,6 @@ export default function Sidebar() {
     selectedPlaylistId,
     playlists,
     setCurrentView,
-    createPlaylist,
   } = usePlayback();
 
   // Create playlist modal state
@@ -26,19 +25,6 @@ export default function Sidebar() {
   const [playlistName, setPlaylistName] = useState('');
   const [playlistDesc, setPlaylistDesc] = useState('');
   const [error, setError] = useState('');
-
-  const handleCreatePlaylist = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!playlistName.trim()) {
-      setError('Playlist name is required');
-      return;
-    }
-    createPlaylist(playlistName.trim(), playlistDesc.trim());
-    setPlaylistName('');
-    setPlaylistDesc('');
-    setError('');
-    setIsModalOpen(false);
-  };
 
   const navItems = [
     { view: 'home' as AppView, label: 'Home', icon: '🏠' },
@@ -134,12 +120,8 @@ export default function Sidebar() {
                   }`}
                 >
                   <Flex align="center" gap={3} className="min-w-0">
-                    <span className="text-base flex-shrink-0">{pl.emoji}</span>
-                    <span className="truncate">{pl.name}</span>
+                    <span className="truncate">{pl.title}</span>
                   </Flex>
-                  <Text variant="caption" color="muted" className="text-[10px] font-mono flex-shrink-0 ml-2 bg-[var(--bg-surface-hover)] px-1.5 py-0.5 rounded-md">
-                    {pl.trackIds.length}
-                  </Text>
                 </button>
               );
             })
@@ -173,64 +155,7 @@ export default function Sidebar() {
         <Modal.Header onClose={() => setIsModalOpen(false)}>
           Create New Playlist
         </Modal.Header>
-        <form onSubmit={handleCreatePlaylist}>
-          <Modal.Body className="space-y-4">
-            {error && (
-              <Box className="p-3 bg-red-500/10 border border-red-500/25 rounded-xl">
-                <Text variant="body-sm" color="danger">
-                  {error}
-                </Text>
-              </Box>
-            )}
-            <Box className="space-y-1">
-              <Text variant="body-sm" weight="semibold" className="text-[var(--text-secondary)]">
-                Playlist Name
-              </Text>
-              <Input
-                placeholder="My Coding Jams"
-                value={playlistName}
-                onChange={(e) => {
-                  setPlaylistName(e.target.value);
-                  setError('');
-                }}
-                className="w-full text-[var(--text-primary)] bg-[var(--bg-input)] border-[var(--border-subtle)] focus:border-emerald-500"
-                autoFocus
-              />
-            </Box>
-            <Box className="space-y-1">
-              <Text variant="body-sm" weight="semibold" className="text-[var(--text-secondary)]">
-                Description (Optional)
-              </Text>
-              <TextArea
-                placeholder="Give your playlist a cool description..."
-                value={playlistDesc}
-                onChange={(e) => setPlaylistDesc(e.target.value)}
-                className="w-full text-[var(--text-primary)] bg-[var(--bg-input)] border-[var(--border-subtle)] focus:border-emerald-500 h-20 resize-none"
-              />
-            </Box>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setIsModalOpen(false);
-                setPlaylistName('');
-                setPlaylistDesc('');
-                setError('');
-              }}
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              className="bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500"
-            >
-              Create Playlist
-            </Button>
-          </Modal.Footer>
-        </form>
+        
       </Modal>
     </Flex>
   );

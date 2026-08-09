@@ -51,6 +51,8 @@ func main() {
 	// Register handlers from internal/handlers
 	mux.HandleFunc("GET /health", app.HealthHandler)
 	mux.HandleFunc("GET /api/health", app.HealthHandler)
+	mux.HandleFunc("GET /api/popular-playlists", app.PopularPlaylistsHandler)
+	mux.HandleFunc("GET /api/playlist-tracks", app.PlaylistTracksHandler)
 	mux.HandleFunc("GET /api/stream", app.StreamHandler)
 	mux.HandleFunc("GET /api/search", app.SearchHandler)
 	mux.HandleFunc("GET /api/videos", app.BatchVideosHandler)
@@ -73,7 +75,7 @@ func main() {
 
 	go func() {
 		slog.Info("Starting backend server", "port", port, "url", "http://localhost:"+port)
-		
+
 		// Start the server (ListenAndServe always returns an error, ErrServerClosed is normal)
 		err := server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {

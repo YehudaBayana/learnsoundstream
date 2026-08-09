@@ -33,7 +33,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         return 'Recently Played';
       case 'playlist-detail':
         const playlist = playlists.find((p) => p.id === selectedPlaylistId);
-        return playlist ? playlist.name : 'Playlist Details';
+        return playlist ? playlist.title : 'Playlist Details';
       default:
         return 'Soundstream';
     }

@@ -7,7 +7,8 @@ import Badge from '@/components/ui/Badge';
 import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Menu from '@/components/ui/Menu';
-import { usePlayback, Track } from '@/context/PlaybackContext';
+import { usePlayback } from '@/context/PlaybackContext';
+import { Track } from '@/types';
 
 interface TrackItemProps {
   track: Track;
@@ -34,8 +35,6 @@ export default function TrackItem({
     playTrack,
     setPlaying,
     toggleLike,
-    addTrackToPlaylist,
-    removeTrackFromPlaylist,
   } = usePlayback();
 
   const isCurrent = currentTrack?.videoId === track.videoId;
@@ -180,28 +179,6 @@ export default function TrackItem({
           }
         >
           <Menu.Label>Playlists</Menu.Label>
-          {playlists.length === 0 ? (
-            <Menu.Item disabled>No playlists created</Menu.Item>
-          ) : (
-            playlists.map((pl) => {
-              const inPlaylist = pl.trackIds.includes(track.videoId);
-              return (
-                <Menu.Item
-                  key={pl.id}
-                  icon={<span>{inPlaylist ? '✓' : '+'}</span>}
-                  onClick={() => {
-                    if (inPlaylist) {
-                      removeTrackFromPlaylist(pl.id, track.videoId);
-                    } else {
-                      addTrackToPlaylist(pl.id, track.videoId);
-                    }
-                  }}
-                >
-                  {inPlaylist ? `In ${pl.name}` : `Add to ${pl.name}`}
-                </Menu.Item>
-              );
-            })
-          )}
 
           {playlistId && (
             <>
@@ -209,7 +186,6 @@ export default function TrackItem({
               <Menu.Item
                 danger
                 icon={<span>✕</span>}
-                onClick={() => removeTrackFromPlaylist(playlistId, track.videoId)}
               >
                 Remove from Playlist
               </Menu.Item>

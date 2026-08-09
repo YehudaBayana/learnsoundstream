@@ -1,39 +1,93 @@
 import React from 'react';
 
-/**
- * Grid column options.
- */
 export type GridCols = 1 | 2 | 3 | 4 | 5 | 6 | 12 | 'none';
-
-/**
- * Grid gap options.
- */
 export type GridGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12;
 
 interface GridProps {
-  /** Grid content */
   children: React.ReactNode;
-  /** Number of columns (desktop) */
   cols?: GridCols;
-  /** Number of columns (mobile) */
   colsMobile?: GridCols;
-  /** Number of columns (tablet) */
   colsTablet?: GridCols;
-  /** Gap between items */
   gap?: GridGap;
-  /** Row gap (overrides gap for rows) */
   rowGap?: GridGap;
-  /** Column gap (overrides gap for columns) */
   colGap?: GridGap;
-  /** HTML element to render */
   as?: 'div' | 'section' | 'ul';
-  /** Additional CSS classes */
   className?: string;
 }
 
-/**
- * Get column classes.
- */
+// Maps for full un-interpolated class names so Tailwind scanner can detect them
+const mobileColsMap: Record<GridCols, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
+  5: 'grid-cols-5',
+  6: 'grid-cols-6',
+  12: 'grid-cols-12',
+  none: 'grid-cols-none',
+};
+
+const tabletColsMap: Record<GridCols, string> = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
+  5: 'md:grid-cols-5',
+  6: 'md:grid-cols-6',
+  12: 'md:grid-cols-12',
+  none: 'md:grid-cols-none',
+};
+
+const desktopColsMap: Record<GridCols, string> = {
+  1: 'lg:grid-cols-1',
+  2: 'lg:grid-cols-2',
+  3: 'lg:grid-cols-3',
+  4: 'lg:grid-cols-4',
+  5: 'lg:grid-cols-5',
+  6: 'lg:grid-cols-6',
+  12: 'lg:grid-cols-12',
+  none: 'lg:grid-cols-none',
+};
+
+const gapMap: Record<GridGap, string> = {
+  0: 'gap-0',
+  1: 'gap-1',
+  2: 'gap-2',
+  3: 'gap-3',
+  4: 'gap-4',
+  5: 'gap-5',
+  6: 'gap-6',
+  8: 'gap-8',
+  10: 'gap-10',
+  12: 'gap-12',
+};
+
+const rowGapMap: Record<GridGap, string> = {
+  0: 'gap-y-0',
+  1: 'gap-y-1',
+  2: 'gap-y-2',
+  3: 'gap-y-3',
+  4: 'gap-y-4',
+  5: 'gap-y-5',
+  6: 'gap-y-6',
+  8: 'gap-y-8',
+  10: 'gap-y-10',
+  12: 'gap-y-12',
+};
+
+const colGapMap: Record<GridGap, string> = {
+  0: 'gap-x-0',
+  1: 'gap-x-1',
+  2: 'gap-x-2',
+  3: 'gap-x-3',
+  4: 'gap-x-4',
+  5: 'gap-x-5',
+  6: 'gap-x-6',
+  8: 'gap-x-8',
+  10: 'gap-x-10',
+  12: 'gap-x-12',
+};
+
 const getColsClasses = (
   cols: GridCols,
   colsMobile?: GridCols,
@@ -42,45 +96,22 @@ const getColsClasses = (
   const classes: string[] = [];
 
   // Mobile first
-  if (colsMobile !== undefined) {
-    classes.push(colsMobile === 'none' ? 'grid-cols-none' : `grid-cols-${colsMobile}`);
-  } else {
-    classes.push(cols === 'none' ? 'grid-cols-none' : `grid-cols-${cols}`);
-  }
+  const mobileValue = colsMobile !== undefined ? colsMobile : cols;
+  classes.push(mobileColsMap[mobileValue]);
 
   // Tablet
   if (colsTablet !== undefined) {
-    classes.push(colsTablet === 'none' ? 'md:grid-cols-none' : `md:grid-cols-${colsTablet}`);
+    classes.push(tabletColsMap[colsTablet]);
   }
 
   // Desktop (lg and up)
   if (colsMobile !== undefined || colsTablet !== undefined) {
-    classes.push(cols === 'none' ? 'lg:grid-cols-none' : `lg:grid-cols-${cols}`);
+    classes.push(desktopColsMap[cols]);
   }
 
   return classes.join(' ');
 };
 
-/**
- * Grid - CSS Grid layout component.
- *
- * Features:
- * - Responsive column counts
- * - Configurable gaps
- * - Separate row and column gaps
- * - Semantic element support
- *
- * Usage:
- *   <Grid cols={3} gap={4}>
- *     <Card>1</Card>
- *     <Card>2</Card>
- *     <Card>3</Card>
- *   </Grid>
- *
- *   <Grid cols={4} colsMobile={1} colsTablet={2} gap={6}>
- *     {items.map(item => <Card key={item.id} />)}
- *   </Grid>
- */
 const Grid: React.FC<GridProps> = ({
   children,
   cols = 1,
@@ -97,9 +128,9 @@ const Grid: React.FC<GridProps> = ({
   const classes = [
     'grid',
     getColsClasses(cols, colsMobile, colsTablet),
-    hasCustomGaps ? '' : `gap-${gap}`,
-    rowGap !== undefined ? `gap-y-${rowGap}` : '',
-    colGap !== undefined ? `gap-x-${colGap}` : '',
+    hasCustomGaps ? '' : gapMap[gap],
+    rowGap !== undefined ? rowGapMap[rowGap] : '',
+    colGap !== undefined ? colGapMap[colGap] : '',
     className,
   ]
     .filter(Boolean)

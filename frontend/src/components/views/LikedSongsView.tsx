@@ -8,8 +8,9 @@ import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Container from '@/components/ui/layout/Container';
 import TrackItem from '@/components/TrackItem';
-import { usePlayback, Track } from '@/context/PlaybackContext';
+import { usePlayback } from '@/context/PlaybackContext';
 import { apiUrl } from '@/constants';
+import { Track } from '@/types';
 
 interface SearchApiResult {
   videoId: string;
