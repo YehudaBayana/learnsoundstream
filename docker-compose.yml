@@ -1,5 +1,22 @@
-
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: soundstream-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    # The database hostname changes from 127.0.0.1 to 'postgres'
+    # when running inside the Docker network.
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=soundstream
+      - DB_PASSWORD=password123
+      - DB_NAME=soundstream
+
   postgres:
     image: postgres:15-alpine
     container_name: soundstream-db
