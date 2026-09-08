@@ -1,11 +1,13 @@
 export interface Playlist {
   id: string;
   title: string;
-  url: string;
-  uploader: string | null;
-  channel: string | null;
+  description: string;
+  uploader: string;
+  channel: string;
+  channelId: string;
+  webpageUrl: string;
   playlist_count: number;
-  thumbnail: string | null;
+  trackCount: number;
   thumbnails: Array<{
     url: string;
     width: number;
@@ -39,8 +41,6 @@ export interface PlaylistTracksApiResponse {
   tracks: PlaylistTrack[];
   count: number;
 }
-
-
 
 export interface Track {
   videoId: string;

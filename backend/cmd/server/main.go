@@ -51,6 +51,7 @@ func main() {
 	// Register handlers from internal/handlers
 	mux.HandleFunc("GET /health", app.HealthHandler)
 	mux.HandleFunc("GET /api/health", app.HealthHandler)
+	mux.HandleFunc("GET /api/playlist-details", app.GetPlaylistDetailsHandler)
 	mux.HandleFunc("GET /api/popular-playlists", app.PopularPlaylistsHandler)
 	mux.HandleFunc("GET /api/playlist-tracks", app.PlaylistTracksHandler)
 	mux.HandleFunc("GET /api/stream", app.StreamHandler)

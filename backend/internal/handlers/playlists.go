@@ -111,6 +111,67 @@ func (app *App) PopularPlaylistsHandler(responseWriter http.ResponseWriter, requ
 	}
 }
 
+// PlaylistDetails maps the single JSON object returned by yt-dlp
+type PlaylistDetails struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Uploader    string `json:"uploader"`
+	Channel     string `json:"channel"`
+	ChannelID   string `json:"channel_id"`
+	WebpageURL  string `json:"webpage_url"`
+	TrackCount  int    `json:"playlist_count"`
+	Thumbnails  []struct {
+		URL    string `json:"url"`
+		Width  int    `json:"width"`
+		Height int    `json:"height"`
+	} `json:"thumbnails"`
+}
+
+func (app *App) GetPlaylistDetailsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	playlistId := request.URL.Query().Get("playlist_id")
+	if playlistId == "" {
+		http.Error(responseWriter, "Missing playlist_id", http.StatusBadRequest)
+		return
+	}
+
+	// Reconstruct a full playlist URL if only an ID was provided
+	playlistURL := playlistId
+	if !strings.HasPrefix(playlistId, "http") {
+		playlistURL = fmt.Sprintf("https://www.youtube.com/playlist?list=%s", playlistId)
+	}
+
+	args := []string{
+		playlistURL,
+		"--dump-single-json",    // Returns one JSON object for the entire playlist
+		"--flat-playlist",       // Avoids scraping individual video pages
+		"--playlist-items", "0", // Excludes individual entries from being extracted
+		"--no-warnings",
+	}
+
+	cmd := exec.Command("yt-dlp", args...)
+	output, err := cmd.Output()
+	if err != nil {
+		slog.Error("Failed to execute yt-dlp", "error", err, "playlist_id", playlistId)
+		http.Error(responseWriter, "Failed to retrieve playlist details", http.StatusInternalServerError)
+		return
+	}
+
+	var details PlaylistDetails
+	if err := json.Unmarshal(output, &details); err != nil {
+		slog.Error("Failed to parse yt-dlp output", "error", err)
+		http.Error(responseWriter, "Failed to process playlist data", http.StatusInternalServerError)
+		return
+	}
+
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(responseWriter).Encode(details); err != nil {
+		slog.Error("Failed to encode playlist response", "error", err)
+	}
+}
+
 func (app *App) PlaylistTracksHandler(w http.ResponseWriter, r *http.Request) {
 	playlistID := r.URL.Query().Get("playlist_id")
 	if playlistID == "" {
@@ -220,6 +281,7 @@ func (app *App) PlaylistTracksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// todo: move this to a a shared utils file
 // parseDuration converts a "mm:ss" or "hh:mm:ss" string to total seconds.
 func parseDuration(d string) int {
 	parts := strings.Split(d, ":")
@@ -238,19 +300,3 @@ func parseDuration(d string) int {
 	}
 	return total
 }
-
-// formatDuration converts seconds to "mm:ss" or "hh:mm:ss" string.
-// func formatDuration(seconds int) string {
-// 	if seconds < 0 {
-// 		return "0:00"
-// 	}
-
-// 	hours := seconds / 3600
-// 	minutes := (seconds % 3600) / 60
-// 	secs := seconds % 60
-
-// 	if hours > 0 {
-// 		return fmt.Sprintf("%d:%02d:%02d", hours, minutes, secs)
-// 	}
-// 	return fmt.Sprintf("%d:%02d", minutes, secs)
-// }
