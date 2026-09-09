@@ -41,3 +41,10 @@ export interface Track {
   durationSeconds: number;
   thumbnails: Thumbnail[];
 }
+
+
+export interface SearchApiResponse {
+  results: Track[];
+  query: string;
+  count: number;
+}

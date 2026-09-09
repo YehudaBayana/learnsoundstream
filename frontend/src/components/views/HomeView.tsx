@@ -7,50 +7,23 @@ import Button from "@/components/ui/Button";
 import Container from "@/components/ui/layout/Container";
 import Flex from "@/components/ui/layout/Flex";
 import Grid from "@/components/ui/layout/Grid";
-import Card from "@/components/ui/Card";
 import Spinner from "@/components/ui/Spinner";
 import Badge from "@/components/ui/Badge";
-import Image from "@/components/ui/Image";
 import ServerStatus from "@/components/ServerStatus";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
-import { apiUrl } from "@/constants";
-import { Playlist, PlaylistsApiResponse } from "@/types";
+import { Playlist } from "@/types";
 import { PlaylistCard } from "../PlaylistCard/PlaylistCard";
+import { usePopularPlaylists } from "@/query/usePlaylists";
 
 export default function HomeView() {
   const router = useRouter();
-  const [popularPlaylists, setPopularPlaylists] = useState<Playlist[]>([]);
-  const [isLoadingPlaylists, setIsLoadingPlaylists] = useState<boolean>(true);
-  const [playlistsError, setPlaylistsError] = useState<string | null>(null);
-
-  const fetchPopularPlaylists = async () => {
-    setIsLoadingPlaylists(true);
-    setPlaylistsError(null);
-    try {
-      const response = await fetch(`${apiUrl}/api/popular-playlists`);
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load popular playlists (${response.status})`,
-        );
-      }
-      const data: PlaylistsApiResponse = await response.json();
-      setPopularPlaylists(data.results || []);
-    } catch (err: unknown) {
-      console.error("Error fetching popular playlists:", err);
-      setPlaylistsError(
-        err instanceof Error
-          ? err.message
-          : "Unable to connect to backend server",
-      );
-    } finally {
-      setIsLoadingPlaylists(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPopularPlaylists();
-  }, []);
+  const {
+    data: popularPlaylists,
+    isLoading: isLoadingPopularPlaylists,
+    error: playlistsError,
+    refetch,
+  } = usePopularPlaylists();
 
   const handlePlaylistClick = (playlist: Playlist) => {
     router.push(`/playlists/${playlist.id}`);
@@ -145,7 +118,7 @@ export default function HomeView() {
           </Text>
         </Flex>
 
-        {isLoadingPlaylists ? (
+        {isLoadingPopularPlaylists ? (
           <Flex
             align="center"
             justify="center"
@@ -165,13 +138,13 @@ export default function HomeView() {
             className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-8 rounded-2xl text-center gap-3"
           >
             <Text variant="body-sm" color="danger">
-              {playlistsError}
+              {playlistsError.message}
             </Text>
-            <Button variant="outline" size="sm" onClick={fetchPopularPlaylists}>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
               Retry
             </Button>
           </Flex>
-        ) : popularPlaylists.length === 0 ? (
+        ) : popularPlaylists?.length === 0 ? (
           <Flex
             direction="col"
             align="center"
@@ -184,7 +157,7 @@ export default function HomeView() {
           </Flex>
         ) : (
           <Grid cols={5} colsTablet={3} colsMobile={3} gap={4}>
-            {popularPlaylists.map((pl) => (
+            {popularPlaylists?.map((pl) => (
               <PlaylistCard key={pl.id} pl={pl} onClick={handlePlaylistClick} />
             ))}
           </Grid>

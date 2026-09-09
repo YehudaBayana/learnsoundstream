@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { PlaybackProvider } from "@/context/PlaybackContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
+import QueryProvider from "@/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +19,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Soundstream | High-Performance Music Streaming",
-  description: "A premium music streaming experience powered by Go and Next.js.",
+  description:
+    "A premium music streaming experience powered by Go and Next.js.",
 };
 
 export default function RootLayout({
@@ -29,14 +31,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <PlaybackProvider>
-          <ThemeProvider>
-            <DashboardShell>
-              {children}
-            </DashboardShell>
-            <AudioPlayer />
-          </ThemeProvider>
-        </PlaybackProvider>
+        <QueryProvider>
+          <PlaybackProvider>
+            <ThemeProvider>
+              <DashboardShell>{children}</DashboardShell>
+              <AudioPlayer />
+            </ThemeProvider>
+          </PlaybackProvider>
+        </QueryProvider>
       </body>
     </html>
   );

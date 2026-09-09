@@ -1,29 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Heading from '@/components/ui/Heading';
-import Text from '@/components/ui/Text';
-import Input from '@/components/ui/Input';
-import Flex from '@/components/ui/layout/Flex';
-import Box from '@/components/ui/layout/Box';
-import Container from '@/components/ui/layout/Container';
-import TrackItem from '@/components/TrackItem';
-import { usePlayback } from '@/context/PlaybackContext';
-import { apiUrl } from '@/constants';
-import { Track } from '@/types';
-
-interface SearchApiResponse {
-  results: Track[];
-  query: string;
-  count: number;
-}
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Heading from "@/components/ui/Heading";
+import Text from "@/components/ui/Text";
+import Input from "@/components/ui/Input";
+import Flex from "@/components/ui/layout/Flex";
+import Box from "@/components/ui/layout/Box";
+import Container from "@/components/ui/layout/Container";
+import TrackItem from "@/components/TrackItem";
+import { usePlayback } from "@/context/PlaybackContext";
+import { apiUrl } from "@/constants";
+import { Track, SearchApiResponse } from "@/types";
 
 const SKELETON_WIDTHS = [
-  { title: '72%', subtitle: '50%' },
-  { title: '64%', subtitle: '40%' },
-  { title: '78%', subtitle: '52%' },
-  { title: '70%', subtitle: '45%' },
-  { title: '66%', subtitle: '48%' },
+  { title: "72%", subtitle: "50%" },
+  { title: "64%", subtitle: "40%" },
+  { title: "78%", subtitle: "52%" },
+  { title: "70%", subtitle: "45%" },
+  { title: "66%", subtitle: "48%" },
 ];
 
 export default function SearchView() {
@@ -65,7 +59,7 @@ export default function SearchView() {
     try {
       const response = await fetch(
         `${apiUrl}/api/search?q=${encodeURIComponent(query.trim())}`,
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
 
       if (!response.ok) {
@@ -76,14 +70,14 @@ export default function SearchView() {
       const data: SearchApiResponse = await response.json();
       setSearchResults(data.results);
     } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (err instanceof Error && err.name === "AbortError") {
         return; // Request was cancelled, ignore
       }
-      console.error('Search error:', err);
+      console.error("Search error:", err);
       setError(
         err instanceof Error
           ? err.message
-          : 'Failed to search. Is the backend server running?'
+          : "Failed to search. Is the backend server running?",
       );
       setSearchResults([]);
     } finally {
@@ -106,8 +100,8 @@ export default function SearchView() {
   };
 
   const handleClear = () => {
-    setLocalQuery('');
-    setSearchQuery('');
+    setLocalQuery("");
+    setSearchQuery("");
     setSearchResults([]);
     setError(null);
     setHasSearched(false);
@@ -143,7 +137,11 @@ export default function SearchView() {
       {/* Search Header Container */}
       <Box className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl">
         <Flex direction="col" gap={3}>
-          <Heading level={2} size="md" className="font-semibold text-[var(--text-primary)]">
+          <Heading
+            level={2}
+            size="md"
+            className="font-semibold text-[var(--text-primary)]"
+          >
             Search YouTube
           </Heading>
           <Text variant="body-sm" color="muted" className="text-[13px] -mt-1">
@@ -177,7 +175,11 @@ export default function SearchView() {
       <Flex direction="col" gap={4}>
         {/* Loading State */}
         {isLoading && (
-          <Flex direction="col" gap={3} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl">
+          <Flex
+            direction="col"
+            gap={3}
+            className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-6 rounded-2xl"
+          >
             <Flex align="center" gap={3} className="px-1">
               <Box className="w-4 h-4 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
               <Text variant="body-sm" color="muted">
@@ -213,10 +215,18 @@ export default function SearchView() {
         {error && !isLoading && (
           <Box className="w-full text-center py-12 rounded-2xl bg-red-500/[0.03] border border-red-500/10">
             <span className="text-4xl mb-4 block">⚠️</span>
-            <Heading level={4} size="sm" className="text-[var(--text-primary)] font-semibold mb-2">
+            <Heading
+              level={4}
+              size="sm"
+              className="text-[var(--text-primary)] font-semibold mb-2"
+            >
               Search Failed
             </Heading>
-            <Text variant="body-sm" color="muted" className="max-w-[400px] mx-auto">
+            <Text
+              variant="body-sm"
+              color="muted"
+              className="max-w-[400px] mx-auto"
+            >
               {error}
             </Text>
             <button
@@ -231,14 +241,22 @@ export default function SearchView() {
         {/* Results */}
         {!isLoading && !error && hasSearched && (
           <>
-            <Heading level={3} size="sm" className="font-semibold text-[var(--text-primary)] px-1">
+            <Heading
+              level={3}
+              size="sm"
+              className="font-semibold text-[var(--text-primary)] px-1"
+            >
               Search Results ({searchResults.length})
             </Heading>
 
             {searchResults.length === 0 ? (
               <Box className="w-full text-center py-16 rounded-2xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
                 <span className="text-4xl mb-4 block">🎧</span>
-                <Heading level={4} size="sm" className="text-[var(--text-primary)] font-semibold mb-1">
+                <Heading
+                  level={4}
+                  size="sm"
+                  className="text-[var(--text-primary)] font-semibold mb-1"
+                >
                   No results found for &quot;{localQuery}&quot;
                 </Heading>
                 <Text variant="body-sm" color="muted">
@@ -246,25 +264,28 @@ export default function SearchView() {
                 </Text>
               </Box>
             ) : (
-              <Flex direction="col" gap={2} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl">
+              <Flex
+                direction="col"
+                gap={2}
+                className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl"
+              >
                 {searchResults.map((track, idx) => (
-                  <TrackItem
-                    key={track.id}
-                    track={track}
-                    index={idx}
-                  />
+                  <TrackItem key={track.id} track={track} index={idx} />
                 ))}
               </Flex>
             )}
           </>
         )}
-
       </Flex>
 
       {/* Category Pills (rendered only when server categories exist) */}
       {categories.length > 0 && (
         <Flex direction="col" gap={3} className="pt-4">
-          <Heading level={3} size="sm" className="font-semibold text-[var(--text-primary)] px-1">
+          <Heading
+            level={3}
+            size="sm"
+            className="font-semibold text-[var(--text-primary)] px-1"
+          >
             Quick Search
           </Heading>
           <Flex gap={3} wrap="wrap">
