@@ -14,16 +14,15 @@ import TrackItem from "@/components/TrackItem";
 import { apiUrl } from "@/constants";
 import {
   Playlist,
-  PlaylistTrack,
-  PlaylistTracksApiResponse,
   Track,
+  PlaylistTracksApiResponse,
 } from "@/types";
 
 const PlaylistDetailView = () => {
   const params = useParams();
   const selectedPlaylistId = params?.id as string;
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const [tracks, setTracks] = useState<PlaylistTrack[]>([]);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +38,7 @@ const PlaylistDetailView = () => {
           throw new Error("Failed to fetch playlist tracks");
         }
         const data: PlaylistTracksApiResponse = await response.json();
+        console.log("Playlist tracks: ", data);
         setTracks(data.tracks || []);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
@@ -48,6 +48,7 @@ const PlaylistDetailView = () => {
     };
     getPlaylistTracks();
   }, []);
+
   useEffect(() => {
     const getPlaylistDetails = async () => {
       setLoading(true);
@@ -73,15 +74,6 @@ const PlaylistDetailView = () => {
 
   if (!playlist) return null;
 
-  // Map PlaylistTrack to Track format for TrackItem component playback compatibility
-  const mappedContextQueue: Track[] = tracks.map((t) => ({
-    videoId: t.id,
-    title: t.title,
-    desc: t.channel || playlist.uploader || "Track",
-    duration: t.duration,
-    emoji: "🎵",
-    category: "Playlist Track",
-  }));
 
   const headerImage =
     playlist.thumbnails && playlist.thumbnails.length > 0
@@ -163,22 +155,13 @@ const PlaylistDetailView = () => {
         ) : (
           <Flex direction="col" gap={2}>
             {tracks.map((track, index) => {
-              const mappedTrack: Track = {
-                videoId: track.id,
-                title: track.title,
-                desc: track.channel || playlist.uploader || "Track",
-                duration: track.duration,
-                emoji: "🎵",
-                category: "Playlist Track",
-              };
 
               return (
                 <TrackItem
                   key={track.id}
-                  track={mappedTrack}
+                  track={track}
                   index={index}
                   playlistId={playlist.id}
-                  contextQueue={mappedContextQueue}
                 />
               );
             })}

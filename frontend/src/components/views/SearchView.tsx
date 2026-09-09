@@ -12,17 +12,8 @@ import { usePlayback } from '@/context/PlaybackContext';
 import { apiUrl } from '@/constants';
 import { Track } from '@/types';
 
-interface SearchApiResult {
-  videoId: string;
-  title: string;
-  channel: string;
-  duration: string;
-  durationSeconds: number;
-  thumbnail: string;
-}
-
 interface SearchApiResponse {
-  results: SearchApiResult[];
+  results: Track[];
   query: string;
   count: number;
 }
@@ -34,18 +25,6 @@ const SKELETON_WIDTHS = [
   { title: '70%', subtitle: '45%' },
   { title: '66%', subtitle: '48%' },
 ];
-
-/** Convert an API search result into a Track object compatible with the playback system */
-function toTrack(result: SearchApiResult): Track {
-  return {
-    videoId: result.videoId,
-    title: result.title,
-    desc: result.channel,
-    duration: result.duration,
-    emoji: '🎵',
-    category: 'YouTube',
-  };
-}
 
 export default function SearchView() {
   const { searchQuery, setSearchQuery } = usePlayback();
@@ -95,7 +74,7 @@ export default function SearchView() {
       }
 
       const data: SearchApiResponse = await response.json();
-      setSearchResults(data.results.map(toTrack));
+      setSearchResults(data.results);
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {
         return; // Request was cancelled, ignore
@@ -270,10 +249,9 @@ export default function SearchView() {
               <Flex direction="col" gap={2} className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl">
                 {searchResults.map((track, idx) => (
                   <TrackItem
-                    key={track.videoId}
+                    key={track.id}
                     track={track}
                     index={idx}
-                    contextQueue={searchResults}
                   />
                 ))}
               </Flex>

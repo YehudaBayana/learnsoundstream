@@ -9,6 +9,7 @@ import Box from '@/components/ui/layout/Box';
 import Menu from '@/components/ui/Menu';
 import { usePlayback } from '@/context/PlaybackContext';
 import { Track } from '@/types';
+import Image from './ui/Image';
 
 interface TrackItemProps {
   track: Track;
@@ -16,7 +17,6 @@ interface TrackItemProps {
   showCover?: boolean;
   showCategory?: boolean;
   playlistId?: string; // If in a playlist context, we can support removal
-  contextQueue?: Track[]; // Queue to load when this track is clicked
 }
 
 export default function TrackItem({
@@ -25,27 +25,25 @@ export default function TrackItem({
   showCover = true,
   showCategory = true,
   playlistId,
-  contextQueue = [track],
 }: TrackItemProps) {
   const {
     currentTrack,
     isPlaying,
     likedTrackIds,
-    playlists,
     playTrack,
     setPlaying,
     toggleLike,
   } = usePlayback();
 
-  const isCurrent = currentTrack?.videoId === track.videoId;
-  const isLiked = likedTrackIds.includes(track.videoId);
+  const isCurrent = currentTrack?.id === track.id;
+  const isLiked = likedTrackIds.includes(track.id);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isCurrent) {
       setPlaying(!isPlaying);
     } else {
-      playTrack(track, contextQueue);
+      playTrack(track);
     }
   };
 
@@ -105,7 +103,11 @@ export default function TrackItem({
                 : 'from-[var(--bg-surface-hover)] to-[var(--bg-surface)] border border-[var(--border-default)] group-hover:from-[var(--bg-surface-active)] group-hover:rotate-[-2deg] group-hover:scale-105'
             }`}
           >
-            {track.emoji}
+            <Image
+              src={track.thumbnails?.[track.thumbnails.length - 1].url}
+              alt={track.title}
+              className="w-full h-full object-cover"
+            />
           </Flex>
         )}
 
@@ -121,16 +123,13 @@ export default function TrackItem({
           >
             {track.title}
           </Text>
-          <Text variant="caption" color="muted" truncate className="text-[12px] mt-0.5 max-w-[90%]">
-            {track.desc}
-          </Text>
         </Flex>
       </Flex>
 
       {/* Middle/Right Part: Category and Actions */}
       <Flex align="center" gap={4} className="flex-shrink-0">
         {/* Category Badge */}
-        {showCategory && (
+        {/* {showCategory && (
           <Box className="hidden sm:block">
             <Badge
               variant="default"
@@ -141,7 +140,7 @@ export default function TrackItem({
               {track.category}
             </Badge>
           </Box>
-        )}
+        )} */}
 
         {/* Duration */}
         <Text variant="small" color="muted" className="font-mono text-xs tracking-wider select-none w-10 text-right">
@@ -154,7 +153,7 @@ export default function TrackItem({
           variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
-            toggleLike(track.videoId);
+            toggleLike(track.id);
           }}
           aria-label={isLiked ? 'Unlike' : 'Like'}
           className={`transition-colors duration-200 ${

@@ -20,33 +20,24 @@ export interface PlaylistsApiResponse {
   count: number;
 }
 
-export interface PlaylistTrackThumbnail {
+export interface Thumbnail {
   url: string;
   height: number;
   width: number;
 }
 
-export interface PlaylistTrack {
+export interface PlaylistTracksApiResponse {
+  tracks: Track[];
+  count: number;
+}
+
+export interface Track {
   id: string;
   title: string;
   channel: string;
   url: string;
   thumbnail: string;
+  duration: string;
   durationSeconds: number;
-  duration: string;
-  thumbnails: PlaylistTrackThumbnail[];
-}
-
-export interface PlaylistTracksApiResponse {
-  tracks: PlaylistTrack[];
-  count: number;
-}
-
-export interface Track {
-  videoId: string;
-  title: string;
-  desc: string;
-  duration: string;
-  emoji: string;
-  category: string;
+  thumbnails: Thumbnail[];
 }

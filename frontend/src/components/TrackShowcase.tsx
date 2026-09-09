@@ -7,15 +7,8 @@ import Button from '@/components/ui/Button';
 import Container from '@/components/ui/layout/Container';
 import Flex from '@/components/ui/layout/Flex';
 import Grid from '@/components/ui/layout/Grid';
-
-export interface Track {
-  videoId: string;
-  title: string;
-  desc: string;
-  duration: string;
-  emoji: string;
-  category: string;
-}
+import { Track } from '@/types';
+import Image from './ui/Image';
 
 export const FEATURED_TRACKS: Track[] = [];
 
@@ -38,7 +31,7 @@ export default function TrackShowcase({ onPlayTrack, activeVideoId }: TrackShowc
 
       <Grid cols={3} colsMobile={1} colsTablet={2} gap={6} className="mt-10">
         {FEATURED_TRACKS.map((track, i) => {
-          const isActive = track.videoId === activeVideoId;
+          const isActive = track.id === activeVideoId;
           return (
             <Flex 
               key={i} 
@@ -53,12 +46,13 @@ export default function TrackShowcase({ onPlayTrack, activeVideoId }: TrackShowc
             >
               {/* Header: Cover & Category Badge */}
               <Flex justify="between" align="start">
-                <Flex align="center" justify="center" className="w-14 h-14 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-3xl shadow-md transition-transform duration-300 group-hover:rotate-[-3deg] group-hover:scale-105 select-none">
-                  {track.emoji}
-                </Flex>
-                <Badge variant="info" size="sm" className="rounded-full border border-blue-500/25 bg-blue-500/10 text-blue-400 font-semibold select-none">
-                  {track.category}
-                </Badge>
+                <Image 
+                  src={track.thumbnails[0].url}
+                  alt={track.title}
+                  width={64}
+                  height={64}
+                  className="w-14 h-14 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-3xl shadow-md transition-transform duration-300 group-hover:rotate-[-3deg] group-hover:scale-105 select-none"
+                />
               </Flex>
               
               {/* Body: Title & Description */}
@@ -67,7 +61,7 @@ export default function TrackShowcase({ onPlayTrack, activeVideoId }: TrackShowc
                   {track.title}
                 </Heading>
                 <Text variant="body-sm" color="muted" className="text-[13px] leading-relaxed line-clamp-3">
-                  {track.desc}
+                  {track.channel}
                 </Text>
               </Flex>
 
@@ -79,7 +73,7 @@ export default function TrackShowcase({ onPlayTrack, activeVideoId }: TrackShowc
                 <Button
                   variant={isActive ? "primary" : "outline"}
                   size="sm"
-                  onClick={() => onPlayTrack(track.videoId, track.title)}
+                  onClick={() => onPlayTrack(track.id, track.title)}
                   leftIcon={<span className="text-[10px]">{isActive ? "🔊" : "▶"}</span>}
                   className={`rounded-full py-1.5 px-4 text-xs font-semibold transition-all duration-200 ${
                     isActive 

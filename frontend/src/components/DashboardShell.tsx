@@ -24,8 +24,6 @@ export default function DashboardShell({ children }: DashboardShellProps) {
     if (pathname === "/") return "Home";
     if (pathname === "/search") return "Search Tracks";
     if (pathname === "/playlists") return "Playlists";
-    if (pathname === "/liked-songs") return "Liked Songs";
-    if (pathname === "/history") return "Recently Played";
     if (pathname?.startsWith("/playlists/")) return "Playlist";
     return "Soundstream";
   };

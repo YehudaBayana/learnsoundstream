@@ -12,7 +12,6 @@ interface PlaybackContextProps {
   currentTrackIndex: number;
   playlists: Playlist[];
   likedTrackIds: string[];
-  history: Track[];
   searchQuery: string;
   shuffleMode: boolean;
   repeatMode: 'none' | 'all' | 'one';
@@ -54,75 +53,18 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
   // User Library State (Persisted)
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [likedTrackIds, setLikedTrackIds] = useState<string[]>([]);
-  const [history, setHistory] = useState<Track[]>([]);
-
-  // Prevent SSR hydration mismatch
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Initialize and synchronize states with LocalStorage on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedPlaylists = localStorage.getItem('soundstream_playlists');
-        const storedLikes = localStorage.getItem('soundstream_likes');
-        const storedHistory = localStorage.getItem('soundstream_history');
-
-        const initialPlaylists = storedPlaylists ? JSON.parse(storedPlaylists) : DEFAULT_PLAYLISTS;
-        const initialLikes = storedLikes ? JSON.parse(storedLikes) : [];
-        const initialHistory = storedHistory ? JSON.parse(storedHistory) : [];
-
-        setTimeout(() => {
-          setPlaylists(initialPlaylists);
-          setLikedTrackIds(initialLikes);
-          setHistory(initialHistory);
-          setIsLoaded(true);
-        }, 0);
-      } catch (err) {
-        console.error('Failed to load libraries from localStorage:', err);
-        setTimeout(() => {
-          setPlaylists(DEFAULT_PLAYLISTS);
-          setIsLoaded(true);
-        }, 0);
-      }
-    }
-  }, []);
-
-  // Save updates to localStorage
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('soundstream_playlists', JSON.stringify(playlists));
-    }
-  }, [playlists, isLoaded]);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('soundstream_likes', JSON.stringify(likedTrackIds));
-    }
-  }, [likedTrackIds, isLoaded]);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('soundstream_history', JSON.stringify(history));
-    }
-  }, [history, isLoaded]);
 
   const playTrack = (track: Track, customQueue?: Track[]) => {
     setCurrentTrack(track);
     setIsPlaying(true);
     
-    // Add to history (remove duplicate first to bump it to top)
-    setHistory((prev) => {
-      const filtered = prev.filter((item) => item.videoId !== track.videoId);
-      return [track, ...filtered].slice(0, 50); // limit history to 50 tracks
-    });
-
     // Handle Queue
     if (customQueue && customQueue.length > 0) {
-      const indexInCustom = customQueue.findIndex((t) => t.videoId === track.videoId);
+      const indexInCustom = customQueue.findIndex((t) => t.id === track.id);
       setOriginalQueue(customQueue);
       if (shuffleMode) {
         // Shuffle queue but keep playing track first
-        const reordered = shuffleArray(customQueue.filter((t) => t.videoId !== track.videoId));
+        const reordered = shuffleArray(customQueue.filter((t) => t.id !== track.id));
         const newQueue = [track, ...reordered];
         setQueue(newQueue);
         setCurrentTrackIndex(0);
@@ -198,14 +140,14 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
       const nextShuffle = !prev;
       if (nextShuffle && queue.length > 0 && currentTrack) {
         // Enable shuffle
-        const rest = originalQueue.filter((t) => t.videoId !== currentTrack.videoId);
+        const rest = originalQueue.filter((t) => t.id !== currentTrack.id);
         const shuffled = [currentTrack, ...shuffleArray(rest)];
         setQueue(shuffled);
         setCurrentTrackIndex(0);
       } else if (!nextShuffle && currentTrack) {
         // Disable shuffle - restore original queue and index
         setQueue(originalQueue);
-        const idx = originalQueue.findIndex((t) => t.videoId === currentTrack.videoId);
+        const idx = originalQueue.findIndex((t) => t.id === currentTrack.id);
         setCurrentTrackIndex(idx >= 0 ? idx : 0);
       }
       return nextShuffle;
@@ -249,7 +191,6 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
         currentTrackIndex,
         playlists,
         likedTrackIds,
-        history,
         searchQuery,
         shuffleMode,
         repeatMode,

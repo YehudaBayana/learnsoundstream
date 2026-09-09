@@ -22,16 +22,11 @@ export default function Sidebar() {
 
   // Create playlist modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [playlistName, setPlaylistName] = useState('');
-  const [playlistDesc, setPlaylistDesc] = useState('');
-  const [error, setError] = useState('');
 
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
     { href: '/search', label: 'Search', icon: '🔍' },
-    { href: '/playlists', label: 'Playlists', icon: '💿' },
-    { href: '/liked-songs', label: 'Liked Songs', icon: '❤️' },
-    { href: '/history', label: 'History', icon: '🕰️' },
+    { href: '/playlists', label: 'Playlists', icon: '' },
   ];
 
   return (

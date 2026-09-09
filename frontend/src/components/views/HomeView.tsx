@@ -13,18 +13,18 @@ import Badge from "@/components/ui/Badge";
 import Image from "@/components/ui/Image";
 import ServerStatus from "@/components/ServerStatus";
 import Footer from "@/components/Footer";
-import TrackItem from "@/components/TrackItem";
-import { usePlayback } from "@/context/PlaybackContext";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/constants";
 import { Playlist, PlaylistsApiResponse } from "@/types";
 
 export default function HomeView() {
-  const { history } = usePlayback();
   const router = useRouter();
   const [popularPlaylists, setPopularPlaylists] = useState<Playlist[]>([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState<boolean>(true);
   const [playlistsError, setPlaylistsError] = useState<string | null>(null);
+
+  // Mock history state (replace with real history later)
+  const [history, setHistory] = useState<any[]>([]);
 
   const fetchPopularPlaylists = async () => {
     setIsLoadingPlaylists(true);
@@ -123,16 +123,9 @@ export default function HomeView() {
                 </Text>
               </Flex>
             ) : (
-              history
-                .slice(0, 4)
-                .map((track, idx) => (
-                  <TrackItem
-                    key={`history-${track.videoId}-${idx}`}
-                    track={track}
-                    index={idx}
-                    contextQueue={history}
-                  />
-                ))
+              <>
+              {/* once we implement history, we will map it here */}
+              </>
             )}
           </Flex>
         </Flex>

@@ -56,7 +56,7 @@ export default function AudioPlayer() {
   useEffect(() => {
     setSeekTime(0);
     setCurrentTime(0);
-  }, [currentTrack?.videoId]);
+  }, [currentTrack?.id]);
 
   // Sync state with HTML5 audio player
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function AudioPlayer() {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentTrack?.videoId, seekTime, setPlaying]);
+  }, [isPlaying, currentTrack?.id, seekTime, setPlaying]);
 
   // Handle mute synchronization
   useEffect(() => {
@@ -170,13 +170,13 @@ export default function AudioPlayer() {
     <Flex 
       align="center"
       className={`fixed left-4 right-4 md:left-[284px] md:right-6 h-[84px] z-[999] px-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-player)] backdrop-blur-xl shadow-[var(--shadow-player)] transition-all duration-500 cubic-bezier(0.16,1,0.3,1) ${
-        currentTrack?.videoId ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
+        currentTrack?.id ? 'bottom-6 opacity-100 pointer-events-auto' : '-bottom-[150px] opacity-0 pointer-events-none'
       }`}
     >
-      {currentTrack?.videoId && (
+      {currentTrack?.id && (
         <audio
           ref={audioRef}
-          src={`${apiUrl}/api/stream?v=${currentTrack.videoId}${seekTime > 0 ? `&ss=${seekTime}` : ''}`}
+          src={`${apiUrl}/api/stream?v=${currentTrack.id}${seekTime > 0 ? `&ss=${seekTime}` : ''}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
@@ -211,7 +211,7 @@ export default function AudioPlayer() {
               </Text>
             </Box>
             <Text variant="caption" color="muted" truncate>
-              {isLoading ? 'Streaming from Go API...' : error ? 'Error' : `${currentTrack?.emoji || '🎵'} YouTube Soundstream`}
+              {isLoading ? 'Streaming from Go API...' : error ? 'Error' : 'YouTube Soundstream'}
             </Text>
           </Flex>
         </Flex>
