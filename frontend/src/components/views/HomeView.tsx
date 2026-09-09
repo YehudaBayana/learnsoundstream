@@ -16,15 +16,13 @@ import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/constants";
 import { Playlist, PlaylistsApiResponse } from "@/types";
+import { PlaylistCard } from "../PlaylistCard/PlaylistCard";
 
 export default function HomeView() {
   const router = useRouter();
   const [popularPlaylists, setPopularPlaylists] = useState<Playlist[]>([]);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState<boolean>(true);
   const [playlistsError, setPlaylistsError] = useState<string | null>(null);
-
-  // Mock history state (replace with real history later)
-  const [history, setHistory] = useState<any[]>([]);
 
   const fetchPopularPlaylists = async () => {
     setIsLoadingPlaylists(true);
@@ -91,19 +89,19 @@ export default function HomeView() {
             >
               Recently Played
             </Heading>
-            {history.length > 0 && (
+            {/* {history1.length > 0 && (
               <Text variant="caption" color="muted">
-                Your History
+                Your History1
               </Text>
-            )}
+            )} */}
           </Flex>
 
-          <Flex
+          {/* <Flex
             direction="col"
             gap={2}
             className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl justify-center min-h-[220px]"
           >
-            {history.length === 0 ? (
+            {history1.length === 0 ? (
               <Flex
                 direction="col"
                 align="center"
@@ -112,7 +110,7 @@ export default function HomeView() {
               >
                 <span className="text-3xl mb-3 opacity-60">🕰️</span>
                 <Text variant="body-sm" color="muted">
-                  No playback history yet.
+                  No playback history1 yet.
                 </Text>
                 <Text
                   variant="caption"
@@ -122,12 +120,8 @@ export default function HomeView() {
                   Tracks you play will show up here.
                 </Text>
               </Flex>
-            ) : (
-              <>
-              {/* once we implement history, we will map it here */}
-              </>
-            )}
-          </Flex>
+            ) : null}
+          </Flex> */}
         </Flex>
       </div>
 
@@ -191,74 +185,7 @@ export default function HomeView() {
         ) : (
           <Grid cols={5} colsTablet={3} colsMobile={3} gap={4}>
             {popularPlaylists.map((pl) => (
-              <Card
-                key={pl.id}
-                clickable
-                hoverable
-                variant="default"
-                onClick={() => handlePlaylistClick(pl)}
-                className="bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-emerald-500/50 transition-all duration-300 group flex flex-col h-full overflow-hidden"
-              >
-                <Card.Body
-                  padding="sm"
-                  className="flex flex-col h-full justify-between gap-3"
-                >
-                  <Flex direction="col" gap={2}>
-                    <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)]">
-                      {pl.thumbnails.length > 0 ? (
-                        <Image
-                          src={pl.thumbnails[0].url}
-                          alt={pl.title}
-                          fit="cover"
-                          showSkeleton
-                          className="w-full h-full group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <Flex
-                          align="center"
-                          justify="center"
-                          className="w-full h-full text-2xl"
-                        >
-                          🎶
-                        </Flex>
-                      )}
-                      {pl.playlist_count > 0 && (
-                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/75 backdrop-blur-sm text-[10px] font-mono text-white z-10">
-                          {pl.playlist_count} videos
-                        </div>
-                      )}
-                    </div>
-
-                    <Heading
-                      level={4}
-                      size="sm"
-                      className="font-semibold text-[var(--text-primary)] line-clamp-2 leading-snug group-hover:text-emerald-400 transition-colors mt-1"
-                    >
-                      {pl.title}
-                    </Heading>
-                  </Flex>
-
-                  <Flex
-                    justify="between"
-                    align="center"
-                    className="pt-2 border-t border-[var(--border-subtle)]"
-                  >
-                    <Text
-                      variant="caption"
-                      color="muted"
-                      className="truncate max-w-[130px] text-[11px]"
-                    >
-                      {pl.channel || pl.uploader || "YouTube"}
-                    </Text>
-                    <Text
-                      variant="caption"
-                      className="text-emerald-400 font-semibold text-[11px] group-hover:translate-x-0.5 transition-transform"
-                    >
-                      View →
-                    </Text>
-                  </Flex>
-                </Card.Body>
-              </Card>
+              <PlaylistCard key={pl.id} pl={pl} onClick={handlePlaylistClick} />
             ))}
           </Grid>
         )}

@@ -59,7 +59,7 @@ type PlaylistTracksResponse struct {
 func (app *App) PopularPlaylistsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// YouTube search URL with the playlist filter (sp=EgIQAw%3D%3D)
 	// You can change 'popular+playlists' to any query terms like 'top+music'
-	searchURL := "https://www.youtube.com/results?search_query=popular+playlists&sp=EgIQAw%3D%3D"
+	searchURL := "https://www.youtube.com/results?search_query=hiphop+playlists&sp=EgIQAw%3D%3D"
 
 	args := []string{
 		searchURL,
