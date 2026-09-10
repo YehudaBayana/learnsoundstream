@@ -7,7 +7,8 @@ import Badge from '@/components/ui/Badge';
 import Flex from '@/components/ui/layout/Flex';
 import Box from '@/components/ui/layout/Box';
 import Menu from '@/components/ui/Menu';
-import { usePlayback } from '@/context/PlaybackContext';
+import { usePlaybackStore } from '@/store/usePlaybackStore';
+import { useLibraryStore } from '@/store/useLibraryStore';
 import { Track } from '@/types';
 import Image from './ui/Image';
 
@@ -26,14 +27,12 @@ export default function TrackItem({
   showCategory = true,
   playlistId,
 }: TrackItemProps) {
-  const {
-    currentTrack,
-    isPlaying,
-    likedTrackIds,
-    playTrack,
-    setPlaying,
-    toggleLike,
-  } = usePlayback();
+  const currentTrack  = usePlaybackStore((s) => s.currentTrack);
+  const isPlaying     = usePlaybackStore((s) => s.isPlaying);
+  const playTrack     = usePlaybackStore((s) => s.playTrack);
+  const setPlaying    = usePlaybackStore((s) => s.setPlaying);
+  const likedTrackIds = useLibraryStore((s) => s.likedTrackIds);
+  const toggleLike    = useLibraryStore((s) => s.toggleLike);
 
   const isCurrent = currentTrack?.id === track.id;
   const isLiked = likedTrackIds.includes(track.id);

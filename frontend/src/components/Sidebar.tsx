@@ -1,32 +1,27 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Text from '@/components/ui/Text';
-import Heading from '@/components/ui/Heading';
-import Button from '@/components/ui/Button';
-import IconButton from '@/components/ui/IconButton';
-import Flex from '@/components/ui/layout/Flex';
-import Box from '@/components/ui/layout/Box';
-import Modal from '@/components/ui/Modal';
-import Input from '@/components/ui/Input';
-import TextArea from '@/components/ui/TextArea';
-import { usePlayback } from '@/context/PlaybackContext';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import Text from "@/components/ui/Text";
+import Heading from "@/components/ui/Heading";
+import IconButton from "@/components/ui/IconButton";
+import Flex from "@/components/ui/layout/Flex";
+import Box from "@/components/ui/layout/Box";
+import Modal from "@/components/ui/Modal";
+import { useLibraryStore } from "@/store/useLibraryStore";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
-  const {
-    playlists,
-  } = usePlayback();
+  const playlists = useLibraryStore((s) => s.playlists);
   const pathname = usePathname();
 
   // Create playlist modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navItems = [
-    { href: '/', label: 'Home', icon: '🏠' },
-    { href: '/search', label: 'Search', icon: '🔍' },
-    { href: '/playlists', label: 'Playlists', icon: '' },
+    { href: "/", label: "Home", icon: "🏠" },
+    { href: "/search", label: "Search", icon: "🔍" },
+    { href: "/playlists", label: "Playlists", icon: "" },
   ];
 
   return (
@@ -35,7 +30,11 @@ export default function Sidebar() {
       className="w-64 h-full bg-[var(--bg-secondary)] border-r border-[var(--border-default)] backdrop-blur-2xl flex-shrink-0 relative overflow-hidden select-none transition-colors duration-300"
     >
       {/* Brand Header */}
-      <Flex align="center" gap={3} className="p-6 border-b border-[var(--border-default)]">
+      <Flex
+        align="center"
+        gap={3}
+        className="p-6 border-b border-[var(--border-default)]"
+      >
         <Flex
           align="center"
           justify="center"
@@ -44,17 +43,28 @@ export default function Sidebar() {
           <span>🎵</span>
         </Flex>
         <Flex direction="col">
-          <Heading level={1} size="md" className="font-extrabold tracking-wide text-[var(--text-primary)]">
+          <Heading
+            level={1}
+            size="md"
+            className="font-extrabold tracking-wide text-[var(--text-primary)]"
+          >
             SOUNDSTREAM
           </Heading>
-          <Text variant="caption" className="text-[10px] tracking-wider text-emerald-400 font-semibold -mt-0.5">
+          <Text
+            variant="caption"
+            className="text-[10px] tracking-wider text-emerald-400 font-semibold -mt-0.5"
+          >
             HI-FI STREAMING
           </Text>
         </Flex>
       </Flex>
 
       {/* Navigation */}
-      <Flex direction="col" gap={1} className="px-3 py-4 border-b border-[var(--border-default)]">
+      <Flex
+        direction="col"
+        gap={1}
+        className="px-3 py-4 border-b border-[var(--border-default)]"
+      >
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -63,8 +73,8 @@ export default function Sidebar() {
               href={item.href}
               className={`relative w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
+                  ? "bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
               }`}
             >
               {isActive && (
@@ -80,7 +90,12 @@ export default function Sidebar() {
       {/* Playlists section */}
       <Flex direction="col" className="flex-1 min-h-0 py-4 px-3">
         <Flex align="center" justify="between" className="px-4 mb-2">
-          <Text variant="caption" weight="bold" color="muted" className="tracking-wider uppercase text-[10px]">
+          <Text
+            variant="caption"
+            weight="bold"
+            color="muted"
+            className="tracking-wider uppercase text-[10px]"
+          >
             My Playlists
           </Text>
           <IconButton
@@ -111,8 +126,8 @@ export default function Sidebar() {
                   href={href}
                   className={`relative w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
+                      ? "bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
                   }`}
                 >
                   <Flex align="center" gap={3} className="min-w-0">
@@ -136,7 +151,12 @@ export default function Sidebar() {
             YB
           </Flex>
           <Flex direction="col" className="min-w-0 flex-1">
-            <Text variant="body-sm" weight="semibold" truncate className="text-[var(--text-primary)] text-xs">
+            <Text
+              variant="body-sm"
+              weight="semibold"
+              truncate
+              className="text-[var(--text-primary)] text-xs"
+            >
               Yehuda Bayana
             </Text>
             <Text variant="caption" color="muted" className="text-[10px]">
@@ -147,11 +167,14 @@ export default function Sidebar() {
       </Box>
 
       {/* Create Playlist Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="md">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        size="md"
+      >
         <Modal.Header onClose={() => setIsModalOpen(false)}>
           Create New Playlist
         </Modal.Header>
-        
       </Modal>
     </Flex>
   );

@@ -7,7 +7,6 @@ import IconButton from "@/components/ui/IconButton";
 import Text from "@/components/ui/Text";
 import Sidebar from "@/components/Sidebar";
 import { usePathname } from "next/navigation";
-import { usePlayback } from "@/context/PlaybackContext";
 import { useTheme } from "@/context/ThemeContext";
 
 interface DashboardShellProps {

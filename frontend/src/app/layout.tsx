@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AudioPlayer from "@/components/AudioPlayer";
 import DashboardShell from "@/components/DashboardShell";
-import { PlaybackProvider } from "@/context/PlaybackContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
@@ -32,12 +31,10 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <QueryProvider>
-          <PlaybackProvider>
-            <ThemeProvider>
-              <DashboardShell>{children}</DashboardShell>
-              <AudioPlayer />
-            </ThemeProvider>
-          </PlaybackProvider>
+          <ThemeProvider>
+            <DashboardShell>{children}</DashboardShell>
+            <AudioPlayer />
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>
