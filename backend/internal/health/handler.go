@@ -1,6 +1,7 @@
-package handlers
+package health
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -27,30 +28,40 @@ type Services struct {
 	Cache    string `json:"cache"`
 }
 
-// HealthHandler handles GET /health and GET /api/health
-func (app *App) HealthHandler(w http.ResponseWriter, r *http.Request) {
-	dbStatus := "disconnected"
-	if app.DB != nil {
-		if err := app.DB.Ping(); err == nil {
-			dbStatus = "connected"
+// Handler handles health check requests.
+type Handler struct {
+	database *sql.DB
+}
+
+// NewHandler creates a new health Handler with an optional database connection.
+func NewHandler(database *sql.DB) *Handler {
+	return &Handler{database: database}
+}
+
+// Handle handles GET /health and GET /api/health
+func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
+	databaseStatus := "disconnected"
+	if handler.database != nil {
+		if err := handler.database.Ping(); err == nil {
+			databaseStatus = "connected"
 		}
 	}
 
-	resp := HealthResponse{
+	responsePayload := HealthResponse{
 		Status:    "OK",
 		Version:   Version,
 		Uptime:    time.Since(StartTime).Round(time.Second).String(),
 		Timestamp: time.Now(),
 		Services: Services{
-			Database: dbStatus,
+			Database: databaseStatus,
 			Cache:    "disconnected (not configured)",
 		},
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
+	if err := json.NewEncoder(responseWriter).Encode(responsePayload); err != nil {
 		slog.Error("Failed to encode health response", "error", err)
 	}
 }

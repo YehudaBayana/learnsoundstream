@@ -10,9 +10,13 @@ import (
 	"syscall"
 	"time"
 
+	"backend/internal/config"
 	"backend/internal/database"
-	"backend/internal/handlers"
+	"backend/internal/health"
 	"backend/internal/middleware"
+	"backend/internal/playlists"
+	"backend/internal/search"
+	"backend/internal/stream"
 )
 
 func main() {
@@ -20,20 +24,11 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	slog.SetDefault(logger)
 
-	// Get port from environment variable, fallback to standard 8080
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	// Get DB connection string (use default for local development via Docker)
-	dbConnStr := os.Getenv("DATABASE_URL")
-	if dbConnStr == "" {
-		dbConnStr = "postgres://soundstream:password123@localhost:5432/soundstream?sslmode=disable"
-	}
+	// Load configuration from environment variables
+	cfg := config.Load()
 
 	// Initialize database
-	db, err := database.InitDB(dbConnStr)
+	db, err := database.InitDB(cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("Failed to initialize database", "error", err)
 		// We could exit here, but let's allow the app to start without DB for resilience
@@ -42,27 +37,36 @@ func main() {
 		defer db.Close()
 	}
 
-	// Create App instance with dependencies
-	app := handlers.NewApp(db)
+	// Wire up feature handlers
+	healthH := health.NewHandler(db)
+
+	searchSvc := search.NewService()
+	searchH := search.NewHandler(searchSvc)
+
+	streamSvc := stream.NewService(db)
+	streamH := stream.NewHandler(streamSvc)
+
+	playlistRepo := playlists.NewRepository()
+	playlistH := playlists.NewHandler(playlistRepo)
 
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
-	// Register handlers from internal/handlers
-	mux.HandleFunc("GET /health", app.HealthHandler)
-	mux.HandleFunc("GET /api/health", app.HealthHandler)
-	mux.HandleFunc("GET /api/playlist-details", app.GetPlaylistDetailsHandler)
-	mux.HandleFunc("GET /api/popular-playlists", app.PopularPlaylistsHandler)
-	mux.HandleFunc("GET /api/playlist-tracks", app.PlaylistTracksHandler)
-	mux.HandleFunc("GET /api/stream", app.StreamHandler)
-	mux.HandleFunc("GET /api/search", app.SearchHandler)
+	// Register handlers
+	mux.HandleFunc("GET /health", healthH.Handle)
+	mux.HandleFunc("GET /api/health", healthH.Handle)
+	mux.HandleFunc("GET /api/playlist-details", playlistH.HandleDetails)
+	mux.HandleFunc("GET /api/popular-playlists", playlistH.HandlePopular)
+	mux.HandleFunc("GET /api/playlist-tracks", playlistH.HandleTracks)
+	mux.HandleFunc("GET /api/stream", streamH.Handle)
+	mux.HandleFunc("GET /api/search", searchH.Handle)
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)
 
 	// Define our HTTP server with robust, production-ready timeouts
 	server := &http.Server{
-		Addr:         ":" + port,
+		Addr:         ":" + cfg.Port,
 		Handler:      handler,
 		ReadTimeout:  10 * time.Second,  // Max duration for reading the entire request (prevents slowloris)
 		WriteTimeout: 10 * time.Second,  // Max duration before timing out writes of the response
@@ -73,7 +77,7 @@ func main() {
 	shutdownError := make(chan error)
 
 	go func() {
-		slog.Info("Starting backend server", "port", port, "url", "http://localhost:"+port)
+		slog.Info("Starting backend server", "port", cfg.Port, "url", "http://localhost:"+cfg.Port)
 
 		// Start the server (ListenAndServe always returns an error, ErrServerClosed is normal)
 		err := server.ListenAndServe()
