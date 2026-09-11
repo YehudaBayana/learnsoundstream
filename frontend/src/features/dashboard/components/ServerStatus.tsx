@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { apiUrl } from "@/constants";
+import { apiUrl } from "@/config/constants";
 import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
 import Text from "@/components/ui/Text";

@@ -1,9 +1,9 @@
-import Card from "../ui/Card";
-import { Playlist } from "../../types";
-import Flex from "../ui/layout/Flex";
-import Image from "../ui/Image";
-import Heading from "../ui/Heading";
-import Text from "../ui/Text";
+import Card from "@/components/ui/Card";
+import { Playlist } from "@/types/global.types";
+import Flex from "@/components/ui/layout/Flex";
+import Image from "@/components/ui/Image";
+import Heading from "@/components/ui/Heading";
+import Text from "@/components/ui/Text";
 
 interface PlaylistCardProps {
   pl: Playlist;

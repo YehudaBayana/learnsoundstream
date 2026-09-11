@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import type { Track } from '@/types';
+import { create } from "zustand";
+import type { Track } from "@/types/global.types";
 import {
   reportPlayTrack,
   reportNextTrack,
   reportPrevTrack,
   reportPreferences,
-} from '@/api/playback'; 
+} from "@/features/player/api/playback";
 
-export type RepeatMode = 'none' | 'all' | 'one';
+export type RepeatMode = "none" | "all" | "one";
 
 // ---------------------------------------------------------------------------
 // State shape
@@ -45,7 +45,6 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
     // --- actions ---
 
     playTrack: (track) => {
-
       set({
         currentTrack: track,
         isPlaying: true,
@@ -71,8 +70,7 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
         return;
       }
 
-      
-          set({ isPlaying: false });
+      set({ isPlaying: false });
 
       reportNextTrack().catch(() => {});
     },
@@ -87,7 +85,6 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
       }
 
       reportPrevTrack().catch(() => {});
-    }
-
-  })
+    },
+  }),
 );

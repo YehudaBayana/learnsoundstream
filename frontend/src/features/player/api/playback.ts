@@ -9,7 +9,7 @@
  * until they exist, every call will fail silently.
  */
 
-import { apiUrl } from '@/constants';
+import { apiUrl } from "@/config/constants";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,7 +17,7 @@ import { apiUrl } from '@/constants';
 
 interface PlaybackPreferences {
   shuffleMode?: boolean;
-  repeatMode?: 'none' | 'all' | 'one';
+  repeatMode?: "none" | "all" | "one";
 }
 
 // ---------------------------------------------------------------------------
@@ -26,8 +26,8 @@ interface PlaybackPreferences {
 
 async function post(path: string, body?: unknown): Promise<void> {
   await fetch(`${apiUrl}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 }
@@ -42,23 +42,25 @@ async function post(path: string, body?: unknown): Promise<void> {
  * stub allows for a dedicated session-tracking route in the future).
  */
 export async function reportPlayTrack(trackId: string): Promise<void> {
-  await post('/api/playback/play', { trackId });
+  await post("/api/playback/play", { trackId });
 }
 
 /** Report that the user skipped to the next track. */
 export async function reportNextTrack(): Promise<void> {
-  await post('/api/playback/next');
+  await post("/api/playback/next");
 }
 
 /** Report that the user went back to the previous track. */
 export async function reportPrevTrack(): Promise<void> {
-  await post('/api/playback/prev');
+  await post("/api/playback/prev");
 }
 
 /**
  * Persist shuffle/repeat preferences to the backend so they survive
  * page refreshes (once a preferences endpoint is available).
  */
-export async function reportPreferences(prefs: PlaybackPreferences): Promise<void> {
-  await post('/api/playback/preferences', prefs);
+export async function reportPreferences(
+  prefs: PlaybackPreferences,
+): Promise<void> {
+  await post("/api/playback/preferences", prefs);
 }

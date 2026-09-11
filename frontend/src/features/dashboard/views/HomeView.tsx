@@ -9,12 +9,12 @@ import Flex from "@/components/ui/layout/Flex";
 import Grid from "@/components/ui/layout/Grid";
 import Spinner from "@/components/ui/Spinner";
 import Badge from "@/components/ui/Badge";
-import ServerStatus from "@/components/ServerStatus";
-import Footer from "@/components/Footer";
+import ServerStatus from "@/features/dashboard/components/ServerStatus";
+import Footer from "@/features/dashboard/components/Footer";
 import { useRouter } from "next/navigation";
-import { Playlist } from "@/types";
-import { PlaylistCard } from "../PlaylistCard/PlaylistCard";
-import { usePopularPlaylists } from "@/query/usePlaylists";
+import { Playlist } from "@/types/global.types";
+import { PlaylistCard } from "@/features/playlists/components/PlaylistCard/PlaylistCard";
+import { usePopularPlaylists } from "@/features/playlists/query/usePlaylists";
 
 export default function HomeView() {
   const router = useRouter();

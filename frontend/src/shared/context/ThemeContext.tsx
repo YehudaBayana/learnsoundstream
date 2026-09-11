@@ -1,9 +1,21 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ThemeName, ThemeDefinition, themes, getTheme, DEFAULT_THEME } from '@/themes';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  ThemeName,
+  ThemeDefinition,
+  themes,
+  getTheme,
+  DEFAULT_THEME,
+} from "@/config/themes";
 
-const STORAGE_KEY = 'soundstream-theme';
+const STORAGE_KEY = "soundstream-theme";
 
 interface ThemeContextValue {
   /** Current active theme name */
@@ -23,7 +35,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 /** Apply a theme's CSS variables to the document root */
 function applyTheme(themeDef: ThemeDefinition) {
   const root = document.documentElement;
-  root.setAttribute('data-theme', themeDef.name);
+  root.setAttribute("data-theme", themeDef.name);
 
   // Set all CSS custom properties
   for (const [property, value] of Object.entries(themeDef.variables)) {
@@ -33,7 +45,7 @@ function applyTheme(themeDef: ThemeDefinition) {
 
 /** Read stored theme from localStorage (returns null if not found or invalid) */
 function getStoredTheme(): ThemeName | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored && themes.some((t) => t.name === stored)) {
@@ -86,9 +98,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   };
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
@@ -96,7 +106,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 }

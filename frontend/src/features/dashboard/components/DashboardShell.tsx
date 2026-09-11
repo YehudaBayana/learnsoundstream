@@ -5,9 +5,9 @@ import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import IconButton from "@/components/ui/IconButton";
 import Text from "@/components/ui/Text";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/features/dashboard/components/Sidebar";
 import { usePathname } from "next/navigation";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/shared/context/ThemeContext";
 
 interface DashboardShellProps {
   children: React.ReactNode;

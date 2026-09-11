@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { apiUrl } from "@/constants";
+import { apiUrl } from "@/config/constants";
 import Text from "@/components/ui/Text";
 import IconButton from "@/components/ui/IconButton";
 import Slider from "@/components/ui/Slider";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
-import { usePlaybackStore } from "@/store/usePlaybackStore";
+import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
 
 // Helper to convert "M:SS", "MM:SS" or "H:MM:SS" into seconds
 const parseDurationString = (durStr?: string): number => {

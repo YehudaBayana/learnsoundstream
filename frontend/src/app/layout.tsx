@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import AudioPlayer from "@/components/AudioPlayer";
-import DashboardShell from "@/components/DashboardShell";
-import { ThemeProvider } from "@/context/ThemeContext";
+import AudioPlayer from "@/features/player/components/AudioPlayer";
+import DashboardShell from "@/features/dashboard/components/DashboardShell";
+import { ThemeProvider } from "@/shared/context/ThemeContext";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 

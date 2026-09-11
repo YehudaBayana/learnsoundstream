@@ -7,7 +7,7 @@ import IconButton from "@/components/ui/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import Modal from "@/components/ui/Modal";
-import { useLibraryStore } from "@/store/useLibraryStore";
+import { useLibraryStore } from "@/features/playlists/store/useLibraryStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

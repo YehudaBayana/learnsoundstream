@@ -1,4 +1,4 @@
-import HomeView from '@/components/views/HomeView';
+import HomeView from "@/features/dashboard/views/HomeView";
 
 export default function Home() {
   return <HomeView />;

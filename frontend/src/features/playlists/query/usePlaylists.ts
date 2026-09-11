@@ -1,6 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
-import { playlistKeys } from '@/api/keys';
-import { getPopularPlaylists, getPlaylistDetails, getPlaylistTracks } from '@/api/playlists';
+import { useQuery } from "@tanstack/react-query";
+import { playlistKeys } from "@/shared/api/keys";
+import {
+  getPopularPlaylists,
+  getPlaylistDetails,
+  getPlaylistTracks,
+} from "@/features/playlists/api/playlists";
 
 export function usePopularPlaylists() {
   return useQuery({

@@ -8,8 +8,11 @@ import Text from "@/components/ui/Text";
 import Image from "@/components/ui/Image";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
-import TrackItem from "@/components/TrackItem";
-import { usePlaylistDetails, usePlaylistTracks } from "@/query/usePlaylists";
+import TrackItem from "@/features/player/components/TrackItem";
+import {
+  usePlaylistDetails,
+  usePlaylistTracks,
+} from "@/features/playlists/query/usePlaylists";
 
 const PlaylistDetailView = () => {
   const params = useParams();

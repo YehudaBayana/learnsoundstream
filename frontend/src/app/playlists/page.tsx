@@ -1,4 +1,4 @@
-import PlaylistsView from '@/components/views/PlaylistsView';
+import PlaylistsView from "@/features/playlists/views/PlaylistsView";
 
 export default function PlaylistsPage() {
   return <PlaylistsView />;
