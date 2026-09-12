@@ -3,7 +3,6 @@
 import React from "react";
 import Text from "@/components/ui/Text";
 import IconButton from "@/components/ui/IconButton";
-import Badge from "@/components/ui/Badge";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import Menu from "@/components/ui/Menu";
@@ -24,7 +23,6 @@ export default function TrackItem({
   track,
   index,
   showCover = true,
-  showCategory = true,
   playlistId,
 }: TrackItemProps) {
   const currentTrack = usePlaybackStore((s) => s.currentTrack);
@@ -103,7 +101,10 @@ export default function TrackItem({
             }`}
           >
             <Image
-              src={track.thumbnails?.[track.thumbnails.length - 1].url}
+              src={
+                track.thumbnails?.[track.thumbnails.length - 1].url ||
+                track.thumbnail
+              }
               alt={track.title}
               className="w-full h-full object-cover"
             />
