@@ -1,6 +1,9 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 // Config holds all environment-driven configuration for the application.
 type Config struct {
@@ -11,15 +14,19 @@ type Config struct {
 // Load reads configuration from environment variables, applying sensible defaults
 // for local development.
 func Load() Config {
+	dbURL := os.Getenv("DB_URL")
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		dbURL = "postgres://soundstream:password123@localhost:5432/soundstream?sslmode=disable"
-	}
+if dbURL == "" {
+    host := os.Getenv("DB_HOST")
+    port := os.Getenv("DB_PORT")
+    user := os.Getenv("DB_USER")
+    password := os.Getenv("DB_PASSWORD")
+    name := os.Getenv("DB_NAME")
+    dbURL = fmt.Sprintf(
+        "postgres://%s:%s@%s:%s/%s?sslmode=disable",
+        user, password, host, port, name,
+    )
+}
 
 	return Config{
 		Port:        port,

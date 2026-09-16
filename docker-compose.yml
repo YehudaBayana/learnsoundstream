@@ -1,33 +1,40 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: soundstream-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   backend:
+    depends_on:
+      postgres:
+        condition: service_healthy
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: soundstream-backend
     ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
+      - "${PORT}:${PORT}"
     # The database hostname changes from 127.0.0.1 to 'postgres'
     # when running inside the Docker network.
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=soundstream
-      - DB_PASSWORD=password123
-      - DB_NAME=soundstream
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: soundstream-db
-    environment:
-      POSTGRES_USER: soundstream
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: soundstream
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
 
 volumes:
   postgres_data:

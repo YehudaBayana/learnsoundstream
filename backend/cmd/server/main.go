@@ -13,6 +13,7 @@ import (
 	"backend/internal/config"
 	"backend/internal/database"
 	"backend/internal/health"
+	"backend/internal/history"
 	"backend/internal/middleware"
 	"backend/internal/playlists"
 	"backend/internal/search"
@@ -31,11 +32,10 @@ func main() {
 	db, err := database.InitDB(cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("Failed to initialize database", "error", err)
-		// We could exit here, but let's allow the app to start without DB for resilience
+		os.Exit(1)
 	}
-	if db != nil {
 		defer db.Close()
-	}
+	
 
 	// Wire up feature handlers
 	healthH := health.NewHandler(db)
@@ -49,6 +49,9 @@ func main() {
 	playlistRepo := playlists.NewRepository()
 	playlistH := playlists.NewHandler(playlistRepo)
 
+	historyRepo := history.NewRepository(db)
+	historyH := history.NewHandler(historyRepo)
+
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
@@ -60,6 +63,7 @@ func main() {
 	mux.HandleFunc("GET /api/playlist-tracks", playlistH.HandleTracks)
 	mux.HandleFunc("GET /api/stream", streamH.Handle)
 	mux.HandleFunc("GET /api/search", searchH.Handle)
+	mux.HandleFunc("GET /api/playback-history", historyH.Handle)
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)
