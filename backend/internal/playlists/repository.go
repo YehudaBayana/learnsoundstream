@@ -1,26 +1,29 @@
 package playlists
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"log/slog"
 	"os/exec"
 	"strconv"
 	"strings"
 
+	"backend/internal/videos"
 	"backend/internal/ytdlp"
 )
 
 // Repository fetches playlist data from YouTube via yt-dlp.
 type Repository struct {
-	ytDlpPath string
+	ytDlpPath    string
+	videoService *videos.Service
 }
 
 // NewRepository creates a new playlist Repository, resolving the yt-dlp binary path at construction time.
-func NewRepository() *Repository {
+func NewRepository(videoService *videos.Service) *Repository {
 	return &Repository{
-		ytDlpPath: ytdlp.ResolvePath(),
+		ytDlpPath:    ytdlp.ResolvePath(),
+		videoService: videoService,
 	}
 }
 
@@ -41,7 +44,7 @@ func (repository *Repository) FetchPopular() ([]PlaylistInfo, error) {
 	command := exec.Command(repository.ytDlpPath, commandArguments...)
 	commandOutput, err := command.Output()
 	if err != nil {
-		log.Fatalf("Failed to execute yt-dlp: %v", err)
+		return nil, fmt.Errorf("yt-dlp execution failed: %w", err)
 	}
 
 	// yt-dlp outputs NDJSON (newline-delimited JSON) for search result pages
@@ -95,7 +98,7 @@ func (repository *Repository) FetchDetails(playlistURL string) (PlaylistDetails,
 }
 
 // FetchTracks retrieves a paginated slice of tracks from a playlist.
-func (repository *Repository) FetchTracks(playlistID string, start, count int) ([]PlaylistTrack, error) {
+func (repository *Repository) FetchTracks(ctx context.Context, playlistID string, start, count int) ([]PlaylistTrack, error) {
 	end := start + count - 1
 	searchURL := fmt.Sprintf("https://www.youtube.com/playlist?list=%s", playlistID)
 
@@ -108,7 +111,7 @@ func (repository *Repository) FetchTracks(playlistID string, start, count int) (
 		"--no-warnings",
 	}
 
-	command := exec.Command(repository.ytDlpPath, commandArguments...)
+	command := exec.CommandContext(ctx, repository.ytDlpPath, commandArguments...)
 	commandOutput, err := command.Output()
 	if err != nil {
 		return nil, fmt.Errorf("yt-dlp execution failed: %w", err)
@@ -170,6 +173,21 @@ func (repository *Repository) FetchTracks(playlistID string, start, count int) (
 			Thumbnails:      flat.Thumbnails,
 		}
 		tracks = append(tracks, track)
+	}
+
+	if repository.videoService != nil {
+		metadata := make([]videos.Video, 0, len(tracks))
+		for _, track := range tracks {
+			metadata = append(metadata, videos.Video{
+				ID:              track.ID,
+				Title:           track.Title,
+				Channel:         track.Channel,
+				DurationSeconds: track.DurationSeconds,
+			})
+		}
+		if err := repository.videoService.Save(ctx, metadata); err != nil {
+			slog.Warn("failed to save playlist video metadata", "error", err)
+		}
 	}
 
 	return tracks, nil

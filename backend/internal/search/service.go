@@ -9,18 +9,21 @@ import (
 	"os/exec"
 	"strings"
 
+	"backend/internal/videos"
 	"backend/internal/ytdlp"
 )
 
 // Service executes YouTube searches via yt-dlp.
 type Service struct {
-	ytDlpPath string
+	ytDlpPath    string
+	videoService *videos.Service
 }
 
 // NewService creates a new search Service, resolving the yt-dlp binary path at construction time.
-func NewService() *Service {
+func NewService(videoService *videos.Service) *Service {
 	return &Service{
-		ytDlpPath: ytdlp.ResolvePath(),
+		ytDlpPath:    ytdlp.ResolvePath(),
+		videoService: videoService,
 	}
 }
 
@@ -111,6 +114,21 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 
 	if results == nil {
 		results = []SearchResult{} // Ensure we return [] not null in JSON
+	}
+
+	if service.videoService != nil {
+		metadata := make([]videos.Video, 0, len(results))
+		for _, result := range results {
+			metadata = append(metadata, videos.Video{
+				ID:              result.VideoID,
+				Title:           result.Title,
+				Channel:         result.Channel,
+				DurationSeconds: result.DurationSeconds,
+			})
+		}
+		if err := service.videoService.Save(requestContext, metadata); err != nil {
+			slog.Warn("failed to save search video metadata", "error", err)
+		}
 	}
 
 	return results, nil

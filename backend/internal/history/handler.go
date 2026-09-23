@@ -20,7 +20,7 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 		userID = "1"
 	}
 
-	items, err := handler.repository.GetPlaybackHistory(userID)
+	items, err := handler.repository.GetPlaybackHistory(userID,request.Context())
 	if err != nil{
 		slog.Error("Failed to fetch history","error", err)
 		http.Error(responseWriter, "Failed to fetch history", http.StatusInternalServerError)

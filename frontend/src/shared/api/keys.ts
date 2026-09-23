@@ -9,3 +9,7 @@ export const playlistKeys = {
 export const searchKeys = {
   searchBy: (searchTerm: string) => ["search-by", searchTerm] as const,
 };
+
+export const historyKeys = {
+  getHistory: (userId: string) => ["get-history", userId] as const,
+};

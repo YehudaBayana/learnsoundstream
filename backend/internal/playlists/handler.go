@@ -88,7 +88,7 @@ func (handler *Handler) HandleTracks(responseWriter http.ResponseWriter, request
 		count = parsedCount
 	}
 
-	tracks, err := handler.repository.FetchTracks(playlistID, start, count)
+	tracks, err := handler.repository.FetchTracks(request.Context(), playlistID, start, count)
 	if err != nil {
 		slog.Error("yt-dlp execution failed", "error", err)
 		http.Error(responseWriter, "Failed to fetch playlist tracks", http.StatusInternalServerError)

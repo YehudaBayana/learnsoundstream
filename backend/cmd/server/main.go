@@ -18,6 +18,7 @@ import (
 	"backend/internal/playlists"
 	"backend/internal/search"
 	"backend/internal/stream"
+	"backend/internal/videos"
 )
 
 func main() {
@@ -34,22 +35,24 @@ func main() {
 		slog.Error("Failed to initialize database", "error", err)
 		os.Exit(1)
 	}
-		defer db.Close()
-	
+	defer db.Close()
 
 	// Wire up feature handlers
 	healthH := health.NewHandler(db)
 
-	searchSvc := search.NewService()
-	searchH := search.NewHandler(searchSvc)
-
 	streamSvc := stream.NewService(db)
 	streamH := stream.NewHandler(streamSvc)
 
-	playlistRepo := playlists.NewRepository()
+	videoRepository := videos.NewRepository(db)
+	videoService := videos.NewService(videoRepository)
+
+	searchSvc := search.NewService(videoService)
+	searchH := search.NewHandler(searchSvc)
+
+	playlistRepo := playlists.NewRepository(videoService)
 	playlistH := playlists.NewHandler(playlistRepo)
 
-	historyRepo := history.NewRepository(db)
+	historyRepo := history.NewRepository(db, videoService)
 	historyH := history.NewHandler(historyRepo)
 
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)

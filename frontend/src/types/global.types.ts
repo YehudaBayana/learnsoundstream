@@ -42,9 +42,10 @@ export interface Track {
   thumbnails: Thumbnail[];
 }
 
-
 export interface SearchApiResponse {
   results: Track[];
   query: string;
   count: number;
 }
+
+export type HistoryResponse = Track[];

@@ -22,6 +22,7 @@ export default function Sidebar() {
     { href: "/", label: "Home", icon: "🏠" },
     { href: "/search", label: "Search", icon: "🔍" },
     { href: "/playlists", label: "Playlists", icon: "" },
+    { href: "/history", label: "History", icon: "" },
   ];
 
   return (
