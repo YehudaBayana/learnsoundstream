@@ -22,9 +22,9 @@ func (repository *DatabaseRepository) GetByIDs(ctx context.Context, ids []string
 	}
 
 	rows, err := repository.db.QueryContext(ctx, `
-		SELECT video_id, title, channel, duration_seconds
+		SELECT id, title, channel, duration_seconds
 		FROM video
-		WHERE video_id = ANY($1)
+		WHERE id = ANY($1)
 	`, pq.Array(ids))
 	if err != nil {
 		return nil, fmt.Errorf("query video metadata: %w", err)
@@ -64,9 +64,9 @@ func (repository *DatabaseRepository) UpsertMany(ctx context.Context, videos []V
 	defer transaction.Rollback()
 
 	statement, err := transaction.PrepareContext(ctx, `
-		INSERT INTO video (video_id, title, channel, duration_seconds, last_seen_at)
+		INSERT INTO video (id, title, channel, duration_seconds, last_seen_at)
 		VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-		ON CONFLICT (video_id) DO UPDATE SET
+		ON CONFLICT (id) DO UPDATE SET
 			title = EXCLUDED.title,
 			channel = EXCLUDED.channel,
 			duration_seconds = EXCLUDED.duration_seconds,

@@ -46,9 +46,9 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 	}
 
 	if startOffset > 0 {
-		slog.Info("Starting audio stream", "video_id", videoID, "start_offset", startOffset)
+		slog.Info("Starting audio stream", "id", videoID, "start_offset", startOffset)
 	} else {
-		slog.Info("Starting audio stream", "video_id", videoID)
+		slog.Info("Starting audio stream", "id", videoID)
 	}
 
 	// In Go 1.20+, we can dynamically bypass the server's WriteTimeout for this long-lived streaming connection.

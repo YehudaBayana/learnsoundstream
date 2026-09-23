@@ -93,7 +93,7 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 		thumbnail := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", entry.ID)
 
 		results = append(results, SearchResult{
-			VideoID:         entry.ID,
+			Id:         entry.ID,
 			Title:           entry.Title,
 			Channel:         channelName,
 			Duration:        durationText,
@@ -120,7 +120,7 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 		metadata := make([]videos.Video, 0, len(results))
 		for _, result := range results {
 			metadata = append(metadata, videos.Video{
-				ID:              result.VideoID,
+				ID:              result.Id,
 				Title:           result.Title,
 				Channel:         result.Channel,
 				DurationSeconds: result.DurationSeconds,

@@ -6,7 +6,7 @@ import (
 )
 
 type Video struct {
-	ID              string `json:"videoId"`
+	ID              string `json:"id"`
 	Title           string `json:"title"`
 	Channel         string `json:"channel"`
 	DurationSeconds int    `json:"durationSeconds"`

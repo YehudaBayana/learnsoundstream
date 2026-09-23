@@ -33,9 +33,9 @@ func (service *Service) Stream(request *http.Request, responseWriter http.Respon
 	if service.database != nil {
 		go func(videoID string) {
 			query := `
-				INSERT INTO playback_history (user_id, video_id, play_count, last_played_at) 
+				INSERT INTO playback_history (user_id, id, play_count, last_played_at) 
 				VALUES ($1, $2, 1, CURRENT_TIMESTAMP)
-				ON CONFLICT (user_id, video_id) 
+				ON CONFLICT (user_id, id) 
 				DO UPDATE SET 
 					play_count = playback_history.play_count + 1,
 					last_played_at = CURRENT_TIMESTAMP;
@@ -44,9 +44,9 @@ func (service *Service) Stream(request *http.Request, responseWriter http.Respon
 			userID := "1"
 			_, err := service.database.Exec(query, userID, videoID)
 			if err != nil {
-				slog.Error("Failed to upsert playback history", "error", err, "video_id", videoID)
+				slog.Error("Failed to upsert playback history", "error", err, "id", videoID)
 			} else {
-				slog.Debug("Playback history updated successfully", "video_id", videoID)
+				slog.Debug("Playback history updated successfully", "id", videoID)
 			}
 		}(videoID)
 	}
@@ -92,13 +92,13 @@ func (service *Service) Stream(request *http.Request, responseWriter http.Respon
 	bytesWritten, err := io.Copy(responseWriter, standardOutput)
 	if err != nil {
 		// Connection reset by peer / broken pipe is normal when client pauses, closes tab, or skips
-		slog.Info("Audio stream ended with write info", "video_id", videoID, "bytes_written", bytesWritten, "info", err.Error())
+		slog.Info("Audio stream ended with write info", "id", videoID, "bytes_written", bytesWritten, "info", err.Error())
 	} else {
-		slog.Info("Audio stream completed successfully", "video_id", videoID, "bytes_written", bytesWritten)
+		slog.Info("Audio stream completed successfully", "id", videoID, "bytes_written", bytesWritten)
 	}
 
 	// Wait for the command to finish to reclaim system/process resources
 	if err := command.Wait(); err != nil {
-		slog.Debug("yt-dlp process completed with info", "video_id", videoID, "info", err.Error())
+		slog.Debug("yt-dlp process completed with info", "id", videoID, "info", err.Error())
 	}
 }

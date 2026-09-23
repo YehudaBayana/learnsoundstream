@@ -1,5 +1,5 @@
 CREATE TABLE video (
-    video_id VARCHAR(20) PRIMARY KEY,
+    id VARCHAR(20) PRIMARY KEY,
     title TEXT NOT NULL,
     channel TEXT,
     duration_seconds INT NOT NULL DEFAULT 0,

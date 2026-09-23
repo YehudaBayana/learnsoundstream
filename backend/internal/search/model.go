@@ -2,7 +2,7 @@ package search
 
 // SearchResult represents a single YouTube search result returned to the client
 type SearchResult struct {
-	VideoID         string `json:"videoId"`
+	Id       		string `json:"id"`
 	Title           string `json:"title"`
 	Channel         string `json:"channel"`
 	Duration        string `json:"duration"`

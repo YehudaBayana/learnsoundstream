@@ -27,7 +27,7 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 	}
 
 	rows, err := repository.db.Query(`
-    SELECT user_id, video_id, play_count, last_played_at
+    SELECT user_id, id, play_count, last_played_at
     FROM playback_history
     WHERE user_id = $1
     ORDER BY last_played_at DESC
@@ -42,10 +42,10 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 	var videoIDs []string
 	for rows.Next() {
 		var item PlaybackHistory
-		if err := rows.Scan(&item.UserID, &item.VideoID, &item.PlayCount, &item.LastPlayedAt); err != nil {
+		if err := rows.Scan(&item.UserID, &item.ID, &item.PlayCount, &item.LastPlayedAt); err != nil {
 			return nil, err
 		}
-		videoIDs = append(videoIDs, item.VideoID)
+		videoIDs = append(videoIDs, item.ID)
 	}
 
 	if len(videoIDs) == 0 {
@@ -64,7 +64,7 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 	results := make([]GetVideosInfoResult, 0, len(metadata))
 	for _, video := range metadata {
 		results = append(results, GetVideosInfoResult{
-			VideoID:         video.ID,
+			ID:         video.ID,
 			Title:           video.Title,
 			Channel:         video.Channel,
 			Duration:        formatDuration(video.DurationSeconds),
