@@ -32,14 +32,13 @@ type PopularPlaylistsResponse struct {
 
 // PlaylistTrack represents a single track inside a playlist
 type PlaylistTrack struct {
-	ID              string      `json:"id"`
-	Title           string      `json:"title"`
-	Channel         string      `json:"channel"`
-	URL             string      `json:"url"`
-	Thumbnail       string      `json:"thumbnail"`
-	DurationSeconds int         `json:"durationSeconds"`
-	Duration        string      `json:"duration"`
-	Thumbnails      []Thumbnail `json:"thumbnails"`
+	ID         string      `json:"id"`
+	Title      string      `json:"title"`
+	Channel    string      `json:"channel"`
+	URL        string      `json:"url"`
+	Thumbnail  string      `json:"thumbnail"`
+	Duration   int         `json:"duration"`
+	Thumbnails []Thumbnail `json:"thumbnails"`
 }
 
 // PlaylistTracksResponse is the JSON envelope for the playlist-tracks endpoint

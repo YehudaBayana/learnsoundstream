@@ -1,7 +1,6 @@
 package ytdlp
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
@@ -21,41 +20,6 @@ func ResolvePath() string {
 	}
 	// Fall back to bare name — exec will search PATH at runtime
 	return "yt-dlp"
-}
-
-// FormatDuration converts a total number of seconds to a human-readable "m:ss" or "h:mm:ss" string.
-func FormatDuration(totalSeconds int) string {
-	if totalSeconds <= 0 {
-		return "0:00"
-	}
-
-	hours := totalSeconds / 3600
-	minutes := (totalSeconds % 3600) / 60
-	seconds := totalSeconds % 60
-
-	if hours > 0 {
-		return fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
-	}
-	return fmt.Sprintf("%d:%02d", minutes, seconds)
-}
-
-// ParseDuration converts a "mm:ss" or "hh:mm:ss" string to total seconds.
-func ParseDuration(d string) int {
-	parts := splitString(d, ":")
-	if len(parts) == 0 {
-		return 0
-	}
-	var total int
-	for i, part := range parts {
-		val := atoi(part)
-		multiplier := 1
-		// Rightmost part is seconds, next is minutes, next is hours...
-		for j := 0; j < len(parts)-1-i; j++ {
-			multiplier *= 60
-		}
-		total += val * multiplier
-	}
-	return total
 }
 
 // splitString splits s by sep (avoids importing strings in this file).

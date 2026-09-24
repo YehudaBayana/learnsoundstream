@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"backend/internal/videos"
 )
@@ -64,23 +63,13 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 	results := make([]GetVideosInfoResult, 0, len(metadata))
 	for _, video := range metadata {
 		results = append(results, GetVideosInfoResult{
-			ID:         video.ID,
-			Title:           video.Title,
-			Channel:         video.Channel,
-			Duration:        formatDuration(video.DurationSeconds),
-			DurationSeconds: video.DurationSeconds,
-			Thumbnail:       video.Thumbnail,
+			ID:        video.ID,
+			Title:     video.Title,
+			Channel:   video.Channel,
+			Duration:  video.Duration,
+			Thumbnail: video.Thumbnail,
 		})
 	}
 
 	return results, nil
 }
-
-func formatDuration(seconds int) string {
-	return fmt.Sprintf("%d:%02d", seconds/60, seconds%60)
-}
-
-// ```[Fubu Toy review](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-
-// This video provides an example format of how individual YouTube media metadata outputs are retrieved and structured.
-// http://googleusercontent.com/youtube_content/1

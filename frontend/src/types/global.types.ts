@@ -37,8 +37,7 @@ export interface Track {
   channel: string;
   url: string;
   thumbnail: string;
-  duration: string;
-  durationSeconds: number;
+  duration: number;
   thumbnails: Thumbnail[];
 }
 

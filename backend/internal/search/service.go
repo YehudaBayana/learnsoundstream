@@ -85,20 +85,15 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 			channelName = entry.Uploader
 		}
 
-		// Convert duration from seconds to "m:ss" format
-		durationSeconds := int(entry.Duration)
-		durationText := ytdlp.FormatDuration(durationSeconds)
-
 		// Build a high-quality thumbnail URL from the video ID
 		thumbnail := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", entry.ID)
 
 		results = append(results, SearchResult{
-			Id:         entry.ID,
-			Title:           entry.Title,
-			Channel:         channelName,
-			Duration:        durationText,
-			DurationSeconds: durationSeconds,
-			Thumbnail:       thumbnail,
+			Id:        entry.ID,
+			Title:     entry.Title,
+			Channel:   channelName,
+			Duration:  entry.Duration,
+			Thumbnail: thumbnail,
 		})
 	}
 
@@ -120,10 +115,10 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 		metadata := make([]videos.Video, 0, len(results))
 		for _, result := range results {
 			metadata = append(metadata, videos.Video{
-				ID:              result.Id,
-				Title:           result.Title,
-				Channel:         result.Channel,
-				DurationSeconds: result.DurationSeconds,
+				ID:       result.Id,
+				Title:    result.Title,
+				Channel:  result.Channel,
+				Duration: result.Duration,
 			})
 		}
 		if err := service.videoService.Save(requestContext, metadata); err != nil {

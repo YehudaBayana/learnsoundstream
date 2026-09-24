@@ -8,53 +8,36 @@ import Slider from "@/components/ui/Slider";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
-
-// Helper to convert "M:SS", "MM:SS" or "H:MM:SS" into seconds
-const parseDurationString = (durStr?: string): number => {
-  if (!durStr) return 0;
-  const parts = durStr.split(":");
-  if (parts.length === 2) {
-    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-  }
-  if (parts.length === 3) {
-    return (
-      parseInt(parts[0], 10) * 3600 +
-      parseInt(parts[1], 10) * 60 +
-      parseInt(parts[2], 10)
-    );
-  }
-  return parseFloat(durStr) || 0;
-};
+import { convertSecondsToTime } from "@/shared/utils";
 
 export default function AudioPlayer() {
   const currentTrack = usePlaybackStore((s) => s.currentTrack);
   const isPlaying = usePlaybackStore((s) => s.isPlaying);
   const setPlaying = usePlaybackStore((s) => s.setPlaying);
-  const nextTrack = usePlaybackStore((s) => s.nextTrack);
-  const prevTrack = usePlaybackStore((s) => s.prevTrack);
-  const [duration, setDuration] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(currentTrack?.duration || 0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [volume, setVolume] = useState<number>(0.8);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Seek position tracking
   const [seekTime, setSeekTime] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
 
-  const trackDuration = currentTrack
-    ? parseDurationString(currentTrack.duration)
-    : 0;
-
   // Reset seek and current time when track changes
   useEffect(() => {
     setSeekTime(0);
     setCurrentTime(0);
   }, [currentTrack?.id]);
+
+  // Update duration state when track changes
+  useEffect(() => {
+    if (currentTrack?.duration) {
+      setDuration(currentTrack.duration);
+    }
+  }, [currentTrack?.duration]);
 
   // Sync state with HTML5 audio player
   useEffect(() => {
@@ -73,27 +56,17 @@ export default function AudioPlayer() {
     }
   }, [isPlaying, currentTrack?.id, seekTime, setPlaying]);
 
-  // Handle mute synchronization
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.muted = isMuted;
     }
   }, [isMuted]);
 
-  // Handle volume synchronization
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
   }, [volume]);
-
-  // Formatter for time display (e.g. 03:45)
-  const formatTime = (secs: number) => {
-    if (isNaN(secs)) return "0:00";
-    const minutes = Math.floor(secs / 60);
-    const seconds = Math.floor(secs % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
 
   const handlePlayPause = () => {
     if (!currentTrack) return;
@@ -127,28 +100,21 @@ export default function AudioPlayer() {
     setPlaying(false);
   };
 
-  const performSeek = (newTime: number) => {
-    setSeekTime(newTime);
-    setCurrentTime(newTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-    }
-  };
-
   const handleDragStart = () => {
     setIsDragging(true);
   };
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    performSeek(currentTime);
+    // When user finishes dragging, update seekTime so the audio re-requests the stream from the new point
+    setSeekTime(currentTime);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     setCurrentTime(newTime);
     if (!isDragging) {
-      performSeek(newTime);
+      setSeekTime(newTime);
     }
   };
 
@@ -176,13 +142,13 @@ export default function AudioPlayer() {
       {currentTrack?.id && (
         <audio
           ref={audioRef}
+          // Pass seekTime to your Go backend via query param so it streams from the correct second
           src={`${apiUrl}/api/stream?v=${currentTrack.id}${seekTime > 0 ? `&ss=${seekTime}` : ""}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
           onCanPlay={handleAudioCanPlay}
           onError={handleAudioError}
-          onEnded={nextTrack}
         />
       )}
 
@@ -193,7 +159,6 @@ export default function AudioPlayer() {
           gap={4}
           className="w-[30%] min-w-[200px] overflow-hidden"
         >
-          {/* Visualizer bars */}
           <Flex
             align="end"
             gap={1}
@@ -258,19 +223,16 @@ export default function AudioPlayer() {
           className="w-[40%] min-w-[280px]"
         >
           <Flex align="center" gap={4}>
-            {/* Previous Button */}
             <IconButton
               variant="ghost"
               size="sm"
               aria-label="Previous track"
               disabled={!currentTrack}
-              onClick={prevTrack}
               className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
             >
               <span>⏮</span>
             </IconButton>
 
-            {/* Play / Pause Button */}
             <IconButton
               variant="primary"
               size="md"
@@ -284,13 +246,11 @@ export default function AudioPlayer() {
               <span>{isPlaying ? "⏸" : "▶"}</span>
             </IconButton>
 
-            {/* Next Button */}
             <IconButton
               variant="ghost"
               size="sm"
               aria-label="Next track"
               disabled={!currentTrack}
-              onClick={nextTrack}
               className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
             >
               <span>⏭</span>
@@ -301,9 +261,9 @@ export default function AudioPlayer() {
             <Text
               variant="caption"
               color="muted"
-              className="w-[35px] text-center font-mono text-[11px] select-none"
+              className="w-[45px] text-center font-mono text-[11px] select-none"
             >
-              {formatTime(currentTime)}
+              {convertSecondsToTime(currentTime)}
             </Text>
             <Box className="flex-1">
               <Slider
@@ -311,7 +271,7 @@ export default function AudioPlayer() {
                 size="sm"
                 color="primary"
                 min={0}
-                max={trackDuration || duration || 100}
+                max={currentTrack?.duration || duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
                 onMouseDown={handleDragStart}
@@ -327,11 +287,9 @@ export default function AudioPlayer() {
               color="muted"
               className="w-[35px] text-center font-mono text-[11px] select-none"
             >
-              {trackDuration > 0
-                ? formatTime(trackDuration)
-                : duration > 0
-                  ? formatTime(duration)
-                  : "0:00"}
+              {currentTrack?.duration
+                ? convertSecondsToTime(currentTrack?.duration)
+                : "0:00"}
             </Text>
           </Flex>
 

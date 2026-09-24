@@ -146,30 +146,12 @@ func (repository *Repository) FetchTracks(ctx context.Context, playlistID string
 			continue
 		}
 
-		// Handle duration which could be number or string
-		var durationSeconds int
-		var durationText string
-
-		switch value := flat.Duration.(type) {
-		case float64:
-			durationSeconds = int(value)
-			durationText = ytdlp.FormatDuration(durationSeconds)
-		case string:
-			durationText = value
-			durationSeconds = ytdlp.ParseDuration(value)
-		default:
-			durationText = "0:00"
-			durationSeconds = 0
-		}
-
 		track := PlaylistTrack{
 			ID:              flat.ID,
 			Title:           flat.Title,
 			Channel:         flat.Channel,
 			URL:             flat.URL,
 			Thumbnail:       flat.Thumbnail,
-			DurationSeconds: durationSeconds,
-			Duration:        durationText,
 			Thumbnails:      flat.Thumbnails,
 		}
 		tracks = append(tracks, track)
@@ -182,7 +164,7 @@ func (repository *Repository) FetchTracks(ctx context.Context, playlistID string
 				ID:              track.ID,
 				Title:           track.Title,
 				Channel:         track.Channel,
-				DurationSeconds: track.DurationSeconds,
+				Duration: track.Duration,
 			})
 		}
 		if err := repository.videoService.Save(ctx, metadata); err != nil {

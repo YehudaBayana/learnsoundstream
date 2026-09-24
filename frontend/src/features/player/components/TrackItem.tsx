@@ -10,6 +10,7 @@ import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
 import { useLibraryStore } from "@/features/playlists/store/useLibraryStore";
 import { Track } from "@/types/global.types";
 import Image from "@/components/ui/Image";
+import { convertSecondsToTime } from "@/shared/utils";
 
 interface TrackItemProps {
   track: Track;
@@ -150,7 +151,7 @@ export default function TrackItem({
           color="muted"
           className="font-mono text-xs tracking-wider select-none w-10 text-right"
         >
-          {track.duration}
+          {convertSecondsToTime(track.duration)}
         </Text>
 
         {/* Like Heart Button */}

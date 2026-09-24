@@ -9,7 +9,7 @@ type Video struct {
 	ID              string `json:"id"`
 	Title           string `json:"title"`
 	Channel         string `json:"channel"`
-	DurationSeconds int    `json:"durationSeconds"`
+	Duration int    `json:"duration"`
 	Thumbnail       string `json:"thumbnail"`
 	URL             string `json:"url"`
 }

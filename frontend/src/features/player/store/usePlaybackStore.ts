@@ -1,11 +1,5 @@
 import { create } from "zustand";
 import type { Track } from "@/types/global.types";
-import {
-  reportPlayTrack,
-  reportNextTrack,
-  reportPrevTrack,
-  reportPreferences,
-} from "@/features/player/api/playback";
 
 export type RepeatMode = "none" | "all" | "one";
 
@@ -25,10 +19,7 @@ interface PlaybackState {
 
 interface PlaybackActions {
   playTrack: (track: Track, customQueue?: Track[]) => void;
-  playAll: (tracks: Track[]) => void;
   setPlaying: (playing: boolean) => void;
-  nextTrack: () => void;
-  prevTrack: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -50,41 +41,8 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
         isPlaying: true,
         currentTrackIndex: 0,
       });
-
-      // Fire-and-forget: report to backend (routes to be implemented)
-      reportPlayTrack(track.id).catch(() => {});
-    },
-
-    playAll: (tracks) => {
-      if (tracks.length === 0) return;
-      get().playTrack(tracks[0], tracks);
     },
 
     setPlaying: (playing) => set({ isPlaying: playing }),
-
-    nextTrack: () => {
-      const { currentTrack, playTrack } = get();
-
-      if (currentTrack) {
-        playTrack(currentTrack);
-        return;
-      }
-
-      set({ isPlaying: false });
-
-      reportNextTrack().catch(() => {});
-    },
-
-    prevTrack: () => {
-      const { currentTrack, playTrack } = get();
-
-      if (currentTrack) {
-        playTrack(currentTrack);
-      } else {
-        set({ isPlaying: false });
-      }
-
-      reportPrevTrack().catch(() => {});
-    },
   }),
 );
