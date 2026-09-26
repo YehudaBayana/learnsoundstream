@@ -146,6 +146,18 @@ func (repository *Repository) FetchTracks(ctx context.Context, playlistID string
 			continue
 		}
 
+		var durationInt int
+		if flat.Duration != nil {
+			switch rawDuration := flat.Duration.(type) {
+			case float64:
+				durationInt = int(rawDuration)
+			case string:
+				if parsedInt, err := strconv.Atoi(rawDuration); err == nil {
+					durationInt = parsedInt
+				}
+			}
+		}
+
 		track := PlaylistTrack{
 			ID:              flat.ID,
 			Title:           flat.Title,
@@ -153,6 +165,7 @@ func (repository *Repository) FetchTracks(ctx context.Context, playlistID string
 			URL:             flat.URL,
 			Thumbnail:       flat.Thumbnail,
 			Thumbnails:      flat.Thumbnails,
+			Duration:        durationInt,
 		}
 		tracks = append(tracks, track)
 	}

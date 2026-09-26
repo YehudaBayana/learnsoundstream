@@ -23,5 +23,5 @@ type ytDlpEntry struct {
 	Title    string `json:"title"`
 	Channel  string `json:"channel"`
 	Uploader string `json:"uploader"`
-	Duration int    `json:"duration"`
+	Duration interface{} `json:"duration"`
 }

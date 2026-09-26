@@ -11,6 +11,7 @@ import (
 
 	"backend/internal/videos"
 	"backend/internal/ytdlp"
+	"strconv"
 )
 
 // Service executes YouTube searches via yt-dlp.
@@ -88,11 +89,23 @@ func (service *Service) Search(requestContext context.Context, query string) ([]
 		// Build a high-quality thumbnail URL from the video ID
 		thumbnail := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", entry.ID)
 
+		var durationInt int
+		if entry.Duration != nil {
+			switch rawDuration := entry.Duration.(type) {
+			case float64:
+				durationInt = int(rawDuration)
+			case string:
+				if parsedInt, err := strconv.Atoi(rawDuration); err == nil {
+					durationInt = parsedInt
+				}
+			}
+		}
+
 		results = append(results, SearchResult{
 			Id:        entry.ID,
 			Title:     entry.Title,
 			Channel:   channelName,
-			Duration:  entry.Duration,
+			Duration:  durationInt,
 			Thumbnail: thumbnail,
 		})
 	}
