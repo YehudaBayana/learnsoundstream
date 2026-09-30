@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
-	"strconv"
 	"time"
 )
 
@@ -34,22 +33,7 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 		return
 	}
 
-	startSecondsString := request.URL.Query().Get("ss")
-	var startOffset float64
-	if startSecondsString != "" {
-		parsedOffset, err := strconv.ParseFloat(startSecondsString, 64)
-		if err != nil || parsedOffset < 0 {
-			http.Error(responseWriter, "Invalid 'ss' parameter", http.StatusBadRequest)
-			return
-		}
-		startOffset = parsedOffset
-	}
-
-	if startOffset > 0 {
-		slog.Info("Starting audio stream", "id", videoID, "start_offset", startOffset)
-	} else {
-		slog.Info("Starting audio stream", "id", videoID)
-	}
+	slog.Info("Starting audio stream", "id", videoID)
 
 	// In Go 1.20+, we can dynamically bypass the server's WriteTimeout for this long-lived streaming connection.
 	responseController := http.NewResponseController(responseWriter)
@@ -57,5 +41,5 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 		slog.Warn("Failed to clear write deadline, streaming might time out", "error", err)
 	}
 
-	handler.service.Stream(request, responseWriter, videoID, startOffset)
+	handler.service.Stream(request, responseWriter, videoID)
 }

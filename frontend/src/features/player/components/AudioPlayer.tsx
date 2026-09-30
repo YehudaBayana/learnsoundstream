@@ -20,15 +20,13 @@ export default function AudioPlayer() {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [seekTime, setSeekTime] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
 
-  // Reset seek and current time when track changes
+  // Reset current time when track changes
   useEffect(() => {
-    setSeekTime(0);
     setCurrentTime(0);
   }, [currentTrack?.id]);
 
@@ -54,7 +52,7 @@ export default function AudioPlayer() {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentTrack?.id, seekTime, setPlaying]);
+  }, [isPlaying, currentTrack?.id, setPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -75,7 +73,7 @@ export default function AudioPlayer() {
 
   const handleTimeUpdate = () => {
     if (audioRef.current && !isDragging) {
-      setCurrentTime(seekTime + audioRef.current.currentTime);
+      setCurrentTime(audioRef.current.currentTime);
     }
   };
 
@@ -106,15 +104,16 @@ export default function AudioPlayer() {
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    // When user finishes dragging, update seekTime so the audio re-requests the stream from the new point
-    setSeekTime(currentTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = currentTime;
+    }
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     setCurrentTime(newTime);
-    if (!isDragging) {
-      setSeekTime(newTime);
+    if (!isDragging && audioRef.current) {
+      audioRef.current.currentTime = newTime;
     }
   };
 
@@ -142,8 +141,7 @@ export default function AudioPlayer() {
       {currentTrack?.id && (
         <audio
           ref={audioRef}
-          // Pass seekTime to your Go backend via query param so it streams from the correct second
-          src={`${apiUrl}/api/stream?v=${currentTrack.id}${seekTime > 0 ? `&ss=${seekTime}` : ""}`}
+          src={`${apiUrl}/api/stream?v=${currentTrack.id}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}

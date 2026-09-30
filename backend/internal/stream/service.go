@@ -2,11 +2,11 @@ package stream
 
 import (
 	"database/sql"
-	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"os/exec"
+	"strings"
 
 	"backend/internal/ytdlp"
 )
@@ -25,9 +25,9 @@ func NewService(database *sql.DB) *Service {
 	}
 }
 
-// Stream pipes yt-dlp audio output directly to the HTTP response writer.
-// It also records playback history asynchronously so it never blocks the stream startup.
-func (service *Service) Stream(request *http.Request, responseWriter http.ResponseWriter, videoID string, startOffset float64) {
+// Stream proxies the audio stream of a YouTube video using a direct URL from yt-dlp.
+// It supports HTTP Range requests for seeking and records playback history asynchronously.
+func (service *Service) Stream(request *http.Request, responseWriter http.ResponseWriter, videoID string) {
 	// Async DB Insert/Update (Upsert) for playback history
 	// We run this in a goroutine so it doesn't block the stream startup
 	if service.database != nil {
@@ -53,52 +53,72 @@ func (service *Service) Stream(request *http.Request, responseWriter http.Respon
 
 	videoURL := "https://www.youtube.com/watch?v=" + videoID
 
+	// Extract the direct audio URL using yt-dlp
 	commandArguments := []string{
 		"-f", "bestaudio",
-		"-o", "-",
+		"-g", // Get direct URL
+		videoURL,
 	}
-	if startOffset > 0 {
-		commandArguments = append(commandArguments, "--download-sections", fmt.Sprintf("*%f-inf", startOffset))
-	}
-	commandArguments = append(commandArguments, videoURL)
 
-	// Create command to run yt-dlp and extract audio to stdout (-)
-	// We use the request context so Go automatically signals and terminates the command on client disconnect!
 	command := exec.CommandContext(request.Context(), service.ytDlpPath, commandArguments...)
-
-	// Get stdout pipe to stream the audio data
-	standardOutput, err := command.StdoutPipe()
+	
+	output, err := command.Output()
 	if err != nil {
-		slog.Error("Failed to create stdout pipe", "error", err)
+		slog.Error("Failed to get audio URL with yt-dlp", "error", err, "id", videoID)
+		http.Error(responseWriter, "Failed to resolve stream URL", http.StatusInternalServerError)
+		return
+	}
+
+	directURL := strings.TrimSpace(string(output))
+	if directURL == "" {
+		slog.Error("yt-dlp returned empty URL", "id", videoID)
+		http.Error(responseWriter, "Stream not found", http.StatusNotFound)
+		return
+	}
+
+	// Create proxy request to the direct URL
+	proxyReq, err := http.NewRequestWithContext(request.Context(), "GET", directURL, nil)
+	if err != nil {
+		slog.Error("Failed to create proxy request", "error", err)
 		http.Error(responseWriter, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	// Start the command in the background
-	if err := command.Start(); err != nil {
-		slog.Error("Failed to start yt-dlp command", "error", err)
-		http.Error(responseWriter, "Failed to start stream", http.StatusInternalServerError)
-		return
+	// Forward the Range header to allow seeking
+	if rangeHeader := request.Header.Get("Range"); rangeHeader != "" {
+		proxyReq.Header.Set("Range", rangeHeader)
 	}
 
-	// Set proper streaming and CORS headers
-	responseWriter.Header().Set("Content-Type", "audio/mpeg")
-	responseWriter.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	responseWriter.Header().Set("Connection", "keep-alive")
-	responseWriter.Header().Set("X-Content-Type-Options", "nosniff")
-	responseWriter.WriteHeader(http.StatusOK)
-
-	// Pipe the stdout directly to the HTTP response writer
-	bytesWritten, err := io.Copy(responseWriter, standardOutput)
+	// Execute proxy request
+	client := &http.Client{}
+	resp, err := client.Do(proxyReq)
 	if err != nil {
-		// Connection reset by peer / broken pipe is normal when client pauses, closes tab, or skips
+		slog.Error("Failed to fetch audio stream", "error", err)
+		http.Error(responseWriter, "Failed to stream audio", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Forward relevant headers from upstream response
+	headersToForward := []string{"Content-Type", "Content-Length", "Content-Range", "Accept-Ranges"}
+	for _, headerName := range headersToForward {
+		if headerValue := resp.Header.Get(headerName); headerValue != "" {
+			responseWriter.Header().Set(headerName, headerValue)
+		}
+	}
+	
+	// Add proper streaming and CORS headers
+	responseWriter.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	responseWriter.Header().Set("X-Content-Type-Options", "nosniff")
+
+	// Write status code (e.g., 200 OK or 206 Partial Content)
+	responseWriter.WriteHeader(resp.StatusCode)
+
+	// Stream body
+	bytesWritten, err := io.Copy(responseWriter, resp.Body)
+	if err != nil {
 		slog.Info("Audio stream ended with write info", "id", videoID, "bytes_written", bytesWritten, "info", err.Error())
 	} else {
 		slog.Info("Audio stream completed successfully", "id", videoID, "bytes_written", bytesWritten)
-	}
-
-	// Wait for the command to finish to reclaim system/process resources
-	if err := command.Wait(); err != nil {
-		slog.Debug("yt-dlp process completed with info", "id", videoID, "info", err.Error())
 	}
 }
