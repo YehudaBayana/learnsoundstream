@@ -1,0 +1,3 @@
+ALTER TABLE video 
+DROP COLUMN IF EXISTS direct_url,
+DROP COLUMN IF EXISTS url_expires_at;
