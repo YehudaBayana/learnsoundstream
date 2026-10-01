@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
-	"time"
 )
 
 // Handler handles HTTP requests for the audio streaming feature.
@@ -17,29 +16,25 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
-// Handle handles GET /api/stream?v=<videoID>[&ss=<startSeconds>]
-// It pipes the audio stream of a YouTube video using yt-dlp.
-func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
+// HandleManifest handles GET /api/stream/manifest?v=<videoID>
+func (handler *Handler) HandleManifest(responseWriter http.ResponseWriter, request *http.Request) {
 	videoID := request.URL.Query().Get("v")
 	if videoID == "" {
 		http.Error(responseWriter, "Missing 'v' parameter", http.StatusBadRequest)
 		return
 	}
 
-	// Safety check: prevent command injection by strictly validating the YouTube video ID (alphanumeric, underscore, hyphen, 11 chars)
 	matched, err := regexp.MatchString("^[a-zA-Z0-9_-]{11}$", videoID)
 	if err != nil || !matched {
 		http.Error(responseWriter, "Invalid video ID format", http.StatusBadRequest)
 		return
 	}
 
-	slog.Info("Starting audio stream", "id", videoID)
+	slog.Info("Fetching manifest", "id", videoID)
+	handler.service.StreamManifest(request, responseWriter, videoID)
+}
 
-	// In Go 1.20+, we can dynamically bypass the server's WriteTimeout for this long-lived streaming connection.
-	responseController := http.NewResponseController(responseWriter)
-	if err := responseController.SetWriteDeadline(time.Time{}); err != nil {
-		slog.Warn("Failed to clear write deadline, streaming might time out", "error", err)
-	}
-
-	handler.service.Stream(request, responseWriter, videoID)
+// HandleSegment handles GET /api/stream/segment?v=<videoID>&file=<fileName>
+func (handler *Handler) HandleSegment(responseWriter http.ResponseWriter, request *http.Request) {
+	handler.service.StreamSegment(request, responseWriter, "")
 }

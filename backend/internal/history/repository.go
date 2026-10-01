@@ -46,6 +46,9 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 		}
 		videoIDs = append(videoIDs, item.ID)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	if len(videoIDs) == 0 {
 		return []GetVideosInfoResult{}, nil

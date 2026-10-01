@@ -7,6 +7,7 @@ import IconButton from "@/components/ui/IconButton";
 import Slider from "@/components/ui/Slider";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
+import { useMSEPlayer } from "../hooks/useMSEPlayer";
 import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
 import { convertSecondsToTime } from "@/shared/utils";
 
@@ -24,6 +25,8 @@ export default function AudioPlayer() {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLInputElement>(null);
+
+  useMSEPlayer(audioRef, currentTrack?.id);
 
   // Reset current time when track changes
   useEffect(() => {
@@ -141,7 +144,6 @@ export default function AudioPlayer() {
       {currentTrack?.id && (
         <audio
           ref={audioRef}
-          src={`${apiUrl}/api/stream?v=${currentTrack.id}`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
