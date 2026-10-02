@@ -20,7 +20,7 @@ func NewRepository(db *sql.DB, videoService *videos.Service) *Repository {
 	}
 }
 
-func (repository *Repository) GetPlaybackHistory(userID string, requestContext context.Context) ([]GetVideosInfoResult, error) {
+func (repository *Repository) GetPlaybackHistory(userID string, requestContext context.Context, limit int, offset int) ([]GetVideosInfoResult, error) {
 	if repository.db == nil {
 		return nil, errors.New("database connection is nil")
 	}
@@ -30,8 +30,8 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
     FROM playback_history
     WHERE user_id = $1
     ORDER BY last_played_at DESC
-	LIMIT 5 OFFSET 0
-    `, userID)
+	LIMIT $2 OFFSET $3
+    `, userID, limit, offset)
 
 	if err != nil {
 		return nil, err

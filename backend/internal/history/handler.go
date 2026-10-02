@@ -4,25 +4,45 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
 	repository *Repository
 }
 
-func NewHandler(repository *Repository) *Handler{
+func NewHandler(repository *Repository) *Handler {
 	return &Handler{repository: repository}
 }
 
-func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request){
-	userID := request.URL.Query().Get("user_id");
-	if userID == ""{
+func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
+	userID := request.URL.Query().Get("user_id")
+	limit := 10
+	offset := 0
+	if value := request.URL.Query().Get("limit"); value != "" {
+		parsedLimit, err := strconv.Atoi(value)
+		if err != nil || parsedLimit < 1 {
+			http.Error(responseWriter, "Invalid limit", http.StatusBadRequest)
+			return
+		}
+		limit = parsedLimit
+	}
+	if value := request.URL.Query().Get("offset"); value != "" {
+		parsedOffset, err := strconv.Atoi(value)
+		if err != nil || parsedOffset < 0 {
+			http.Error(responseWriter, "Invalid offset", http.StatusBadRequest)
+			return
+		}
+		offset = parsedOffset
+	}
+
+	if userID == "" {
 		userID = "1"
 	}
 
-	items, err := handler.repository.GetPlaybackHistory(userID,request.Context())
-	if err != nil{
-		slog.Error("Failed to fetch history","error", err)
+	items, err := handler.repository.GetPlaybackHistory(userID, request.Context(), limit, offset)
+	if err != nil {
+		slog.Error("Failed to fetch history", "error", err)
 		http.Error(responseWriter, "Failed to fetch history", http.StatusInternalServerError)
 		return
 	}
@@ -31,6 +51,6 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 	responseWriter.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(responseWriter).Encode(items); err != nil {
-		slog.Error("Failed to encode playback history","error",err)
+		slog.Error("Failed to encode playback history", "error", err)
 	}
 }
