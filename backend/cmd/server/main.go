@@ -15,6 +15,7 @@ import (
 	"backend/internal/database"
 	"backend/internal/health"
 	"backend/internal/history"
+	"backend/internal/liked"
 	"backend/internal/middleware"
 	"backend/internal/playlists"
 	"backend/internal/search"
@@ -61,6 +62,9 @@ func main() {
 	authRepo := auth.NewRepository(sessions, db, environment == "production")
 	authH := auth.NewHandler(authRepo)
 
+	likedRepo := liked.NewRepository(db, videoService)
+	likedH := liked.NewHandler(likedRepo)
+
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
@@ -84,6 +88,9 @@ func main() {
 
 	mux.Handle("POST /api/auth/logout", protected(authH.HandleLogout))
 	mux.Handle("GET  /api/auth/me", protected(authH.HandleMe))
+
+	mux.Handle("GET /api/liked", protected(likedH.Handle))
+	mux.Handle("POST /api/liked", protected(likedH.HandlePost))
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)
