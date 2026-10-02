@@ -65,7 +65,6 @@ func main() {
 	mux.HandleFunc("GET /api/popular-playlists", playlistH.HandlePopular)
 	mux.HandleFunc("GET /api/playlist-tracks", playlistH.HandleTracks)
 	mux.HandleFunc("GET /api/stream/manifest", streamH.HandleManifest)
-	mux.HandleFunc("GET /api/stream/segment", streamH.HandleSegment)
 	mux.HandleFunc("GET /api/search", searchH.Handle)
 	mux.HandleFunc("GET /api/playback-history", historyH.Handle)
 

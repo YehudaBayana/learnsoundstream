@@ -33,8 +33,3 @@ func (handler *Handler) HandleManifest(responseWriter http.ResponseWriter, reque
 	slog.Info("Fetching manifest", "id", videoID)
 	handler.service.StreamManifest(request, responseWriter, videoID)
 }
-
-// HandleSegment handles GET /api/stream/segment?v=<videoID>&file=<fileName>
-func (handler *Handler) HandleSegment(responseWriter http.ResponseWriter, request *http.Request) {
-	handler.service.StreamSegment(request, responseWriter, "")
-}
