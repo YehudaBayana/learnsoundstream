@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"backend/internal/auth"
 	"backend/internal/config"
 	"backend/internal/database"
 	"backend/internal/health"
@@ -30,7 +31,7 @@ func main() {
 	cfg := config.Load()
 
 	// Initialize database
-	db, err := database.InitDB(cfg.DatabaseURL)
+	db, err := database.InitDB(context.Background(), cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("Failed to initialize database", "error", err)
 		os.Exit(1)
@@ -55,6 +56,10 @@ func main() {
 	historyRepo := history.NewRepository(db, videoService)
 	historyH := history.NewHandler(historyRepo)
 
+	sessions := auth.NewSessionStore(db)
+	authRepo := auth.NewRepository(sessions, db, false)
+	authH := auth.NewHandler(authRepo)
+
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
@@ -67,6 +72,16 @@ func main() {
 	mux.HandleFunc("GET /api/stream/manifest", streamH.HandleManifest)
 	mux.HandleFunc("GET /api/search", searchH.Handle)
 	mux.HandleFunc("GET /api/playback-history", historyH.Handle)
+
+	mux.HandleFunc("POST /api/auth/register", authH.HandleRegister)
+	mux.HandleFunc("POST /api/auth/login", authH.HandleLogin)
+
+	// Auth + CSRF protected
+	protected := func(h http.HandlerFunc) http.Handler {
+		return sessions.Auth(sessions.CSRF(h))
+	}
+	mux.Handle("POST /api/auth/logout", protected(authH.HandleLogout))
+	mux.Handle("GET  /api/auth/me", protected(authH.HandleMe))
 
 	// Wrap mux with CORS middleware from internal/middleware
 	handler := middleware.CORSMiddleware(mux)

@@ -1,11 +1,12 @@
 package health
 
 import (
-	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var (
@@ -30,11 +31,11 @@ type Services struct {
 
 // Handler handles health check requests.
 type Handler struct {
-	database *sql.DB
+	database *pgxpool.Pool
 }
 
 // NewHandler creates a new health Handler with an optional database connection.
-func NewHandler(database *sql.DB) *Handler {
+func NewHandler(database *pgxpool.Pool) *Handler {
 	return &Handler{database: database}
 }
 
@@ -42,7 +43,7 @@ func NewHandler(database *sql.DB) *Handler {
 func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
 	databaseStatus := "disconnected"
 	if handler.database != nil {
-		if err := handler.database.Ping(); err == nil {
+		if err := handler.database.Ping(request.Context()); err == nil {
 			databaseStatus = "connected"
 		}
 	}

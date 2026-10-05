@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"database/sql"
+	"context"
 	"log/slog"
 	"net/http"
 	"os/exec"
@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"backend/internal/ytdlp"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Service struct {
 	ytDlpPath string
-	database  *sql.DB
+	database  *pgxpool.Pool
 	urlCache  sync.Map
 }
 
@@ -23,7 +25,7 @@ type cachedURL struct {
 	expiresAt time.Time
 }
 
-func NewService(database *sql.DB) *Service {
+func NewService(database *pgxpool.Pool) *Service {
 	return &Service{
 		ytDlpPath: ytdlp.ResolvePath(),
 		database:  database,
@@ -42,7 +44,7 @@ func (service *Service) StreamManifest(request *http.Request, responseWriter htt
                     last_played_at = CURRENT_TIMESTAMP;
             `
 			userID := "1"
-			_, err := service.database.Exec(query, userID, videoID)
+			_, err := service.database.Exec(context.Background(), query, userID, videoID)
 			if err != nil {
 				slog.Error("Failed to upsert playback history", "error", err, "id", videoID)
 			}

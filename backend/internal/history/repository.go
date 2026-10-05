@@ -2,18 +2,19 @@ package history
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 
 	"backend/internal/videos"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Repository struct {
-	db           *sql.DB
+	db           *pgxpool.Pool
 	videoService *videos.Service
 }
 
-func NewRepository(db *sql.DB, videoService *videos.Service) *Repository {
+func NewRepository(db *pgxpool.Pool, videoService *videos.Service) *Repository {
 	return &Repository{
 		db:           db,
 		videoService: videoService,
@@ -25,7 +26,7 @@ func (repository *Repository) GetPlaybackHistory(userID string, requestContext c
 		return nil, errors.New("database connection is nil")
 	}
 
-	rows, err := repository.db.Query(`
+	rows, err := repository.db.Query(requestContext, `
     SELECT user_id, id, play_count, last_played_at
     FROM playback_history
     WHERE user_id = $1
