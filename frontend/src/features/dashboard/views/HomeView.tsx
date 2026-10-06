@@ -18,12 +18,12 @@ import { usePopularPlaylists } from "@/features/playlists/query/usePlaylists";
 
 export default function HomeView() {
   const router = useRouter();
-  const {
-    data: popularPlaylists,
-    isLoading: isLoadingPopularPlaylists,
-    error: playlistsError,
-    refetch,
-  } = usePopularPlaylists();
+  // const {
+  //   data: popularPlaylists,
+  //   isLoading: isLoadingPopularPlaylists,
+  //   error: playlistsError,
+  //   refetch,
+  // } = usePopularPlaylists();
 
   const handlePlaylistClick = (playlist: Playlist) => {
     router.push(`/playlists/${playlist.id}`);
@@ -118,7 +118,7 @@ export default function HomeView() {
           </Text>
         </Flex>
 
-        {isLoadingPopularPlaylists ? (
+        {/* {isLoadingPopularPlaylists ? (
           <Flex
             align="center"
             justify="center"
@@ -161,7 +161,7 @@ export default function HomeView() {
               <PlaylistCard key={pl.id} pl={pl} onClick={handlePlaylistClick} />
             ))}
           </Grid>
-        )}
+        )} */}
       </Flex>
 
       {/* Global Footer */}
