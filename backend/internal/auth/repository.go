@@ -15,7 +15,7 @@ import (
 type Repository struct {
 	sessions      *SessionStore
 	db            *pgxpool.Pool
-	secureCookies bool // false only for local http://localhost
+	secureCookies bool
 }
 
 func NewRepository(sessions *SessionStore, db *pgxpool.Pool, secureCookies bool) *Repository {

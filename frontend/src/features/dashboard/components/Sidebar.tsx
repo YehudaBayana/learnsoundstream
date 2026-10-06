@@ -10,10 +10,14 @@ import Modal from "@/components/ui/Modal";
 import { useLibraryStore } from "@/features/playlists/store/useLibraryStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Button from "@/components/ui/Button";
+import { useGetCurrentUser, useLogout } from "@/features/auth/query/useAuth";
 
 export default function Sidebar() {
   const playlists = useLibraryStore((s) => s.playlists);
   const pathname = usePathname();
+  const { mutate: logout } = useLogout();
+  const { data: currentUser } = useGetCurrentUser(); // Ensure user data is fetched to determine if logged in
 
   // Create playlist modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,8 +25,8 @@ export default function Sidebar() {
   const navItems = [
     { href: "/", label: "Home", icon: "🏠" },
     { href: "/search", label: "Search", icon: "🔍" },
-    { href: "/playlists", label: "Playlists", icon: "" },
-    { href: "/history", label: "History", icon: "" },
+    { href: "/auth/playlists", label: "Playlists", icon: "" },
+    { href: "/auth/history", label: "History", icon: "" },
   ];
 
   return (
@@ -137,6 +141,13 @@ export default function Sidebar() {
                 </Link>
               );
             })
+          )}
+          {currentUser?.user ? (
+            <Button onClick={() => logout()}>Logout</Button>
+          ) : (
+            <Link href="/auth" className="w-full">
+              Login
+            </Link>
           )}
         </Box>
       </Flex>

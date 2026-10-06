@@ -40,11 +40,14 @@ export async function apiClient<T>(
   if (!response.ok) {
     // You can parse custom error structures from your backend here if needed
     const errorData = await response.json().catch(() => null);
+    if (response.status === 401) {
+      return null as unknown as T; // Return null for unauthorized access, allowing the caller to handle it
+    }
     throw new Error(
       errorData?.message || `HTTP error! status: ${response.status}`,
     );
   }
 
   // 4. Return parsed response payload typed automatically
-  return response.json() as Promise<T>;
+  return response?.json() as Promise<T>;
 }

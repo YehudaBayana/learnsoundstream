@@ -23,6 +23,7 @@ import (
 )
 
 func main() {
+	environment := os.Getenv("ENV")
 	// Initialize modern structured logging (slog) using Text format for readability in development
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	slog.SetDefault(logger)
@@ -57,7 +58,7 @@ func main() {
 	historyH := history.NewHandler(historyRepo)
 
 	sessions := auth.NewSessionStore(db)
-	authRepo := auth.NewRepository(sessions, db, false)
+	authRepo := auth.NewRepository(sessions, db, environment == "production")
 	authH := auth.NewHandler(authRepo)
 
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)

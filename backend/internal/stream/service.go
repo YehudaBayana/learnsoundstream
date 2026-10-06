@@ -76,7 +76,7 @@ func (service *Service) StreamManifest(request *http.Request, responseWriter htt
 	}
 
 	// Set CORS headers so the browser allows direct streaming
-	responseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+	// responseWriter.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Redirect the browser directly to the Google/YouTube media stream URL.
 	// This allows the browser to handle HTTP Range requests and long streaming natively.

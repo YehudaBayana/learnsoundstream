@@ -13,3 +13,8 @@ export const searchKeys = {
 export const historyKeys = {
   getHistory: (userId: string) => ["get-history", userId] as const,
 };
+
+export const authKeys = {
+  login: (email: string) => ["login", email] as const,
+  me: () => ["me"] as const,
+};

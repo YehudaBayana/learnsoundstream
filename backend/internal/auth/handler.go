@@ -17,7 +17,7 @@ func NewHandler(repository *Repository) *Handler {
 }
 
 func (handler *Handler) HandleRegister(responseWriter http.ResponseWriter, request *http.Request) {
-	var requestBody credentials
+	var requestBody credentialsLoginRegister
 	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, 1<<20)).Decode(&requestBody); err != nil {
 		writeErr(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
 		return
@@ -28,7 +28,7 @@ func (handler *Handler) HandleRegister(responseWriter http.ResponseWriter, reque
 		writeErr(responseWriter, http.StatusUnprocessableEntity, "invalid_email", "please enter a valid email address")
 		return
 	}
-	// NIST: min 8. Cap the max so nobody can DoS you with a 10 MB password.
+	// NIST: min 4. Cap the max so nobody can DoS you with a 10 MB password.
 	if len(requestBody.Password) < 4 || len(requestBody.Password) > 50 {
 		writeErr(responseWriter, http.StatusUnprocessableEntity, "weak_password", "password must be between 4 and 50 characters")
 		return
@@ -55,13 +55,13 @@ func (handler *Handler) HandleRegister(responseWriter http.ResponseWriter, reque
 		return
 	}
 
-	writeJSON(responseWriter, http.StatusCreated, map[string]any{
-		"user": map[string]any{"id": userID, "email": email},
+	writeJSON(responseWriter, http.StatusCreated, authResponse{
+		User: authUserResponse{ID: userID, Email: email},
 	})
 }
 
 func (handler *Handler) HandleLogin(responseWriter http.ResponseWriter, request *http.Request) {
-	var requestBody credentials
+	var requestBody credentialsLoginRegister
 	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, 1<<20)).Decode(&requestBody); err != nil {
 		writeErr(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
 		return
@@ -94,8 +94,8 @@ func (handler *Handler) HandleLogin(responseWriter http.ResponseWriter, request 
 		return
 	}
 
-	writeJSON(responseWriter, http.StatusOK, map[string]any{
-		"user": map[string]any{"id": user.ID, "email": email},
+	writeJSON(responseWriter, http.StatusOK, authResponse{
+		User: authUserResponse{ID: user.ID, Email: email},
 	})
 }
 
@@ -116,13 +116,13 @@ func (handler *Handler) HandleMe(responseWriter http.ResponseWriter, request *ht
 		return
 	}
 
-	writeJSON(responseWriter, http.StatusOK, map[string]any{
-		"user": map[string]any{
-			"id":            profile.ID,
-			"email":         profile.Email,
-			"displayName":   profile.Display,
-			"emailVerified": profile.Verified,
-			"createdAt":     profile.CreatedAt,
+	writeJSON(responseWriter, http.StatusOK, meResponse{
+		User: userProfileResponse{
+			ID:            profile.ID,
+			Email:         profile.Email,
+			DisplayName:   profile.Display,
+			EmailVerified: profile.Verified,
+			CreatedAt:     profile.CreatedAt,
 		},
 	})
 }
@@ -138,8 +138,8 @@ func writeJSON(responseWriter http.ResponseWriter, status int, value any) {
 }
 
 func writeErr(responseWriter http.ResponseWriter, status int, code, msg string) {
-	writeJSON(responseWriter, status, map[string]any{
-		"error": map[string]string{"code": code, "message": msg},
+	writeJSON(responseWriter, status, errorResponse{
+		Error: apiError{Code: code, Message: msg},
 	})
 }
 

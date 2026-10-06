@@ -8,7 +8,9 @@ func CORSMiddleware(nextHandler http.Handler) http.Handler {
 		// Allow requests from Next.js local server
 		responseWriter.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		responseWriter.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-		responseWriter.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		responseWriter.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-CSRF-Token")
+		responseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
+		responseWriter.Header().Set("X-CSRF-Token", "true")
 
 		// Handle HTTP OPTIONS preflight request
 		if request.Method == http.MethodOptions {
