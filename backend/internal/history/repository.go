@@ -6,6 +6,7 @@ import (
 
 	"backend/internal/videos"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -21,18 +22,26 @@ func NewRepository(db *pgxpool.Pool, videoService *videos.Service) *Repository {
 	}
 }
 
-func (repository *Repository) GetPlaybackHistory(userID string, requestContext context.Context, limit int, offset int) ([]GetVideosInfoResult, error) {
+func (repository *Repository) GetPlaybackHistory(requestContext context.Context, userId uuid.UUID, limit int, offset int) ([]GetVideosInfoResult, error) {
 	if repository.db == nil {
 		return nil, errors.New("database connection is nil")
 	}
-
+	if userId == uuid.Nil {
+		return nil, errors.New("user ID is nil")
+	}
+	if limit <= 0 {
+		return nil, errors.New("limit must be greater than 0")
+	}
+	if offset < 0 {
+		return nil, errors.New("offset cannot be negative")
+	}
 	rows, err := repository.db.Query(requestContext, `
     SELECT user_id, id, play_count, last_played_at
     FROM playback_history
     WHERE user_id = $1
     ORDER BY last_played_at DESC
 	LIMIT $2 OFFSET $3
-    `, userID, limit, offset)
+    `, userId, limit, offset)
 
 	if err != nil {
 		return nil, err

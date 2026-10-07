@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"io"
 	"log/slog"
 	"net/http"
 	"os/exec"
@@ -11,6 +12,7 @@ import (
 
 	"backend/internal/ytdlp"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -32,10 +34,11 @@ func NewService(database *pgxpool.Pool) *Service {
 	}
 }
 
-func (service *Service) StreamManifest(request *http.Request, responseWriter http.ResponseWriter, videoID string) {
-	if service.database != nil {
-		go func(videoID string) {
-			query := `
+func (service *Service) StreamManifest(request *http.Request, responseWriter http.ResponseWriter, userID uuid.UUID, videoID string) {
+	if service.database != nil && isInitialPlaybackRequest(request) {
+		if userID != uuid.Nil {
+			go func(videoID string) {
+				query := `
                 INSERT INTO playback_history (user_id, id, play_count, last_played_at) 
                 VALUES ($1, $2, 1, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id, id) 
@@ -43,12 +46,12 @@ func (service *Service) StreamManifest(request *http.Request, responseWriter htt
                     play_count = playback_history.play_count + 1,
                     last_played_at = CURRENT_TIMESTAMP;
             `
-			userID := "1"
-			_, err := service.database.Exec(context.Background(), query, userID, videoID)
-			if err != nil {
-				slog.Error("Failed to upsert playback history", "error", err, "id", videoID)
-			}
-		}(videoID)
+				_, err := service.database.Exec(context.Background(), query, userID, videoID)
+				if err != nil {
+					slog.Error("Failed to upsert playback history", "error", err, "id", videoID)
+				}
+			}(videoID)
+		}
 	}
 
 	directURL := ""
@@ -75,10 +78,56 @@ func (service *Service) StreamManifest(request *http.Request, responseWriter htt
 		})
 	}
 
-	// Set CORS headers so the browser allows direct streaming
-	// responseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+	upstreamRequest, err := http.NewRequestWithContext(request.Context(), request.Method, directURL, nil)
+	if err != nil {
+		http.Error(responseWriter, "Failed to create media request", http.StatusInternalServerError)
+		return
+	}
+	upstreamRequest.Header.Set("Accept-Encoding", "identity")
+	if userAgent := request.UserAgent(); userAgent != "" {
+		upstreamRequest.Header.Set("User-Agent", userAgent)
+	}
+	for _, header := range []string{"Range", "If-Range"} {
+		if value := request.Header.Get(header); value != "" {
+			upstreamRequest.Header.Set(header, value)
+		}
+	}
 
-	// Redirect the browser directly to the Google/YouTube media stream URL.
-	// This allows the browser to handle HTTP Range requests and long streaming natively.
-	http.Redirect(responseWriter, request, directURL, http.StatusTemporaryRedirect)
+	upstreamResponse, err := http.DefaultClient.Do(upstreamRequest)
+	if err != nil {
+		slog.Error("Failed to fetch media stream", "error", err, "id", videoID)
+		http.Error(responseWriter, "Failed to fetch media stream", http.StatusBadGateway)
+		return
+	}
+	defer upstreamResponse.Body.Close()
+
+	for _, header := range []string{
+		"Accept-Ranges",
+		"Cache-Control",
+		"Content-Encoding",
+		"Content-Length",
+		"Content-Range",
+		"Content-Type",
+		"ETag",
+		"Last-Modified",
+	} {
+		for _, value := range upstreamResponse.Header.Values(header) {
+			responseWriter.Header().Add(header, value)
+		}
+	}
+
+	responseWriter.WriteHeader(upstreamResponse.StatusCode)
+	if request.Method != http.MethodHead {
+		if _, err := io.Copy(responseWriter, upstreamResponse.Body); err != nil {
+			slog.Debug("Media stream ended", "error", err, "id", videoID)
+		}
+	}
+}
+
+func isInitialPlaybackRequest(request *http.Request) bool {
+	if request.Method != http.MethodGet {
+		return false
+	}
+	rangeHeader := strings.ToLower(strings.TrimSpace(request.Header.Get("Range")))
+	return rangeHeader == "" || strings.HasPrefix(rangeHeader, "bytes=0-")
 }

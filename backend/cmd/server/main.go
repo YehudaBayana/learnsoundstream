@@ -64,23 +64,24 @@ func main() {
 	// Create a new ServeMux (Go 1.22+ supports HTTP methods in path patterns)
 	mux := http.NewServeMux()
 
+	// Auth + CSRF protected
+	protected := func(h http.HandlerFunc) http.Handler {
+		return sessions.Auth(sessions.CSRF(h))
+	}
+
 	// Register handlers
 	mux.HandleFunc("GET /health", healthH.Handle)
 	mux.HandleFunc("GET /api/health", healthH.Handle)
 	mux.HandleFunc("GET /api/playlist-details", playlistH.HandleDetails)
 	mux.HandleFunc("GET /api/popular-playlists", playlistH.HandlePopular)
 	mux.HandleFunc("GET /api/playlist-tracks", playlistH.HandleTracks)
-	mux.HandleFunc("GET /api/stream/manifest", streamH.HandleManifest)
+	mux.Handle("GET /api/stream/manifest", protected(streamH.HandleManifest))
 	mux.HandleFunc("GET /api/search", searchH.Handle)
-	mux.HandleFunc("GET /api/playback-history", historyH.Handle)
+	mux.Handle("GET /api/playback-history", protected(historyH.Handle))
 
 	mux.HandleFunc("POST /api/auth/register", authH.HandleRegister)
 	mux.HandleFunc("POST /api/auth/login", authH.HandleLogin)
 
-	// Auth + CSRF protected
-	protected := func(h http.HandlerFunc) http.Handler {
-		return sessions.Auth(sessions.CSRF(h))
-	}
 	mux.Handle("POST /api/auth/logout", protected(authH.HandleLogout))
 	mux.Handle("GET  /api/auth/me", protected(authH.HandleMe))
 

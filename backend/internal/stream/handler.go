@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"backend/internal/auth"
 	"log/slog"
 	"net/http"
 	"regexp"
@@ -31,5 +32,6 @@ func (handler *Handler) HandleManifest(responseWriter http.ResponseWriter, reque
 	}
 
 	slog.Info("Fetching manifest", "id", videoID)
-	handler.service.StreamManifest(request, responseWriter, videoID)
+	session := auth.SessionFrom(request.Context())
+	handler.service.StreamManifest(request, responseWriter, session.UserID, videoID)
 }
