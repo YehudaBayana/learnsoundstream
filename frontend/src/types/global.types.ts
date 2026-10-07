@@ -48,6 +48,7 @@ export interface SearchApiResponse {
 }
 
 export type HistoryResponse = Track[];
+export type LikedResponse = Track[];
 
 export type LoginApiResponse = {
   user: {

@@ -12,7 +12,7 @@ import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
 import { convertSecondsToTime } from "@/shared/utils";
 
 export default function AudioPlayer() {
-  const currentTrack = usePlaybackStore((s) => s.currentTrack);
+  const currentTrack = usePlaybackStore((s) => s.currentChosenTrack);
   const isPlaying = usePlaybackStore((s) => s.isPlaying);
   const setPlaying = usePlaybackStore((s) => s.setPlaying);
   const [duration, setDuration] = useState<number>(currentTrack?.duration || 0);

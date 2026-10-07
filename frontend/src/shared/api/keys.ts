@@ -18,3 +18,7 @@ export const authKeys = {
   login: (email: string) => ["login", email] as const,
   me: () => ["me"] as const,
 };
+
+export const likedKeys = {
+  getLiked: () => ["get-liked"] as const,
+};
