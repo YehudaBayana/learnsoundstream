@@ -7,14 +7,12 @@ import IconButton from "@/components/ui/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import Modal from "@/components/ui/Modal";
-import { useLibraryStore } from "@/features/playlists/store/useLibraryStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useGetCurrentUser, useLogout } from "@/features/auth/query/useAuth";
 
 export default function Sidebar() {
-  const playlists = useLibraryStore((s) => s.playlists);
   const pathname = usePathname();
   const { mutate: logout } = useLogout();
   const { data: currentUser } = useGetCurrentUser(); // Ensure user data is fetched to determine if logged in
@@ -27,6 +25,7 @@ export default function Sidebar() {
     { href: "/search", label: "Search", icon: "🔍" },
     { href: "/auth/playlists", label: "Playlists", icon: "" },
     { href: "/auth/history", label: "History", icon: "" },
+    { href: "/auth/liked", label: "Liked", icon: "" },
   ];
 
   return (
@@ -115,33 +114,11 @@ export default function Sidebar() {
 
         {/* Playlists List */}
         <Box className="flex-1 overflow-y-auto pr-1 space-y-1">
-          {playlists.length === 0 ? (
-            <Box className="px-4 py-3 text-center rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
-              <Text variant="caption" color="muted" className="text-[11px]">
-                Create a playlist to start collecting.
-              </Text>
-            </Box>
-          ) : (
-            playlists.map((pl) => {
-              const href = `/playlists/${pl.id}`;
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={pl.id}
-                  href={href}
-                  className={`relative w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? "bg-[var(--bg-surface-active)] text-emerald-400 shadow-[inset_0_1px_0_var(--border-default)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
-                  }`}
-                >
-                  <Flex align="center" gap={3} className="min-w-0">
-                    <span className="truncate">{pl.title}</span>
-                  </Flex>
-                </Link>
-              );
-            })
-          )}
+          <Box className="px-4 py-3 text-center rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
+            <Text variant="caption" color="muted" className="text-[11px]">
+              Create a playlist to start collecting.
+            </Text>
+          </Box>
           {currentUser?.user ? (
             <Button onClick={() => logout()}>Logout</Button>
           ) : (

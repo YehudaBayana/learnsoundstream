@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Text from "@/components/ui/Text";
 import IconButton from "@/components/ui/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import Menu from "@/components/ui/Menu";
 import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
-import { useLibraryStore } from "@/features/playlists/store/useLibraryStore";
 import { Track } from "@/types/global.types";
 import Image from "@/components/ui/Image";
 import { convertSecondsToTime } from "@/shared/utils";
+import { usePostLiked } from "@/features/liked/query/useLiked";
+import { useLikedStore } from "@/features/liked/store/useLikedStore";
 
 interface TrackItemProps {
   track: Track;
@@ -26,15 +27,20 @@ export default function TrackItem({
   showCover = true,
   playlistId,
 }: TrackItemProps) {
-  const currentTrack = usePlaybackStore((s) => s.currentTrack);
+  const currentChosenTrack = usePlaybackStore((s) => s.currentChosenTrack);
   const isPlaying = usePlaybackStore((s) => s.isPlaying);
   const playTrack = usePlaybackStore((s) => s.playTrack);
   const setPlaying = usePlaybackStore((s) => s.setPlaying);
-  const likedTrackIds = useLibraryStore((s) => s.likedTrackIds);
-  const toggleLike = useLibraryStore((s) => s.toggleLike);
 
-  const isCurrent = currentTrack?.id === track.id;
-  const isLiked = likedTrackIds.includes(track.id);
+  const { mutate: postLiked } = usePostLiked();
+  const isLiked = useLikedStore((state) => state.isLiked);
+  const likedTracks = useLikedStore((state) => state.likedTracks);
+  const isCurrent = currentChosenTrack?.id === track.id;
+  const [isCurrentLiked, setIsCurrentLiked] = useState(isLiked(track.id));
+
+  useEffect(() => {
+    setIsCurrentLiked(isLiked(track.id));
+  }, [likedTracks]);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -160,15 +166,15 @@ export default function TrackItem({
           variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
-            toggleLike(track.id);
+            postLiked(track);
           }}
-          aria-label={isLiked ? "Unlike" : "Like"}
+          aria-label={isCurrentLiked ? "Unlike" : "Like"}
           className={`transition-colors duration-200 ${
-            isLiked
+            isCurrentLiked
               ? "text-emerald-500 hover:text-emerald-400"
               : "text-[var(--text-muted)] hover:text-[var(--text-primary)] opacity-0 group-hover:opacity-100"
           }`}
-          icon={<span>{isLiked ? "❤️" : "🤍"}</span>}
+          icon={<span>{isCurrentLiked ? "❤️" : "🤍"}</span>}
         />
 
         {/* Playlist Action Menu */}

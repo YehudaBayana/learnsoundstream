@@ -51,6 +51,7 @@ export async function apiClient<T>(
   if (response.status === 204) {
     return undefined as T;
   }
+
   // 4. Return parsed response payload typed automatically
   return response?.json() as Promise<T>;
 }

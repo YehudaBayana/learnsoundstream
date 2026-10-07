@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
+
 	"backend/internal/videos"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,7 +23,7 @@ func NewRepository(db *pgxpool.Pool, videoService *videos.Service) *Repository {
 	}
 }
 
-func (repository *Repository) GetLikedVideos(requestContext context.Context, userID string, limit int, offset int) ([]GetVideosInfoResult, error) {
+func (repository *Repository) GetLikedVideos(requestContext context.Context, userID uuid.UUID, limit int, offset int) ([]GetVideosInfoResult, error) {
 	if repository.db == nil {
 		return nil, errors.New("database connection is nil")
 	}
@@ -78,7 +80,7 @@ func (repository *Repository) GetLikedVideos(requestContext context.Context, use
 	return results, nil
 }
 
-func (repository *Repository) PostLikedVideo(requestContext context.Context, userID string, videoID string) error {
+func (repository *Repository) PostLikedVideo(requestContext context.Context, userID uuid.UUID, videoID string) error {
 	if repository.db == nil {
 		return errors.New("database connection is nil")
 	}

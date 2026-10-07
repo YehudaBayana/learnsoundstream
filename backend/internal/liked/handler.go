@@ -1,6 +1,7 @@
 package liked
 
 import (
+	"backend/internal/auth"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -16,7 +17,7 @@ func NewHandler(repository *Repository) *Handler {
 }
 
 func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
-	userID := request.URL.Query().Get("user_id")
+	session := auth.SessionFrom(request.Context())
 	limit := 10
 	offset := 0
 	if value := request.URL.Query().Get("limit"); value != "" {
@@ -36,11 +37,7 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 		offset = parsedOffset
 	}
 
-	if userID == "" {
-		userID = "1"
-	}
-
-	items, err := handler.repository.GetLikedVideos(request.Context(), userID, limit, offset)
+	items, err := handler.repository.GetLikedVideos(request.Context(), session.UserID, limit, offset)
 	if err != nil {
 		slog.Error("Failed to fetch liked videos", "error", err)
 		http.Error(responseWriter, "Failed to fetch liked videos", http.StatusInternalServerError)
@@ -56,20 +53,20 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 }
 
 func (handler *Handler) HandlePost(responseWriter http.ResponseWriter, request *http.Request) {
-	userID := request.URL.Query().Get("user_id")
+	session := auth.SessionFrom(request.Context())
 	videoID := request.URL.Query().Get("video_id")
 
-	if userID == "" || videoID == "" {
-		http.Error(responseWriter, "Missing 'user_id' or 'video_id' parameter", http.StatusBadRequest)
+	if videoID == "" {
+		http.Error(responseWriter, "Missing 'video_id' parameter", http.StatusBadRequest)
 		return
 	}
 
-	err := handler.repository.PostLikedVideo(request.Context(), userID, videoID)
+	err := handler.repository.PostLikedVideo(request.Context(), session.UserID, videoID)
 	if err != nil {
 		slog.Error("Failed to add liked video", "error", err)
 		http.Error(responseWriter, "Failed to add liked video", http.StatusInternalServerError)
 		return
 	}
 
-	responseWriter.WriteHeader(http.StatusOK)
+	responseWriter.WriteHeader(http.StatusNoContent)
 }

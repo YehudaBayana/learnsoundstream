@@ -1,5 +1,5 @@
 import HistoryView from "@/features/history/views/HistoryView";
 
-export default function SearchPage() {
+export default function HistoryPage() {
   return <HistoryView />;
 }

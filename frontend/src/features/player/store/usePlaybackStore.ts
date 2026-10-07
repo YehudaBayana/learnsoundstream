@@ -8,7 +8,7 @@ export type RepeatMode = "none" | "all" | "one";
 // ---------------------------------------------------------------------------
 
 interface PlaybackState {
-  currentTrack: Track | null;
+  currentChosenTrack: Track | null;
   isPlaying: boolean;
   currentTrackIndex: number;
 }
@@ -29,7 +29,7 @@ interface PlaybackActions {
 export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
   (set, get) => ({
     // --- initial state ---
-    currentTrack: null,
+    currentChosenTrack: null,
     isPlaying: false,
     currentTrackIndex: -1,
 
@@ -37,7 +37,7 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
 
     playTrack: (track) => {
       set({
-        currentTrack: track,
+        currentChosenTrack: track,
         isPlaying: true,
         currentTrackIndex: 0,
       });
