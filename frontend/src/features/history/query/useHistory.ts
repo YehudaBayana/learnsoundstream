@@ -4,10 +4,10 @@ import { getHistory } from "../api/history";
 
 const PAGE_SIZE = 10;
 
-export function useHistory(userId: string) {
+export function useHistory() {
   return useInfiniteQuery({
-    queryKey: historyKeys.getHistory(userId),
-    queryFn: ({ pageParam }) => getHistory(userId, PAGE_SIZE, pageParam),
+    queryKey: historyKeys.getHistory(),
+    queryFn: ({ pageParam }) => getHistory(PAGE_SIZE, pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) =>
       lastPage.length === 0 ? undefined : lastPageParam + PAGE_SIZE,

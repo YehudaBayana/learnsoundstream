@@ -16,7 +16,7 @@ export default function HistoryView() {
     isFetchingNextPage,
     isPending,
     refetch,
-  } = useHistory("1");
+  } = useHistory();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const tracks = data?.pages.flat() ?? [];
 

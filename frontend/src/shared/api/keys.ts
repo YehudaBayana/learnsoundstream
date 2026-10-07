@@ -11,7 +11,7 @@ export const searchKeys = {
 };
 
 export const historyKeys = {
-  getHistory: (userId: string) => ["get-history", userId] as const,
+  getHistory: () => ["get-history"] as const,
 };
 
 export const authKeys = {
