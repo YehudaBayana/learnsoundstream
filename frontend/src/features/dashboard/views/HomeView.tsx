@@ -15,6 +15,7 @@ interface HomeViewProps {
 }
 
 export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
+  console.log("dummy commit");
   return (
     <Box dataHook={dataHook}>
       <Container className="px-6 py-8 max-w-[1200px] space-y-12">
