@@ -8,9 +8,15 @@ import Badge from "@/components/ui/Badge";
 import ServerStatus from "@/features/dashboard/components/ServerStatus";
 import Footer from "@/features/dashboard/components/Footer";
 import { Grid } from "@/components/ui/layout";
+import Box from "@/components/ui/layout/Box";
 
-export default function HomeView() {
+interface HomeViewProps {
+  dataHook?: string;
+}
+
+export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
   return (
+    <Box dataHook={dataHook}>
     <Container className="px-6 py-8 max-w-[1200px] space-y-12">
       {/* Server Status Widget */}
       <ServerStatus />
@@ -148,5 +154,6 @@ export default function HomeView() {
       {/* Global Footer */}
       <Footer />
     </Container>
+    </Box>
   );
 }

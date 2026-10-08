@@ -9,9 +9,10 @@ interface PlaylistCardProps {
   pl: Playlist;
   onClick: (playlist: Playlist) => void;
   className?: string;
+  dataHook?: string;
 }
 
-export const PlaylistCard = ({ onClick, pl: playlist }: PlaylistCardProps) => {
+export const PlaylistCard = ({ onClick, pl: playlist, dataHook }: PlaylistCardProps) => {
   return (
     <Card
       key={playlist.id}
@@ -19,6 +20,7 @@ export const PlaylistCard = ({ onClick, pl: playlist }: PlaylistCardProps) => {
       hoverable
       variant="default"
       onClick={() => onClick(playlist)}
+      dataHook={dataHook}
       className="bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-emerald-500/50 transition-all duration-300 group flex flex-col h-full overflow-hidden"
     >
       <Card.Body

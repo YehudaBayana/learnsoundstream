@@ -5,13 +5,17 @@ import { Box } from "@/components/ui/layout";
 import Text from "@/components/ui/Text";
 import { useLikedStore } from "../store/useLikedStore";
 
-export default function LikedView() {
+interface LikedViewProps {
+  dataHook?: string;
+}
+
+export default function LikedView({ dataHook = "liked-view-container" }: LikedViewProps) {
   const refetch = useLikedStore((state) => state.refetch);
   const isPending = useLikedStore((state) => state.isPending);
   const isError = useLikedStore((state) => state.isError);
   const tracks = useLikedStore((state) => state.likedTracks);
   return (
-    <Box className="p-10 flex flex-col gap-4" dataHook="liked-view-container">
+    <Box className="p-10 flex flex-col gap-4" dataHook={dataHook}>
       <Text variant="h1" dataHook="liked-view-heading">Liked</Text>
       {isPending && <Text role="status" dataHook="liked-loading-text">Loading liked tracks...</Text>}
       {isError && tracks.length === 0 && (

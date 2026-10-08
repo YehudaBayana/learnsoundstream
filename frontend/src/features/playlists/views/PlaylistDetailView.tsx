@@ -14,7 +14,11 @@ import {
   usePlaylistTracks,
 } from "@/features/playlists/query/usePlaylists";
 
-const PlaylistDetailView = () => {
+interface PlaylistDetailViewProps {
+  dataHook?: string;
+}
+
+const PlaylistDetailView = ({ dataHook = "playlist-detail-view" }: PlaylistDetailViewProps) => {
   const params = useParams();
   const selectedPlaylistId = params?.id as string;
   const { data: playlistDetails } = usePlaylistDetails(selectedPlaylistId);
@@ -32,6 +36,7 @@ const PlaylistDetailView = () => {
       : "";
 
   return (
+    <Box dataHook={dataHook}>
     <Container className="space-y-6">
       {/* Playlist Header */}
       <Flex
@@ -52,7 +57,7 @@ const PlaylistDetailView = () => {
           <Badge variant="primary" size="sm" className="w-fit">
             PLAYLIST
           </Badge>
-          <Heading level={1} size="xl" truncate>
+          <Heading level={1} size="xl" truncate dataHook={`${dataHook}-title`}>
             {playlistDetails.title}
           </Heading>
           {playlistDetails.uploader && (
@@ -75,7 +80,7 @@ const PlaylistDetailView = () => {
       <Box className="mt-6">
         {isTracksLoading ? (
           <Flex justify="center" align="center" className="py-16">
-            <Spinner size="lg" />
+            <Spinner size="lg" dataHook={`${dataHook}-tracks-loading`} />
           </Flex>
         ) : tracksError ? (
           <Flex
@@ -87,7 +92,7 @@ const PlaylistDetailView = () => {
             <Text variant="h3" color="danger">
               Failed to load tracks
             </Text>
-            <Text variant="body" color="muted" className="mt-2">
+            <Text variant="body" color="muted" className="mt-2" dataHook={`${dataHook}-tracks-error`}>
               {tracksError.message}
             </Text>
           </Flex>
@@ -98,7 +103,7 @@ const PlaylistDetailView = () => {
             justify="center"
             className="py-16 text-center"
           >
-            <Text variant="h3">No tracks found</Text>
+            <Text variant="h3" dataHook={`${dataHook}-tracks-empty`}>No tracks found</Text>
             <Text variant="body" color="muted" className="mt-2">
               This playlist has no available tracks.
             </Text>
@@ -119,6 +124,7 @@ const PlaylistDetailView = () => {
         )}
       </Box>
     </Container>
+    </Box>
   );
 };
 

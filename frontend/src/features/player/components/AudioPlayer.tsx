@@ -4,11 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import Flex from "@/components/ui/layout/Flex";
 import { useMSEPlayer } from "../hooks/useMSEPlayer";
 import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
-import AudioPlayerTrackInfo from "./AudioPlayerTrackInfo";
-import AudioPlayerControls from "./AudioPlayerControls";
-import AudioPlayerVolume from "./AudioPlayerVolume";
+import AudioPlayerTrackInfo from "./audio-player-track-info/AudioPlayerTrackInfo";
+import AudioPlayerControls from "./audio-player-controls/AudioPlayerControls";
+import AudioPlayerVolume from "./audio-player-volume/AudioPlayerVolume";
 
-export default function AudioPlayer() {
+interface AudioPlayerProps {
+  dataHook?: string;
+}
+
+export default function AudioPlayer({ dataHook = "audio-player" }: AudioPlayerProps) {
   const currentTrack = usePlaybackStore((s) => s.currentChosenTrack);
   const isPlaying = usePlaybackStore((s) => s.isPlaying);
   const setPlaying = usePlaybackStore((s) => s.setPlaying);
@@ -139,10 +143,12 @@ export default function AudioPlayer() {
           ? "bottom-6 opacity-100 pointer-events-auto"
           : "-bottom-[150px] opacity-0 pointer-events-none"
       }`}
+      dataHook={dataHook}
     >
       {currentTrack?.id && (
         <audio
           ref={audioRef}
+          data-hook={`${dataHook}-audio`}
           onTimeUpdate={handleTimeUpdate}
           onDurationChange={handleDurationChange}
           onLoadStart={handleAudioLoadStart}
@@ -154,12 +160,14 @@ export default function AudioPlayer() {
 
       <Flex justify="between" align="center" gap={6} className="w-full">
         <AudioPlayerTrackInfo
+          dataHook={`${dataHook}-track-info`}
           track={currentTrack}
           isPlaying={isPlaying}
           isLoading={isLoading}
           hasError={Boolean(error)}
         />
         <AudioPlayerControls
+          dataHook={`${dataHook}-controls`}
           currentTrack={currentTrack}
           isPlaying={isPlaying}
           isLoading={isLoading}
@@ -173,6 +181,7 @@ export default function AudioPlayer() {
           onDragEnd={handleDragEnd}
         />
         <AudioPlayerVolume
+          dataHook={`${dataHook}-volume`}
           hasTrack={Boolean(currentTrack)}
           isMuted={isMuted}
           volume={volume}

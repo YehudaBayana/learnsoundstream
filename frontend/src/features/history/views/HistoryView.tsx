@@ -6,7 +6,11 @@ import TrackItem from "@/features/player/components/TrackItem";
 import { Box } from "@/components/ui/layout";
 import Text from "@/components/ui/Text";
 
-export default function HistoryView() {
+interface HistoryViewProps {
+  dataHook?: string;
+}
+
+export default function HistoryView({ dataHook = "history-view-container" }: HistoryViewProps) {
   const {
     data,
     error,
@@ -38,7 +42,7 @@ export default function HistoryView() {
   }, [fetchNextPage, hasNextPage, isError, isFetchingNextPage]);
 
   return (
-    <Box className="p-10 flex flex-col gap-4" dataHook="history-view-container">
+    <Box className="p-10 flex flex-col gap-4" dataHook={dataHook}>
       <Text variant="h1" dataHook="history-view-heading">History</Text>
       {isPending && <Text role="status" dataHook="history-loading-text">Loading history...</Text>}
       {isError && tracks.length === 0 && (
