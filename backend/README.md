@@ -7,7 +7,8 @@ This is the high-performance Go backend for the Soundstream music streaming plat
 In line with the project's learning goals (defined in [PROJECT_GOALS.md](../PROJECT_GOALS.md)), this backend is built with **zero external frameworks** to promote a raw understanding of HTTP, concurrency, and system-level operations.
 
 ### Key Features
-- **Modern Routing:** Uses native `net/http` package (routing patterns with HTTP methods introduced in Go 1.22+).
+
+- **Modern Routing:** Uses native `net/http` package (routing patterns with HTTP methods introduced in Go 1.27.0+).
 - **Graceful Shutdown:** Actively listens for OS interruption signals (`SIGINT`, `SIGTERM`) to clean up resources, cancel contexts, and drain active connections safely.
 - **Production-Ready Timeouts:** Configured with robust `ReadTimeout`, `WriteTimeout`, and `IdleTimeout` to prevent resource starvation (e.g., slowloris attacks).
 - **Structured Logging:** Utilizes standard `log/slog` for fast, structured, context-aware logging.
@@ -18,9 +19,11 @@ In line with the project's learning goals (defined in [PROJECT_GOALS.md](../PROJ
 ## Getting Started
 
 ### Prerequisites
+
 - Go (version 1.22 or higher)
 
 ### Run the Server
+
 Run the following command from this directory:
 
 ```bash
@@ -40,6 +43,7 @@ PORT=9000 go run cmd/server/main.go
 ## API Endpoints
 
 ### 1. Health Check
+
 Checks the status of the server and sub-services.
 
 - **URL:** `/health` or `/api/health`
@@ -48,6 +52,7 @@ Checks the status of the server and sub-services.
 - **Response Format:** JSON
 
 #### Example Response:
+
 ```json
 {
   "status": "OK",
