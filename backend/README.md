@@ -35,7 +35,7 @@ The server will start on port `8080` by default: `http://localhost:8080`.
 To run on a different port, set the `PORT` environment variable:
 
 ```bash
-PORT=9000 go run cmd/server/main.go
+PORT=8080 go run cmd/server/main.go
 ```
 
 ---

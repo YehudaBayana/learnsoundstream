@@ -7,6 +7,7 @@
     "stop": "docker compose down",
     "restart": "docker compose down && docker compose up --build -d && docker compose logs -f backend",
     "start-db-dash": "docker start pgadmin4 || docker run -d --name pgadmin4 -p 9090:80 -e PGADMIN_DEFAULT_EMAIL=admin@admin.com -e PGADMIN_DEFAULT_PASSWORD=admin dpage/pgadmin4",
-    "stop-db-dash": "docker stop pgadmin4"
+    "stop-db-dash": "docker stop pgadmin4",
+    "test-server": "docker compose up -d postgres && (cd backend && set -a && source ../.env && set +a && DB_URL=\"${DB_URL/@postgres:/@127.0.0.1:}\" go test -tags=integration -v ./...)"
   }
 }
