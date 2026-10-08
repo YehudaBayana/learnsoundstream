@@ -1,0 +1,23 @@
+databases:
+  - name: soundstream-db
+    plan: free
+    databaseName: soundstream
+    user: soundstream
+
+services:
+  - type: web
+    name: soundstream-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      - key: DB_URL
+        fromDatabase:
+          name: soundstream-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        sync: false

@@ -9,7 +9,8 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   const { params, headers, ...customConfig } = options;
 
   // 1. Build URL with query parameters automatically
-  const url = new URL(endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`);
+  const base = typeof window !== "undefined" ? window.location.origin : "http://localhost";
+  const url = new URL(endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`, base);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
