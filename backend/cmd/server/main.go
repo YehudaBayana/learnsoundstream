@@ -21,25 +21,11 @@ import (
 	"backend/internal/search"
 	"backend/internal/stream"
 	"backend/internal/videos"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func main() {
-	environment := os.Getenv("ENV")
-	// Initialize modern structured logging (slog) using Text format for readability in development
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	slog.SetDefault(logger)
-
-	// Load configuration from environment variables
-	cfg := config.Load()
-
-	// Initialize database
-	db, err := database.InitDB(context.Background(), cfg.DatabaseURL)
-	if err != nil {
-		slog.Error("Failed to initialize database", "error", err)
-		os.Exit(1)
-	}
-	defer db.Close()
-
+func newHTTPHandler(db *pgxpool.Pool, environment string) http.Handler {
 	// Wire up feature handlers
 	healthH := health.NewHandler(db)
 
@@ -92,13 +78,30 @@ func main() {
 	mux.Handle("GET /api/liked", protected(likedH.Handle))
 	mux.Handle("POST /api/liked", protected(likedH.HandlePost))
 
-	// Wrap mux with CORS middleware from internal/middleware
-	handler := middleware.CORSMiddleware(mux)
+	return middleware.CORSMiddleware(mux)
+}
+
+func main() {
+	environment := os.Getenv("ENV")
+	// Initialize modern structured logging (slog) using Text format for readability in development
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	slog.SetDefault(logger)
+
+	// Load configuration from environment variables
+	cfg := config.Load()
+
+	// Initialize database
+	db, err := database.InitDB(context.Background(), cfg.DatabaseURL)
+	if err != nil {
+		slog.Error("Failed to initialize database", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
 
 	// Define our HTTP server with robust, production-ready timeouts
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      handler,
+		Handler:      newHTTPHandler(db, environment),
 		ReadTimeout:  10 * time.Second,  // Max duration for reading the entire request (prevents slowloris)
 		WriteTimeout: 10 * time.Second,  // Max duration before timing out writes of the response
 		IdleTimeout:  120 * time.Second, // Max amount of time to keep keep-alive connections idle
