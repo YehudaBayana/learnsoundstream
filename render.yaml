@@ -1,9 +1,3 @@
-databases:
-  - name: soundstream-db
-    plan: free
-    databaseName: soundstream
-    user: soundstream
-
 services:
   - type: web
     name: soundstream-backend
@@ -15,9 +9,8 @@ services:
     envVars:
       - key: ENV
         value: production
+      # Neon direct (non-pooled) connection string, ending in ?sslmode=require
       - key: DB_URL
-        fromDatabase:
-          name: soundstream-db
-          property: connectionString
+        sync: false
       - key: ALLOWED_ORIGINS
         sync: false

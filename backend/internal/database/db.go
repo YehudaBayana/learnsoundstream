@@ -28,9 +28,10 @@ func InitDB(ctx context.Context, connectionString string) (*pgxpool.Pool, error)
 	}
 
 	// Configure pool parameters
-	config.MaxConns = 25
-	config.MinConns = 5
+	config.MaxConns = 10
+	config.MinConns = 0 // let idle connections close so Neon can scale to zero
 	config.MaxConnLifetime = 5 * time.Minute
+	config.MaxConnIdleTime = 2 * time.Minute
 
 	// Create the connection pool
 	pool, err := pgxpool.NewWithConfig(ctx, config)
