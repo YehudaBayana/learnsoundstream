@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useLikedStore } from "../store/useLikedStore";
 import { useGetLiked } from "../query/useLiked";
 
@@ -13,7 +13,6 @@ export default function LikedInitializer({
   const setLikedQueryState = useLikedStore((state) => state.setLikedQueryState);
   const {
     data,
-    error,
     fetchNextPage,
     hasNextPage,
     isError,
@@ -22,7 +21,7 @@ export default function LikedInitializer({
     refetch,
   } = useGetLiked();
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const tracks = data?.pages.flat() ?? [];
+  const tracks = useMemo(() => data?.pages.flat() ?? [], [data?.pages]);
 
   useEffect(() => {
     setLikedQueryState({ isPending, isError, refetch });
@@ -48,7 +47,7 @@ export default function LikedInitializer({
   useEffect(() => {
     if (isPending || !data) return; // Wait until the data is loaded
     setInitialLiked(tracks);
-  }, [setInitialLiked, isPending, data]);
+  }, [setInitialLiked, isPending, data, tracks]);
 
   return (
     <>

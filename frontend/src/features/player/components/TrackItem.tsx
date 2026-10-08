@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Text from "@/components/ui/Text";
 import IconButton from "@/components/ui/IconButton";
 import Flex from "@/components/ui/layout/Flex";
@@ -34,13 +34,8 @@ export default function TrackItem({
 
   const { mutate: postLiked } = usePostLiked();
   const isLiked = useLikedStore((state) => state.isLiked);
-  const likedTracks = useLikedStore((state) => state.likedTracks);
   const isCurrent = currentChosenTrack?.id === track.id;
-  const [isCurrentLiked, setIsCurrentLiked] = useState(isLiked(track.id));
-
-  useEffect(() => {
-    setIsCurrentLiked(isLiked(track.id));
-  }, [likedTracks]);
+  const isCurrentLiked = isLiked(track.id);
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();

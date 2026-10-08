@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "eslint . && next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --format json | remove-unused-vars && eslint . --fix"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",
@@ -25,6 +26,8 @@
     "autoprefixer": "^10.5.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.6",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "remove-unused-vars": "0.0.15",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
     "typescript": "^5"

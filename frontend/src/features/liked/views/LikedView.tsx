@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useGetLiked } from "../query/useLiked";
 import TrackItem from "@/features/player/components/TrackItem";
 import { Box } from "@/components/ui/layout";
 import Text from "@/components/ui/Text";

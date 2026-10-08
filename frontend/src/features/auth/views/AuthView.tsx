@@ -1,13 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Login } from "../components/Login";
 import { Register } from "../components/Register";
 import { useGetCurrentUser, useLogout } from "../query/useAuth";
 
 export default function AuthView() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const router = useRouter();
   const { data, isLoading } = useGetCurrentUser();
   const { mutate: logout } = useLogout();
+
+  useEffect(() => {
+    if (data?.user.id) {
+      router.push("/");
+    }
+  }, [data?.user.id, router]);
 
   if (isLoading) {
     return (
@@ -15,10 +23,6 @@ export default function AuthView() {
         <p>Loading...</p>
       </div>
     );
-  }
-
-  if (data?.user.id) {
-    window.location.href = "/"; // Redirect to home page if user is already logged in
   }
 
   return (

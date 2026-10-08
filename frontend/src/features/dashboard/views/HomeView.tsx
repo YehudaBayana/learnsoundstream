@@ -1,34 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Heading from "@/components/ui/Heading";
 import Text from "@/components/ui/Text";
-import Button from "@/components/ui/Button";
 import Container from "@/components/ui/layout/Container";
 import Flex from "@/components/ui/layout/Flex";
-import Grid from "@/components/ui/layout/Grid";
-import Spinner from "@/components/ui/Spinner";
 import Badge from "@/components/ui/Badge";
 import ServerStatus from "@/features/dashboard/components/ServerStatus";
 import Footer from "@/features/dashboard/components/Footer";
-import { useRouter } from "next/navigation";
-import { Playlist } from "@/types/global.types";
-import { PlaylistCard } from "@/features/playlists/components/PlaylistCard/PlaylistCard";
-import { usePopularPlaylists } from "@/features/playlists/query/usePlaylists";
 
 export default function HomeView() {
-  const router = useRouter();
-  // const {
-  //   data: popularPlaylists,
-  //   isLoading: isLoadingPopularPlaylists,
-  //   error: playlistsError,
-  //   refetch,
-  // } = usePopularPlaylists();
-
-  const handlePlaylistClick = (playlist: Playlist) => {
-    router.push(`/playlists/${playlist.id}`);
-  };
-
   return (
     <Container className="px-6 py-8 max-w-[1200px] space-y-12">
       {/* Server Status Widget */}

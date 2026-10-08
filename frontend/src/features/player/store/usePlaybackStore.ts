@@ -27,7 +27,7 @@ interface PlaybackActions {
 // ---------------------------------------------------------------------------
 
 export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
-  (set, get) => ({
+  (set,) => ({
     // --- initial state ---
     currentChosenTrack: null,
     isPlaying: false,
