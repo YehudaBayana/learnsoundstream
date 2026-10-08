@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL;
+    const backendUrl = process.env.BACKEND_URL?.replace(/\/+$/, "");
     if (!backendUrl) return [];
     return [
       { source: "/api/:path*", destination: `${backendUrl}/api/:path*` },
