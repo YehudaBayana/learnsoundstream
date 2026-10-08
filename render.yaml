@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: soundstream-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      # Neon direct (non-pooled) connection string, ending in ?sslmode=require
+      - key: DB_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
