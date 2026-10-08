@@ -1,3 +1,4 @@
 # Go binaries
 backend/server
 .env
+.DS_Store
