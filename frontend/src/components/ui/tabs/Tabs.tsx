@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 /**
  * Tabs variant options.
  */
-export type TabsVariant = 'default' | 'pills' | 'underline';
+export type TabsVariant = "default" | "pills" | "underline";
 
 /**
  * Tabs size options.
  */
-export type TabsSize = 'sm' | 'md' | 'lg';
+export type TabsSize = "sm" | "md" | "lg";
 
 // Context for sharing state between Tab components
 interface TabsContextValue {
@@ -23,7 +23,7 @@ const TabsContext = createContext<TabsContextValue | null>(null);
 const useTabsContext = () => {
   const context = useContext(TabsContext);
   if (!context) {
-    throw new Error('Tab components must be used within Tabs');
+    throw new Error("Tab components must be used within Tabs");
   }
   return context;
 };
@@ -38,13 +38,13 @@ interface TabListProps {
   dataHook?: string;
 }
 
-const TabList: React.FC<TabListProps> = ({ children, className = '', dataHook }) => {
+const TabList: React.FC<TabListProps> = ({ children, className = "", dataHook }) => {
   const { variant } = useTabsContext();
 
   const variantClasses = {
-    default: 'border-b border-gray-200 dark:border-slate-700',
-    pills: 'bg-gray-100 dark:bg-slate-800 rounded-xl p-1',
-    underline: '',
+    default: "border-b border-gray-200 dark:border-slate-700",
+    pills: "bg-gray-100 dark:bg-slate-800 rounded-xl p-1",
+    underline: "",
   };
 
   return (
@@ -80,32 +80,32 @@ const Tab: React.FC<TabProps> = ({
   children,
   icon,
   disabled = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const { activeTab, setActiveTab, variant, size } = useTabsContext();
   const isActive = activeTab === id;
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-3 text-base",
   };
 
   const getVariantClasses = () => {
     switch (variant) {
-      case 'default':
+      case "default":
         return isActive
-          ? 'border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 -mb-px'
-          : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300';
-      case 'pills':
+          ? "border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 -mb-px"
+          : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300";
+      case "pills":
         return isActive
-          ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm rounded-lg'
-          : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white';
-      case 'underline':
+          ? "bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm rounded-lg"
+          : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white";
+      case "underline":
         return isActive
-          ? 'border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400'
-          : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 border-b-2 border-transparent';
+          ? "border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400"
+          : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 border-b-2 border-transparent";
     }
   };
 
@@ -126,7 +126,7 @@ const Tab: React.FC<TabProps> = ({
         transition-all
         ${sizeClasses[size]}
         ${getVariantClasses()}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2
         dark:focus-visible:ring-offset-slate-900
         ${className}
@@ -151,7 +151,7 @@ interface TabPanelProps {
   dataHook?: string;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ id, children, className = '', dataHook }) => {
+const TabPanel: React.FC<TabPanelProps> = ({ id, children, className = "", dataHook }) => {
   const { activeTab } = useTabsContext();
   const isActive = activeTab === id;
 
@@ -232,12 +232,12 @@ const Tabs: React.FC<TabsProps> & {
   Panel: typeof TabPanel;
 } = ({
   children,
-  defaultTab = '',
+  defaultTab = "",
   activeTab: controlledActiveTab,
   onTabChange,
-  variant = 'default',
-  size = 'md',
-  className = '',
+  variant = "default",
+  size = "md",
+  className = "",
   dataHook,
 }) => {
   const [internalActiveTab, setInternalActiveTab] = useState(defaultTab);
@@ -254,7 +254,9 @@ const Tabs: React.FC<TabsProps> & {
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab, variant, size }}>
-      <div className={className} data-hook={dataHook}>{children}</div>
+      <div className={className} data-hook={dataHook}>
+        {children}
+      </div>
     </TabsContext.Provider>
   );
 };

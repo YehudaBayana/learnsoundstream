@@ -1,8 +1,8 @@
-import React from 'react';
-import { Flex, Box } from '../layout';
-import Spinner from '../Spinner';
-import Alert from '../Alert';
-import Button from '../Button';
+import React from "react";
+import { Flex, Box } from "../layout";
+import Spinner from "../Spinner";
+import Alert from "../Alert";
+import Button from "../Button";
 
 interface DataStateWrapperProps {
   /** Whether the data is currently loading */
@@ -23,12 +23,12 @@ interface DataStateWrapperProps {
   children: React.ReactNode;
   /** Optional skeleton to show while loading. If not provided, shows a Spinner. */
   skeleton?: React.ReactNode;
-  /** 
-   * Behavior when data is empty: 
+  /**
+   * Behavior when data is empty:
    * - 'show-empty': Shows the emptyComponent (default)
    * - 'hide': Renders nothing
    */
-  emptyBehavior?: 'show-empty' | 'hide';
+  emptyBehavior?: "show-empty" | "hide";
   /** Container className */
   className?: string;
   dataHook?: string;
@@ -36,22 +36,22 @@ interface DataStateWrapperProps {
 
 /**
  * DataStateWrapper - A resilient container that handles loading, error, and empty states.
- * 
+ *
  * Updated to be backward compatible with existing usage while adding new resilient features.
  */
 const DataStateWrapper: React.FC<DataStateWrapperProps> = ({
   loading,
   error,
   empty,
-  emptyMessage = 'No data available',
+  emptyMessage = "No data available",
   emptyComponent,
   onRetry,
   minHeight,
   children,
   skeleton,
-  emptyBehavior = 'show-empty',
-  className = '',
-  dataHook
+  emptyBehavior = "show-empty",
+  className = "",
+  dataHook,
 }) => {
   const containerStyle = minHeight ? { minHeight } : {};
 
@@ -61,7 +61,11 @@ const DataStateWrapper: React.FC<DataStateWrapperProps> = ({
       <Box className={className} style={containerStyle} dataHook={dataHook}>
         {skeleton || (
           <Flex justify="center" align="center" className="py-20 h-full">
-            <Spinner size="xl" variant="primary" dataHook={dataHook ? `${dataHook}-loading` : undefined} />
+            <Spinner
+              size="xl"
+              variant="primary"
+              dataHook={dataHook ? `${dataHook}-loading` : undefined}
+            />
           </Flex>
         )}
       </Box>
@@ -72,8 +76,17 @@ const DataStateWrapper: React.FC<DataStateWrapperProps> = ({
   if (error) {
     return (
       <Box className={className} style={containerStyle} dataHook={dataHook}>
-        <Flex direction="col" justify="center" align="center" className="py-20 h-full text-center px-4">
-          <Alert variant="error" className="mb-4 max-w-md" dataHook={dataHook ? `${dataHook}-error` : undefined}>
+        <Flex
+          direction="col"
+          justify="center"
+          align="center"
+          className="py-20 h-full text-center px-4"
+        >
+          <Alert
+            variant="error"
+            className="mb-4 max-w-md"
+            dataHook={dataHook ? `${dataHook}-error` : undefined}
+          >
             {error}
           </Alert>
           {onRetry && (
@@ -88,13 +101,16 @@ const DataStateWrapper: React.FC<DataStateWrapperProps> = ({
 
   // 3. Empty State
   if (empty) {
-    if (emptyBehavior === 'hide') return null;
-    
+    if (emptyBehavior === "hide") return null;
+
     return (
       <Box className={className} style={containerStyle} dataHook={dataHook}>
         {emptyComponent || (
           <Flex justify="center" align="center" className="py-20 h-full text-center">
-            <Box className="text-gray-500 dark:text-slate-400" dataHook={dataHook ? `${dataHook}-empty` : undefined}>
+            <Box
+              className="text-gray-500 dark:text-slate-400"
+              dataHook={dataHook ? `${dataHook}-empty` : undefined}
+            >
               {emptyMessage}
             </Box>
           </Flex>

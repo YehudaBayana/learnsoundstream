@@ -1,11 +1,11 @@
-import React, { forwardRef, useId } from 'react';
+import React, { forwardRef, useId } from "react";
 
 /**
  * Radio size options.
  */
-export type RadioSize = 'sm' | 'md' | 'lg';
+export type RadioSize = "sm" | "md" | "lg";
 
-interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type"> {
   /** Radio size */
   size?: RadioSize;
   /** Label text */
@@ -24,12 +24,12 @@ interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, '
  */
 const getSizeClasses = (size: RadioSize): string => {
   switch (size) {
-    case 'sm':
-      return 'w-4 h-4';
-    case 'md':
-      return 'w-5 h-5';
-    case 'lg':
-      return 'w-6 h-6';
+    case "sm":
+      return "w-4 h-4";
+    case "md":
+      return "w-5 h-5";
+    case "lg":
+      return "w-6 h-6";
   }
 };
 
@@ -38,12 +38,12 @@ const getSizeClasses = (size: RadioSize): string => {
  */
 const getLabelSizeClasses = (size: RadioSize): string => {
   switch (size) {
-    case 'sm':
-      return 'text-sm';
-    case 'md':
-      return 'text-base';
-    case 'lg':
-      return 'text-lg';
+    case "sm":
+      return "text-sm";
+    case "md":
+      return "text-base";
+    case "lg":
+      return "text-lg";
   }
 };
 
@@ -66,36 +66,36 @@ const getLabelSizeClasses = (size: RadioSize): string => {
 const Radio = forwardRef<HTMLInputElement, RadioProps>(
   (
     {
-      size = 'md',
+      size = "md",
       label,
       description,
       error = false,
       disabled,
-      className = '',
+      className = "",
       id,
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const defaultId = useId();
     const radioId = id || `radio-${defaultId}`;
 
     const radioClasses = [
       getSizeClasses(size),
-      'rounded-full',
-      'border-2',
+      "rounded-full",
+      "border-2",
       error
-        ? 'border-rose-500 text-rose-600 focus:ring-rose-500'
-        : 'border-gray-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500',
-      'bg-white dark:bg-slate-800',
-      'transition-colors duration-200',
-      'cursor-pointer',
-      'focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
-      disabled ? 'opacity-50 cursor-not-allowed' : '',
+        ? "border-rose-500 text-rose-600 focus:ring-rose-500"
+        : "border-gray-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500",
+      "bg-white dark:bg-slate-800",
+      "transition-colors duration-200",
+      "cursor-pointer",
+      "focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900",
+      disabled ? "opacity-50 cursor-not-allowed" : "",
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     return (
       <div className={`flex items-start gap-3 ${className}`} data-hook={dataHook}>
@@ -116,7 +116,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 className={`
                   ${getLabelSizeClasses(size)}
                   text-gray-900 dark:text-white
-                  ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                  ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 `}
               >
                 {label}
@@ -129,9 +129,9 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
-Radio.displayName = 'Radio';
+Radio.displayName = "Radio";
 
 export default Radio;

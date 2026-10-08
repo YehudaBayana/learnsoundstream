@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Radio, { RadioSize } from '../Radio';
-import { getByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Radio, { RadioSize } from "../Radio";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface RadioDriverProps {
   dataHook?: string;
@@ -15,7 +15,7 @@ export interface RadioDriverProps {
 
 export class RadioDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-radio';
+  private readonly defaultDataHook = "test-radio";
 
   render(props: RadioDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -24,7 +24,7 @@ export class RadioDriver {
   }
 
   private getInput(dataHook = this.defaultDataHook): HTMLInputElement {
-    if (!this.renderResult) throw new Error('RadioDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("RadioDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, `${dataHook}-input`) as HTMLInputElement;
   }
 

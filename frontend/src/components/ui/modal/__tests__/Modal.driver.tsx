@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Modal, { ModalSize } from '../Modal';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Modal, { ModalSize } from "../Modal";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface ModalDriverProps {
   dataHook?: string;
@@ -15,7 +15,7 @@ export interface ModalDriverProps {
 
 export class ModalDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-modal';
+  private readonly defaultDataHook = "test-modal";
   private currentProps: ModalDriverProps = {};
 
   render(props: ModalDriverProps = {}): this {
@@ -44,7 +44,7 @@ export class ModalDriver {
   }
 
   private getRenderResult(): RenderResult {
-    if (!this.renderResult) throw new Error('ModalDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("ModalDriver: render() must be called before querying");
     return this.renderResult;
   }
 
@@ -52,7 +52,7 @@ export class ModalDriver {
     return queryByDataHook(document.body, dataHook) !== null;
   }
 
-  hasSection(section: 'header' | 'body' | 'footer', dataHook = this.defaultDataHook): boolean {
+  hasSection(section: "header" | "body" | "footer", dataHook = this.defaultDataHook): boolean {
     return queryByDataHook(document.body, `${dataHook}-${section}`) !== null;
   }
 
@@ -69,7 +69,7 @@ export class ModalDriver {
   }
 
   pressEscape(): void {
-    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent.keyDown(document, { key: "Escape" });
   }
 
   setOpen(isOpen: boolean): void {

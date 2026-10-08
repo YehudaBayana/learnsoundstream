@@ -1,10 +1,10 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Sidebar from '../Sidebar';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Sidebar from "../Sidebar";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class SidebarDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'dashboard-sidebar';
+  private readonly defaultDataHook = "dashboard-sidebar";
 
   render(dataHook = this.defaultDataHook): this {
     this.renderResult = render(<Sidebar dataHook={dataHook} />);
@@ -12,7 +12,8 @@ export class SidebarDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('SidebarDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("SidebarDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import { useToastStore } from '@/store/useToastStore';
-import Toast from '../toast/Toast';
+import React from "react";
+import { useToastStore } from "@/store/useToastStore";
+import Toast from "../toast/Toast";
 
 /**
  * ToastContainer - Container component that displays all active toasts.
@@ -15,7 +15,7 @@ interface ToastContainerProps {
   dataHook?: string;
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({ dataHook = 'toast-container' }) => {
+const ToastContainer: React.FC<ToastContainerProps> = ({ dataHook = "toast-container" }) => {
   const { toasts, removeToast } = useToastStore();
 
   // Don't render anything if there are no toasts
@@ -30,7 +30,11 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ dataHook = 'toast-conta
       className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"
     >
       {toasts.map((toast) => (
-        <div key={toast.id} className="pointer-events-auto" data-hook={`${dataHook}-item-${toast.id}`}>
+        <div
+          key={toast.id}
+          className="pointer-events-auto"
+          data-hook={`${dataHook}-item-${toast.id}`}
+        >
           <Toast toast={toast} onDismiss={removeToast} dataHook={`${dataHook}-toast-${toast.id}`} />
         </div>
       ))}

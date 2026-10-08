@@ -1,16 +1,16 @@
-import React from 'react';
-import { FaMusic, FaUser, FaList } from 'react-icons/fa';
-import Image from '../image/Image';
+import React from "react";
+import { FaMusic, FaUser, FaList } from "react-icons/fa";
+import Image from "../image/Image";
 
 /**
  * Entity types for standardized fallback icons.
  */
-export type EntityType = 'song' | 'playlist' | 'user' | 'category' | 'generic';
+export type EntityType = "song" | "playlist" | "user" | "category" | "generic";
 
 /**
  * Aspect ratio presets for common use  cases.
  */
-export type AspectRatio = '1/1' | '16/9' | '4/3' | '3/2' | '2/3';
+export type AspectRatio = "1/1" | "16/9" | "4/3" | "3/2" | "2/3";
 
 interface SmartImageProps {
   /** Image source URL */
@@ -22,7 +22,7 @@ interface SmartImageProps {
   /** Aspect ratio (maintains layout integrity) */
   aspectRatio?: AspectRatio;
   /** Border radius */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "full";
   /** Additional CSS classes */
   className?: string;
   /** Custom fallback content */
@@ -35,16 +35,16 @@ interface SmartImageProps {
  */
 const getAspectRatioClass = (ratio: AspectRatio): string => {
   switch (ratio) {
-    case '1/1':
-      return 'aspect-square';
-    case '16/9':
-      return 'aspect-video';
-    case '4/3':
-      return 'aspect-[4/3]';
-    case '3/2':
-      return 'aspect-[3/2]';
-    case '2/3':
-      return 'aspect-[2/3]';
+    case "1/1":
+      return "aspect-square";
+    case "16/9":
+      return "aspect-video";
+    case "4/3":
+      return "aspect-[4/3]";
+    case "3/2":
+      return "aspect-[3/2]";
+    case "2/3":
+      return "aspect-[2/3]";
   }
 };
 
@@ -53,18 +53,18 @@ const getAspectRatioClass = (ratio: AspectRatio): string => {
  */
 const getFallbackIcon = (entityType: EntityType): React.ReactNode => {
   const iconClass = "w-1/3 h-1/3 max-w-12 max-h-12";
-  
+
   switch (entityType) {
-    case 'song':
+    case "song":
       return <FaMusic className={iconClass} />;
-    case 'playlist':
+    case "playlist":
       return <FaList className={iconClass} />;
-    case 'user':
+    case "user":
       return <FaUser className={iconClass} />;
-    case 'category':
+    case "category":
       return <FaMusic className={iconClass} />;
-    case 'generic':
-default:
+    case "generic":
+    default:
       return <FaMusic className={iconClass} />;
   }
 };
@@ -83,15 +83,15 @@ default:
  *
  * Usage:
  *   // Song/Video thumbnail
- *   <SmartImage 
- *     src={song.thumbnail} 
+ *   <SmartImage
+ *     src={song.thumbnail}
  *     alt={song.title}
  *     entityType="song"
  *     aspectRatio="16/9"
  *   />
  *
  *   // User avatar
- *   <SmartImage 
+ *   <SmartImage
  *     src={user.avatarUrl}
  *     alt={user.username}
  *     entityType="user"
@@ -100,7 +100,7 @@ default:
  *   />
  *
  *   // Playlist cover
- *   <SmartImage 
+ *   <SmartImage
  *     src={playlist.coverArtUrl}
  *     alt={playlist.name}
  *     entityType="playlist"
@@ -110,10 +110,10 @@ default:
 const SmartImage: React.FC<SmartImageProps> = ({
   src,
   alt,
-  entityType = 'generic',
-  aspectRatio = '1/1',
-  rounded = 'none',
-  className = '',
+  entityType = "generic",
+  aspectRatio = "1/1",
+  rounded = "none",
+  className = "",
   fallbackContent,
   dataHook,
 }) => {
@@ -125,7 +125,10 @@ const SmartImage: React.FC<SmartImageProps> = ({
   // If no src, show fallback immediately
   if (!src) {
     return (
-      <div data-hook={dataHook} className={`${containerClasses} flex items-center justify-center bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500 overflow-hidden`}>
+      <div
+        data-hook={dataHook}
+        className={`${containerClasses} flex items-center justify-center bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500 overflow-hidden`}
+      >
         {fallbackContent || getFallbackIcon(entityType)}
       </div>
     );
@@ -135,7 +138,7 @@ const SmartImage: React.FC<SmartImageProps> = ({
   return (
     <div className={containerClasses} data-hook={dataHook}>
       <Image
-      dataHook={dataHook ? `${dataHook}-image` : undefined}
+        dataHook={dataHook ? `${dataHook}-image` : undefined}
         src={src}
         alt={alt}
         rounded={rounded}

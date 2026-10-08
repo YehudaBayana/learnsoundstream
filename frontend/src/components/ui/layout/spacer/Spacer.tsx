@@ -35,21 +35,10 @@ interface SpacerProps {
  *   // Fixed horizontal space
  *   <Spacer size={4} axis="horizontal" />
  */
-const Spacer: React.FC<SpacerProps> = ({
-  size,
-  axis = "vertical",
-  className = "",
-  dataHook,
-}) => {
+const Spacer: React.FC<SpacerProps> = ({ size, axis = "vertical", className = "", dataHook }) => {
   // Flexible spacer (no size specified)
   if (size === undefined) {
-    return (
-      <div
-        className={`flex-1 ${className}`}
-        aria-hidden="true"
-        data-hook={dataHook}
-      />
-    );
+    return <div className={`flex-1 ${className}`} aria-hidden="true" data-hook={dataHook} />;
   }
 
   // Fixed size spacer

@@ -18,8 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Soundstream | High-Performance Music Streaming",
-  description:
-    "A premium music streaming experience powered by Go and Next.js.",
+  description: "A premium music streaming experience powered by Go and Next.js.",
 };
 
 export default function RootLayout({

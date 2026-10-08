@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import ContextMenu, { ContextMenuDivider, ContextMenuItem } from '../ContextMenu';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import ContextMenu, { ContextMenuDivider, ContextMenuItem } from "../ContextMenu";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface ContextMenuDriverProps {
   dataHook?: string;
@@ -11,7 +11,7 @@ export interface ContextMenuDriverProps {
 
 export class ContextMenuDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-context-menu';
+  private readonly defaultDataHook = "test-context-menu";
 
   render(props: ContextMenuDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -19,25 +19,28 @@ export class ContextMenuDriver {
       <ContextMenu
         dataHook={dataHook}
         disabled={props.disabled}
-        content={(
+        content={
           <>
-            <ContextMenuItem dataHook={`${dataHook}-first-item`} onClick={props.onFirstItemClick ?? jest.fn()}>
+            <ContextMenuItem
+              dataHook={`${dataHook}-first-item`}
+              onClick={props.onFirstItemClick ?? jest.fn()}
+            >
               First action
             </ContextMenuItem>
             <ContextMenuDivider dataHook={`${dataHook}-divider`} />
             <ContextMenuItem dataHook={`${dataHook}-second-item`}>Second action</ContextMenuItem>
           </>
-        )}
+        }
       >
         <span>Trigger</span>
-      </ContextMenu>
+      </ContextMenu>,
     );
     return this;
   }
 
   private getContainer(): HTMLElement {
     if (!this.renderResult) {
-      throw new Error('ContextMenuDriver: render() must be called before querying elements');
+      throw new Error("ContextMenuDriver: render() must be called before querying elements");
     }
     return this.renderResult.container;
   }
@@ -50,11 +53,11 @@ export class ContextMenuDriver {
     return queryByDataHook(document.body, `${dataHook}-menu`) !== null;
   }
 
-  hasItem(item: 'first' | 'second', dataHook = this.defaultDataHook): boolean {
+  hasItem(item: "first" | "second", dataHook = this.defaultDataHook): boolean {
     return queryByDataHook(document.body, `${dataHook}-${item}-item`) !== null;
   }
 
-  clickItem(item: 'first' | 'second', dataHook = this.defaultDataHook): void {
+  clickItem(item: "first" | "second", dataHook = this.defaultDataHook): void {
     fireEvent.click(getByDataHook(document.body, `${dataHook}-${item}-item`));
   }
 

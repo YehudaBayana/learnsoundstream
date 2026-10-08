@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Alert, { AlertVariant } from '../Alert';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Alert, { AlertVariant } from "../Alert";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface AlertDriverProps {
   dataHook?: string;
@@ -12,16 +12,20 @@ export interface AlertDriverProps {
 
 export class AlertDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-alert';
+  private readonly defaultDataHook = "test-alert";
 
   render(props: AlertDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
-    this.renderResult = render(<Alert {...props} dataHook={dataHook}>Message</Alert>);
+    this.renderResult = render(
+      <Alert {...props} dataHook={dataHook}>
+        Message
+      </Alert>,
+    );
     return this;
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
-    if (!this.renderResult) throw new Error('AlertDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("AlertDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 
@@ -34,12 +38,12 @@ export class AlertDriver {
   }
 
   hasDismissButton(dataHook = this.defaultDataHook): boolean {
-    if (!this.renderResult) throw new Error('AlertDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("AlertDriver: render() must be called before querying");
     return queryByDataHook(this.renderResult.container, `${dataHook}-dismiss`) !== null;
   }
 
   clickDismiss(dataHook = this.defaultDataHook): void {
-    if (!this.renderResult) throw new Error('AlertDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("AlertDriver: render() must be called before querying");
     fireEvent.click(getByDataHook(this.renderResult.container, `${dataHook}-dismiss`));
   }
 }

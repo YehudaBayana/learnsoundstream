@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useRef, useEffect, createContext, useContext } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * Menu placement options.
  */
-export type MenuPlacement = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+export type MenuPlacement = "bottom-start" | "bottom-end" | "top-start" | "top-end";
 
 // Context for menu state
 interface MenuContextValue {
@@ -17,7 +17,7 @@ const MenuContext = createContext<MenuContextValue | null>(null);
 const useMenuContext = () => {
   const context = useContext(MenuContext);
   if (!context) {
-    throw new Error('Menu components must be used within Menu');
+    throw new Error("Menu components must be used within Menu");
   }
   return context;
 };
@@ -47,7 +47,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   onClick,
   danger = false,
   disabled = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const { close } = useMenuContext();
@@ -70,11 +70,12 @@ export const MenuItem: React.FC<MenuItemProps> = ({
         flex items-center gap-3
         px-4 py-2
         text-sm text-left
-        ${danger
-          ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20'
-          : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+        ${
+          danger
+            ? "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+            : "text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
         }
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         transition-colors
         focus:outline-none focus:bg-gray-100 dark:focus:bg-slate-800
         ${className}
@@ -90,7 +91,10 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 // Menu Divider
 // ----------------------------------------------------------------------------
 
-export const MenuDivider: React.FC<{ className?: string; dataHook?: string }> = ({ className = '', dataHook }) => (
+export const MenuDivider: React.FC<{ className?: string; dataHook?: string }> = ({
+  className = "",
+  dataHook,
+}) => (
   <div
     role="separator"
     data-hook={dataHook}
@@ -108,7 +112,7 @@ interface MenuLabelProps {
   dataHook?: string;
 }
 
-export const MenuLabel: React.FC<MenuLabelProps> = ({ children, className = '', dataHook }) => (
+export const MenuLabel: React.FC<MenuLabelProps> = ({ children, className = "", dataHook }) => (
   <div
     data-hook={dataHook}
     className={`
@@ -130,9 +134,9 @@ interface MenuProps {
   /** Menu trigger button */
   trigger: React.ReactElement<{
     onClick?: (e: React.MouseEvent) => void;
-    'aria-haspopup'?: string;
-    'aria-expanded'?: boolean;
-    'data-hook'?: string;
+    "aria-haspopup"?: string;
+    "aria-expanded"?: boolean;
+    "data-hook"?: string;
   }>;
   /** Menu content (MenuItems) */
   children: React.ReactNode;
@@ -185,10 +189,10 @@ const Menu: React.FC<MenuProps> & {
 } = ({
   trigger,
   children,
-  placement = 'bottom-end',
+  placement = "bottom-end",
   closeOnOutsideClick = true,
   closeOnEscape = true,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -211,19 +215,19 @@ const Menu: React.FC<MenuProps> & {
       let left = 0;
 
       switch (placement) {
-        case 'bottom-start':
+        case "bottom-start":
           top = triggerRect.bottom + scrollY + 4;
           left = triggerRect.left + scrollX;
           break;
-        case 'bottom-end':
+        case "bottom-end":
           top = triggerRect.bottom + scrollY + 4;
           left = triggerRect.right + scrollX - menuRect.width;
           break;
-        case 'top-start':
+        case "top-start":
           top = triggerRect.top + scrollY - menuRect.height - 4;
           left = triggerRect.left + scrollX;
           break;
-        case 'top-end':
+        case "top-end":
           top = triggerRect.top + scrollY - menuRect.height - 4;
           left = triggerRect.right + scrollX - menuRect.width;
           break;
@@ -251,8 +255,8 @@ const Menu: React.FC<MenuProps> & {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, closeOnOutsideClick]);
 
   // Handle escape key
@@ -260,13 +264,13 @@ const Menu: React.FC<MenuProps> & {
     if (!isOpen || !closeOnEscape) return;
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         close();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, closeOnEscape]);
 
   // Clone trigger to add click handler
@@ -275,9 +279,9 @@ const Menu: React.FC<MenuProps> & {
       toggle();
       trigger.props.onClick?.(e);
     },
-    'aria-haspopup': 'menu',
-    'aria-expanded': isOpen,
-    'data-hook': dataHook ? `${dataHook}-trigger` : undefined,
+    "aria-haspopup": "menu",
+    "aria-expanded": isOpen,
+    "data-hook": dataHook ? `${dataHook}-trigger` : undefined,
   });
 
   const menu = isOpen
@@ -303,11 +307,9 @@ const Menu: React.FC<MenuProps> & {
             left: `${position.left}px`,
           }}
         >
-          <MenuContext.Provider value={{ isOpen, close }}>
-            {children}
-          </MenuContext.Provider>
+          <MenuContext.Provider value={{ isOpen, close }}>{children}</MenuContext.Provider>
         </div>,
-        document.body
+        document.body,
       )
     : null;
 

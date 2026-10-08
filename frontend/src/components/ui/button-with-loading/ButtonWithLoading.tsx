@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Button variant styles for different use cases.
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 
 /**
  * Button size options.
  */
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonWithLoadingProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Whether the button is in a loading state */
@@ -33,7 +33,7 @@ interface ButtonWithLoadingProps extends React.ButtonHTMLAttributes<HTMLButtonEl
  */
 const getVariantClasses = (variant: ButtonVariant): string => {
   switch (variant) {
-    case 'primary':
+    case "primary":
       return `
         bg-gradient-to-r from-emerald-600 to-teal-600
         hover:from-emerald-500 hover:to-teal-500
@@ -41,20 +41,20 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         shadow-lg shadow-emerald-500/25
         hover:shadow-xl hover:shadow-emerald-500/30
       `;
-    case 'secondary':
+    case "secondary":
       return `
         bg-gray-200 dark:bg-slate-700
         text-gray-700 dark:text-slate-300
         hover:bg-gray-300 dark:hover:bg-slate-600
       `;
-    case 'danger':
+    case "danger":
       return `
         bg-rose-600
         hover:bg-rose-500
         text-white font-medium
         shadow-lg shadow-rose-500/25
       `;
-    case 'ghost':
+    case "ghost":
       return `
         bg-transparent
         text-gray-600 dark:text-slate-400
@@ -69,12 +69,12 @@ const getVariantClasses = (variant: ButtonVariant): string => {
  */
 const getSizeClasses = (size: ButtonSize): string => {
   switch (size) {
-    case 'sm':
-      return 'px-3 py-1.5 text-sm rounded-lg';
-    case 'md':
-      return 'px-4 py-2 text-base rounded-xl';
-    case 'lg':
-      return 'px-6 py-3 text-lg rounded-xl';
+    case "sm":
+      return "px-3 py-1.5 text-sm rounded-lg";
+    case "md":
+      return "px-4 py-2 text-base rounded-xl";
+    case "lg":
+      return "px-6 py-3 text-lg rounded-xl";
   }
 };
 
@@ -83,12 +83,12 @@ const getSizeClasses = (size: ButtonSize): string => {
  */
 const getSpinnerSize = (size: ButtonSize): string => {
   switch (size) {
-    case 'sm':
-      return 'w-3.5 h-3.5';
-    case 'md':
-      return 'w-4 h-4';
-    case 'lg':
-      return 'w-5 h-5';
+    case "sm":
+      return "w-3.5 h-3.5";
+    case "md":
+      return "w-4 h-4";
+    case "lg":
+      return "w-5 h-5";
   }
 };
 
@@ -130,13 +130,13 @@ const ButtonWithLoading: React.FC<ButtonWithLoadingProps> = ({
   children,
   loading = false,
   loadingText,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   leftIcon,
   rightIcon,
   fullWidth = false,
   disabled,
-  className = '',
+  className = "",
   dataHook,
   ...props
 }) => {
@@ -151,8 +151,8 @@ const ButtonWithLoading: React.FC<ButtonWithLoadingProps> = ({
         transition-all duration-200
         ${getVariantClasses(variant)}
         ${getSizeClasses(size)}
-        ${fullWidth ? 'w-full' : ''}
-        ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+        ${fullWidth ? "w-full" : ""}
+        ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
         ${className}
       `}
       {...props}

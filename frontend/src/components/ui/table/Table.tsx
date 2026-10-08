@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Table size options.
  */
-export type TableSize = 'sm' | 'md' | 'lg';
+export type TableSize = "sm" | "md" | "lg";
 
 /**
  * Sort direction.
  */
-export type SortDirection = 'asc' | 'desc' | null;
+export type SortDirection = "asc" | "desc" | null;
 
 // ----------------------------------------------------------------------------
 // Table Head
@@ -19,7 +19,7 @@ interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   dataHook?: string;
 }
 
-const TableHead: React.FC<TableHeadProps> = ({ children, className = '', dataHook, ...props }) => (
+const TableHead: React.FC<TableHeadProps> = ({ children, className = "", dataHook, ...props }) => (
   <thead
     className={`
       bg-gray-50 dark:bg-slate-800
@@ -42,7 +42,7 @@ interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   dataHook?: string;
 }
 
-const TableBody: React.FC<TableBodyProps> = ({ children, className = '', dataHook, ...props }) => (
+const TableBody: React.FC<TableBodyProps> = ({ children, className = "", dataHook, ...props }) => (
   <tbody
     className={`
       divide-y divide-gray-100 dark:divide-slate-800
@@ -66,33 +66,30 @@ interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   dataHook?: string;
 }
 
-const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({
-  children,
-  selected = false,
-  hoverable = true,
-  onClick,
-  dataHook,
-  className = '',
-  ...props
-}, ref) => (
-  <tr
-    ref={ref}
-    onClick={onClick}
-    data-hook={dataHook}
-    className={`
-      ${selected ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-white dark:bg-slate-900'}
-      ${hoverable ? 'hover:bg-gray-50 dark:hover:bg-slate-800/50' : ''}
-      ${onClick ? 'cursor-pointer' : ''}
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  (
+    { children, selected = false, hoverable = true, onClick, dataHook, className = "", ...props },
+    ref,
+  ) => (
+    <tr
+      ref={ref}
+      onClick={onClick}
+      data-hook={dataHook}
+      className={`
+      ${selected ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-white dark:bg-slate-900"}
+      ${hoverable ? "hover:bg-gray-50 dark:hover:bg-slate-800/50" : ""}
+      ${onClick ? "cursor-pointer" : ""}
       transition-colors
       ${className}
     `}
-    {...props}
-  >
-    {children}
-  </tr>
-));
+      {...props}
+    >
+      {children}
+    </tr>
+  ),
+);
 
-TableRow.displayName = 'Table.Row';
+TableRow.displayName = "Table.Row";
 
 // ----------------------------------------------------------------------------
 // Table Header Cell
@@ -107,7 +104,7 @@ interface TableThProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   /** Called when header is clicked for sorting */
   onSort?: () => void;
   /** Text alignment */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   /** Column width */
   width?: string | number;
   dataHook?: string;
@@ -118,17 +115,18 @@ const TableTh: React.FC<TableThProps> = ({
   sortable = false,
   sortDirection = null,
   onSort,
-  align = 'left',
+  align = "left",
   width,
   dataHook,
-  className = '',
+  className = "",
   ...props
 }) => {
-  const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
+  const alignClass =
+    align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
 
   const style: React.CSSProperties = {
     ...props.style,
-    width: typeof width === 'number' ? `${width}px` : width,
+    width: typeof width === "number" ? `${width}px` : width,
   };
 
   return (
@@ -142,7 +140,7 @@ const TableTh: React.FC<TableThProps> = ({
         text-xs font-semibold uppercase tracking-wider
         text-gray-500 dark:text-slate-400
         ${alignClass}
-        ${sortable ? 'cursor-pointer hover:text-gray-700 dark:hover:text-slate-200 select-none' : ''}
+        ${sortable ? "cursor-pointer hover:text-gray-700 dark:hover:text-slate-200 select-none" : ""}
         ${className}
       `}
       {...props}
@@ -152,14 +150,14 @@ const TableTh: React.FC<TableThProps> = ({
         {sortable && (
           <span className="inline-flex flex-col">
             <svg
-              className={`w-3 h-3 -mb-1 ${sortDirection === 'asc' ? 'text-emerald-500' : 'text-gray-300 dark:text-slate-600'}`}
+              className={`w-3 h-3 -mb-1 ${sortDirection === "asc" ? "text-emerald-500" : "text-gray-300 dark:text-slate-600"}`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
               <path d="M5 12l5-5 5 5H5z" />
             </svg>
             <svg
-              className={`w-3 h-3 -mt-1 ${sortDirection === 'desc' ? 'text-emerald-500' : 'text-gray-300 dark:text-slate-600'}`}
+              className={`w-3 h-3 -mt-1 ${sortDirection === "desc" ? "text-emerald-500" : "text-gray-300 dark:text-slate-600"}`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -179,18 +177,19 @@ const TableTh: React.FC<TableThProps> = ({
 interface TableTdProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   children?: React.ReactNode;
   /** Text alignment */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   dataHook?: string;
 }
 
 const TableTd: React.FC<TableTdProps> = ({
   children,
-  align = 'left',
+  align = "left",
   dataHook,
-  className = '',
+  className = "",
   ...props
 }) => {
-  const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
+  const alignClass =
+    align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
 
   return (
     <td
@@ -233,12 +232,12 @@ interface TableProps {
  */
 const getSizeClasses = (size: TableSize): string => {
   switch (size) {
-    case 'sm':
-      return '[&_th]:px-3 [&_th]:py-2 [&_td]:px-3 [&_td]:py-2 [&_td]:text-xs';
-    case 'md':
-      return '';
-    case 'lg':
-      return '[&_th]:px-6 [&_th]:py-4 [&_td]:px-6 [&_td]:py-4';
+    case "sm":
+      return "[&_th]:px-3 [&_th]:py-2 [&_td]:px-3 [&_td]:py-2 [&_td]:text-xs";
+    case "md":
+      return "";
+    case "lg":
+      return "[&_th]:px-6 [&_th]:py-4 [&_td]:px-6 [&_td]:py-4";
   }
 };
 
@@ -284,27 +283,31 @@ interface TableComponent extends React.FC<TableProps> {
  */
 const Table: TableComponent = ({
   children,
-  size = 'md',
+  size = "md",
   fixed = false,
   bordered = false,
   striped = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const classes = [
-    'w-full',
-    fixed ? 'table-fixed' : 'table-auto',
-    bordered ? 'border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden' : '',
-    striped ? '[&_tbody_tr:nth-child(even)]:bg-gray-50 dark:[&_tbody_tr:nth-child(even)]:bg-slate-800/30' : '',
+    "w-full",
+    fixed ? "table-fixed" : "table-auto",
+    bordered ? "border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden" : "",
+    striped
+      ? "[&_tbody_tr:nth-child(even)]:bg-gray-50 dark:[&_tbody_tr:nth-child(even)]:bg-slate-800/30"
+      : "",
     getSizeClasses(size),
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <div className="overflow-x-auto" data-hook={dataHook}>
-      <table className={classes} data-hook={dataHook ? `${dataHook}-table` : undefined}>{children}</table>
+      <table className={classes} data-hook={dataHook ? `${dataHook}-table` : undefined}>
+        {children}
+      </table>
     </div>
   );
 };

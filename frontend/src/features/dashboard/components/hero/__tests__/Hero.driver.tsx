@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Hero from '../Hero';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Hero from "../Hero";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface HeroDriverProps {
   dataHook?: string;
@@ -10,17 +10,22 @@ export interface HeroDriverProps {
 
 export class HeroDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'dashboard-hero';
+  private readonly defaultDataHook = "dashboard-hero";
 
   render(props: HeroDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
-    this.renderResult = render(<Hero dataHook={dataHook} onStartListening={props.onStartListening ?? jest.fn()}
-      onExploreTracks={props.onExploreTracks ?? jest.fn()} />);
+    this.renderResult = render(
+      <Hero
+        dataHook={dataHook}
+        onStartListening={props.onStartListening ?? jest.fn()}
+        onExploreTracks={props.onExploreTracks ?? jest.fn()}
+      />,
+    );
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('HeroDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("HeroDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

@@ -1,22 +1,23 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import DashboardShell from '../DashboardShell';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import DashboardShell from "../DashboardShell";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class DashboardShellDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'dashboard-shell';
+  private readonly defaultDataHook = "dashboard-shell";
 
   render(dataHook = this.defaultDataHook): this {
     this.renderResult = render(
       <DashboardShell dataHook={dataHook}>
         <div data-hook={`${dataHook}-child`}>Page content</div>
-      </DashboardShell>
+      </DashboardShell>,
     );
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('DashboardShellDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("DashboardShellDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

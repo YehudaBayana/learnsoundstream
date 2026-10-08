@@ -1,10 +1,10 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import ServerStatus from '../ServerStatus';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { act, fireEvent, render, RenderResult } from "@testing-library/react";
+import ServerStatus from "../ServerStatus";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class ServerStatusDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'server-status';
+  private readonly defaultDataHook = "server-status";
 
   render(dataHook = this.defaultDataHook): this {
     this.renderResult = render(<ServerStatus dataHook={dataHook} />);
@@ -12,12 +12,13 @@ export class ServerStatusDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('ServerStatusDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("ServerStatusDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
   getConnectionStatus(dataHook = this.defaultDataHook): string {
-    return getByDataHook(this.getContainer(), `${dataHook}-connection`).textContent?.trim() ?? '';
+    return getByDataHook(this.getContainer(), `${dataHook}-connection`).textContent?.trim() ?? "";
   }
 
   isPanelOpen(dataHook = this.defaultDataHook): boolean {

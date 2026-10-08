@@ -94,15 +94,9 @@ const Divider: React.FC<DividerProps> = ({
           ${className}
         `}
       >
-        <div
-          className={`flex-1 border-t ${getVariantClasses(variant)} ${color}`}
-        />
-        <span className="px-4 text-sm text-gray-500 dark:text-slate-400">
-          {children}
-        </span>
-        <div
-          className={`flex-1 border-t ${getVariantClasses(variant)} ${color}`}
-        />
+        <div className={`flex-1 border-t ${getVariantClasses(variant)} ${color}`} />
+        <span className="px-4 text-sm text-gray-500 dark:text-slate-400">{children}</span>
+        <div className={`flex-1 border-t ${getVariantClasses(variant)} ${color}`} />
       </div>
     );
   }

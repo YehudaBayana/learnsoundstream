@@ -23,10 +23,7 @@ export const PlaylistCard = ({ onClick, pl: playlist, dataHook }: PlaylistCardPr
       dataHook={dataHook}
       className="bg-[var(--bg-surface)] border border-[var(--border-default)] hover:border-emerald-500/50 transition-all duration-300 group flex flex-col h-full overflow-hidden"
     >
-      <Card.Body
-        padding="sm"
-        className="flex flex-col h-full justify-between gap-3"
-      >
+      <Card.Body padding="sm" className="flex flex-col h-full justify-between gap-3">
         <Flex direction="col" gap={2}>
           <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)]">
             {playlist.thumbnails.length > 0 ? (
@@ -38,11 +35,7 @@ export const PlaylistCard = ({ onClick, pl: playlist, dataHook }: PlaylistCardPr
                 className="w-full h-full group-hover:scale-105 transition-transform duration-300"
               />
             ) : (
-              <Flex
-                align="center"
-                justify="center"
-                className="w-full h-full text-2xl"
-              >
+              <Flex align="center" justify="center" className="w-full h-full text-2xl">
                 🎶
               </Flex>
             )}
@@ -67,11 +60,7 @@ export const PlaylistCard = ({ onClick, pl: playlist, dataHook }: PlaylistCardPr
           align="center"
           className="pt-2 border-t border-[var(--border-subtle)]"
         >
-          <Text
-            variant="caption"
-            color="muted"
-            className="truncate max-w-[130px] text-[11px]"
-          >
+          <Text variant="caption" color="muted" className="truncate max-w-[130px] text-[11px]">
             {playlist.channel || playlist.uploader || "YouTube"}
           </Text>
           <Text

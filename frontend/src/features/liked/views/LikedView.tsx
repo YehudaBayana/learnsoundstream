@@ -16,12 +16,24 @@ export default function LikedView({ dataHook = "liked-view-container" }: LikedVi
   const tracks = useLikedStore((state) => state.likedTracks);
   return (
     <Box className="p-10 flex flex-col gap-4" dataHook={dataHook}>
-      <Text variant="h1" dataHook="liked-view-heading">Liked</Text>
-      {isPending && <Text role="status" dataHook="liked-loading-text">Loading liked tracks...</Text>}
+      <Text variant="h1" dataHook="liked-view-heading">
+        Liked
+      </Text>
+      {isPending && (
+        <Text role="status" dataHook="liked-loading-text">
+          Loading liked tracks...
+        </Text>
+      )}
       {isError && tracks.length === 0 && (
         <Box className="flex items-center gap-3" dataHook="liked-error-container">
-          <Text role="alert" dataHook="liked-error-text">{"Could not load liked tracks."}</Text>
-          <button type="button" onClick={() => refetch && void refetch()} data-hook="liked-retry-button">
+          <Text role="alert" dataHook="liked-error-text">
+            {"Could not load liked tracks."}
+          </Text>
+          <button
+            type="button"
+            onClick={() => refetch && void refetch()}
+            data-hook="liked-retry-button"
+          >
             Try again
           </button>
         </Box>
@@ -30,17 +42,18 @@ export default function LikedView({ dataHook = "liked-view-container" }: LikedVi
         <Text dataHook="liked-empty-text">No listening liked tracks yet.</Text>
       )}
       {tracks.map((track, index) => (
-        <TrackItem
-          track={track}
-          index={index}
-          key={`${track.id}-${index}`}
-          showCover
-        />
+        <TrackItem track={track} index={index} key={`${track.id}-${index}`} showCover />
       ))}
       {isError && tracks.length > 0 && (
         <Box className="flex items-center gap-3" dataHook="liked-loadmore-error-container">
-          <Text role="alert" dataHook="liked-loadmore-error-text">Could not load more liked tracks.</Text>
-          <button type="button" onClick={() => refetch && void refetch()} data-hook="liked-loadmore-retry-button">
+          <Text role="alert" dataHook="liked-loadmore-error-text">
+            Could not load more liked tracks.
+          </Text>
+          <button
+            type="button"
+            onClick={() => refetch && void refetch()}
+            data-hook="liked-loadmore-retry-button"
+          >
             Retry
           </button>
         </Box>

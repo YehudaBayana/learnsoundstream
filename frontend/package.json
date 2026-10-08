@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --format json | remove-unused-vars && eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "jest"
   },
   "dependencies": {
@@ -35,10 +37,12 @@
     "autoprefixer": "^10.5.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.6",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.4.1",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "postcss": "^8.5.14",
+    "prettier": "^3.9.9",
     "react-icons": "^5.7.0",
     "remove-unused-vars": "0.0.15",
     "tailwindcss": "^4.3.0",

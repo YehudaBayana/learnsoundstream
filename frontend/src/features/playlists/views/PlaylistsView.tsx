@@ -1,15 +1,11 @@
-'use client';
+"use client";
 
-import Box from '@/components/ui/layout/Box';
+import Box from "@/components/ui/layout/Box";
 
 interface PlaylistsViewProps {
   dataHook?: string;
 }
 
-export default function PlaylistsView({ dataHook = 'playlists-view' }: PlaylistsViewProps) {
-  return (
-    <Box dataHook={dataHook}>
-      hello world
-    </Box>
-  );
+export default function PlaylistsView({ dataHook = "playlists-view" }: PlaylistsViewProps) {
+  return <Box dataHook={dataHook}>hello world</Box>;
 }

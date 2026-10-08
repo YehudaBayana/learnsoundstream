@@ -10,12 +10,7 @@ export * from "./tokens";
 // Typography
 // ============================================================================
 export { default as Text } from "./text/Text";
-export type {
-  TextVariant,
-  TextColor,
-  TextWeight,
-  TextAlign,
-} from "./text/Text";
+export type { TextVariant, TextColor, TextWeight, TextAlign } from "./text/Text";
 
 export { default as Heading } from "./heading/Heading";
 export type {

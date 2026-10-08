@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import FileInput, { FileInputVariant } from '../FileInput';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import FileInput, { FileInputVariant } from "../FileInput";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface FileInputDriverProps {
   dataHook?: string;
@@ -14,7 +14,7 @@ export interface FileInputDriverProps {
 
 export class FileInputDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-file-input';
+  private readonly defaultDataHook = "test-file-input";
 
   render(props: FileInputDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -23,7 +23,8 @@ export class FileInputDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('FileInputDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("FileInputDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -44,17 +45,19 @@ export class FileInputDriver {
   }
 
   spyOnInputClick(dataHook = this.defaultDataHook): jest.SpyInstance {
-    return jest.spyOn(getByDataHook(this.getContainer(), `${dataHook}-input`), 'click');
+    return jest.spyOn(getByDataHook(this.getContainer(), `${dataHook}-input`), "click");
   }
 
-  selectFile(fileName = 'track.wav', dataHook = this.defaultDataHook): void {
-    const selectedFile = new File(['audio'], fileName, { type: 'audio/wav' });
+  selectFile(fileName = "track.wav", dataHook = this.defaultDataHook): void {
+    const selectedFile = new File(["audio"], fileName, { type: "audio/wav" });
     fireEvent.change(getByDataHook(this.getContainer(), `${dataHook}-input`), {
       target: { files: [selectedFile] },
     });
   }
 
   getSelectedFiles(dataHook = this.defaultDataHook): string {
-    return queryByDataHook(this.getContainer(), `${dataHook}-selected-files`)?.textContent?.trim() ?? '';
+    return (
+      queryByDataHook(this.getContainer(), `${dataHook}-selected-files`)?.textContent?.trim() ?? ""
+    );
   }
 }

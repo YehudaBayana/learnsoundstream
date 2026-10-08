@@ -1,38 +1,39 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Text variant types defining different typographic styles.
  */
-export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'body-sm' | 'small' | 'caption' | 'label' | 'lead';
+export type TextVariant =
+  "h1" | "h2" | "h3" | "h4" | "body" | "body-sm" | "small" | "caption" | "label" | "lead";
 
 /**
  * Available text colors.
  */
 export type TextColor =
-  | 'default' // Gray-900 in light, white in dark
-  | 'muted' // Gray-500/slate-400
-  | 'primary' // Brand green
-  | 'secondary' // Teal
-  | 'danger' // Red
-  | 'warning' // Amber
-  | 'success' // Green
-  | 'info' // Blue
-  | 'inherit'; // Inherit from parent
+  | "default" // Gray-900 in light, white in dark
+  | "muted" // Gray-500/slate-400
+  | "primary" // Brand green
+  | "secondary" // Teal
+  | "danger" // Red
+  | "warning" // Amber
+  | "success" // Green
+  | "info" // Blue
+  | "inherit"; // Inherit from parent
 
 /**
  * Font weight options.
  */
-export type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold';
+export type TextWeight = "normal" | "medium" | "semibold" | "bold";
 
 /**
  * Text alignment options.
  */
-export type TextAlign = 'left' | 'center' | 'right' | 'justify';
+export type TextAlign = "left" | "center" | "right" | "justify";
 
 /**
  * Allowed HTML elements for Text component.
  */
-type TextElement = 'p' | 'span' | 'div' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+type TextElement = "p" | "span" | "div" | "label" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 interface TextProps extends React.HTMLAttributes<HTMLElement> {
   /** Text content */
@@ -62,26 +63,26 @@ interface TextProps extends React.HTMLAttributes<HTMLElement> {
  */
 const getVariantClasses = (variant: TextVariant): string => {
   switch (variant) {
-    case 'h1':
-      return 'text-4xl font-bold leading-tight';
-    case 'h2':
-      return 'text-3xl font-bold leading-tight';
-    case 'h3':
-      return 'text-2xl font-bold leading-tight';
-    case 'h4':
-      return 'text-xl font-bold leading-tight';
-    case 'lead':
-      return 'text-lg leading-relaxed';
-    case 'body':
-      return 'text-base leading-normal';
-    case 'body-sm':
-      return 'text-sm leading-normal';
-    case 'small':
-      return 'text-xs leading-normal';
-    case 'caption':
-      return 'text-xs leading-normal';
-    case 'label':
-      return 'text-sm leading-normal font-medium';
+    case "h1":
+      return "text-4xl font-bold leading-tight";
+    case "h2":
+      return "text-3xl font-bold leading-tight";
+    case "h3":
+      return "text-2xl font-bold leading-tight";
+    case "h4":
+      return "text-xl font-bold leading-tight";
+    case "lead":
+      return "text-lg leading-relaxed";
+    case "body":
+      return "text-base leading-normal";
+    case "body-sm":
+      return "text-sm leading-normal";
+    case "small":
+      return "text-xs leading-normal";
+    case "caption":
+      return "text-xs leading-normal";
+    case "label":
+      return "text-sm leading-normal font-medium";
   }
 };
 
@@ -90,29 +91,29 @@ const getVariantClasses = (variant: TextVariant): string => {
  */
 const getColorClasses = (color: TextColor, variant: TextVariant): string => {
   // Caption variant defaults to muted color
-  if (variant === 'caption' && color === 'default') {
-    return 'text-gray-500 dark:text-slate-400';
+  if (variant === "caption" && color === "default") {
+    return "text-gray-500 dark:text-slate-400";
   }
 
   switch (color) {
-    case 'default':
-      return 'text-gray-900 dark:text-white';
-    case 'muted':
-      return 'text-gray-500 dark:text-slate-400';
-    case 'primary':
-      return 'text-emerald-600 dark:text-emerald-400';
-    case 'secondary':
-      return 'text-teal-600 dark:text-teal-400';
-    case 'danger':
-      return 'text-rose-600 dark:text-rose-400';
-    case 'warning':
-      return 'text-amber-600 dark:text-amber-400';
-    case 'success':
-      return 'text-green-600 dark:text-green-400';
-    case 'info':
-      return 'text-blue-600 dark:text-blue-400';
-    case 'inherit':
-      return '';
+    case "default":
+      return "text-gray-900 dark:text-white";
+    case "muted":
+      return "text-gray-500 dark:text-slate-400";
+    case "primary":
+      return "text-emerald-600 dark:text-emerald-400";
+    case "secondary":
+      return "text-teal-600 dark:text-teal-400";
+    case "danger":
+      return "text-rose-600 dark:text-rose-400";
+    case "warning":
+      return "text-amber-600 dark:text-amber-400";
+    case "success":
+      return "text-green-600 dark:text-green-400";
+    case "info":
+      return "text-blue-600 dark:text-blue-400";
+    case "inherit":
+      return "";
   }
 };
 
@@ -120,17 +121,17 @@ const getColorClasses = (color: TextColor, variant: TextVariant): string => {
  * Get Tailwind classes for font weight.
  */
 const getWeightClasses = (weight?: TextWeight): string => {
-  if (!weight) return '';
+  if (!weight) return "";
 
   switch (weight) {
-    case 'normal':
-      return 'font-normal';
-    case 'medium':
-      return 'font-medium';
-    case 'semibold':
-      return 'font-semibold';
-    case 'bold':
-      return 'font-bold';
+    case "normal":
+      return "font-normal";
+    case "medium":
+      return "font-medium";
+    case "semibold":
+      return "font-semibold";
+    case "bold":
+      return "font-bold";
   }
 };
 
@@ -138,17 +139,17 @@ const getWeightClasses = (weight?: TextWeight): string => {
  * Get Tailwind classes for text alignment.
  */
 const getAlignClasses = (align?: TextAlign): string => {
-  if (!align) return '';
+  if (!align) return "";
 
   switch (align) {
-    case 'left':
-      return 'text-left';
-    case 'center':
-      return 'text-center';
-    case 'right':
-      return 'text-right';
-    case 'justify':
-      return 'text-justify';
+    case "left":
+      return "text-left";
+    case "center":
+      return "text-center";
+    case "right":
+      return "text-right";
+    case "justify":
+      return "text-justify";
   }
 };
 
@@ -157,22 +158,22 @@ const getAlignClasses = (align?: TextAlign): string => {
  */
 const getDefaultElement = (variant: TextVariant): TextElement => {
   switch (variant) {
-    case 'h1':
-      return 'h1';
-    case 'h2':
-      return 'h2';
-    case 'h3':
-      return 'h3';
-    case 'h4':
-      return 'h4';
-    case 'body':
-    case 'body-sm':
-    case 'lead':
-      return 'p';
-    case 'label':
-      return 'label';
+    case "h1":
+      return "h1";
+    case "h2":
+      return "h2";
+    case "h3":
+      return "h3";
+    case "h4":
+      return "h4";
+    case "body":
+    case "body-sm":
+    case "lead":
+      return "p";
+    case "label":
+      return "label";
     default:
-      return 'span';
+      return "span";
   }
 };
 
@@ -189,13 +190,13 @@ const getDefaultElement = (variant: TextVariant): TextElement => {
  */
 const Text: React.FC<TextProps> = ({
   children,
-  variant = 'body',
-  color = 'default',
+  variant = "body",
+  color = "default",
   weight,
   align,
   truncate = false,
   as,
-  className = '',
+  className = "",
   htmlFor,
   dataHook,
   ...props
@@ -205,20 +206,20 @@ const Text: React.FC<TextProps> = ({
     getColorClasses(color, variant),
     getWeightClasses(weight),
     getAlignClasses(align),
-    truncate ? 'truncate' : '',
+    truncate ? "truncate" : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   const element = as || getDefaultElement(variant);
-  const elementProps: Record<string, unknown> = { 
+  const elementProps: Record<string, unknown> = {
     ...props,
-    'data-hook': dataHook,
-    className: classes 
+    "data-hook": dataHook,
+    className: classes,
   };
-  
-  if (element === 'label') {
+
+  if (element === "label") {
     elementProps.htmlFor = htmlFor;
   }
 

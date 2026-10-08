@@ -1,9 +1,9 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 /**
  * Select size options.
  */
-export type SelectSize = 'sm' | 'md' | 'lg';
+export type SelectSize = "sm" | "md" | "lg";
 
 /**
  * Select option type.
@@ -14,7 +14,7 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size"> {
   /** Select size */
   size?: SelectSize;
   /** Whether the select has an error */
@@ -35,12 +35,12 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
  */
 const getSizeClasses = (size: SelectSize): string => {
   switch (size) {
-    case 'sm':
-      return 'h-8 text-sm px-3 pr-8';
-    case 'md':
-      return 'h-10 text-base px-4 pr-10';
-    case 'lg':
-      return 'h-12 text-lg px-5 pr-12';
+    case "sm":
+      return "h-8 text-sm px-3 pr-8";
+    case "md":
+      return "h-10 text-base px-4 pr-10";
+    case "lg":
+      return "h-12 text-lg px-5 pr-12";
   }
 };
 
@@ -49,12 +49,12 @@ const getSizeClasses = (size: SelectSize): string => {
  */
 const getStateClasses = (error: boolean): string => {
   const focusRing = error
-    ? 'focus:ring-rose-500 focus:border-rose-500'
-    : 'focus:ring-emerald-500 focus:border-emerald-500';
+    ? "focus:ring-rose-500 focus:border-rose-500"
+    : "focus:ring-emerald-500 focus:border-emerald-500";
 
   return `
     bg-white dark:bg-slate-800
-    border ${error ? 'border-rose-500' : 'border-gray-300 dark:border-slate-600'}
+    border ${error ? "border-rose-500" : "border-gray-300 dark:border-slate-600"}
     rounded-lg
     ${focusRing}
     focus:ring-2 focus:ring-offset-0
@@ -84,39 +84,39 @@ const getStateClasses = (error: boolean): string => {
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
-      size = 'md',
+      size = "md",
       error = false,
       placeholder,
       options,
       disabled,
-      className = '',
+      className = "",
       children,
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const classes = [
-      'w-full',
-      'appearance-none',
-      'transition-colors duration-200',
-      'text-gray-900 dark:text-white',
-      'cursor-pointer',
+      "w-full",
+      "appearance-none",
+      "transition-colors duration-200",
+      "text-gray-900 dark:text-white",
+      "cursor-pointer",
       getSizeClasses(size),
       getStateClasses(error),
-      disabled ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900' : '',
-      'focus:outline-none',
-      'bg-no-repeat',
+      disabled ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900" : "",
+      "focus:outline-none",
+      "bg-no-repeat",
       className,
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     // Custom dropdown arrow using SVG as background
     const arrowStyle: React.CSSProperties = {
       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`,
-      backgroundPosition: `right ${size === 'sm' ? '0.5rem' : size === 'md' ? '0.75rem' : '1rem'} center`,
-      backgroundSize: '1.25em 1.25em',
+      backgroundPosition: `right ${size === "sm" ? "0.5rem" : size === "md" ? "0.75rem" : "1rem"} center`,
+      backgroundSize: "1.25em 1.25em",
     };
 
     return (
@@ -143,9 +143,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           : children}
       </select>
     );
-  }
+  },
 );
 
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
 export default Select;

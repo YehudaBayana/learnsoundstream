@@ -1,16 +1,19 @@
-import React, { forwardRef, useRef, useState } from 'react';
+import React, { forwardRef, useRef, useState } from "react";
 
 /**
  * FileInput size options.
  */
-export type FileInputSize = 'sm' | 'md' | 'lg';
+export type FileInputSize = "sm" | "md" | "lg";
 
 /**
  * FileInput variant options.
  */
-export type FileInputVariant = 'button' | 'dropzone';
+export type FileInputVariant = "button" | "dropzone";
 
-interface FileInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+interface FileInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "size" | "type"
+> {
   /** Input size */
   size?: FileInputSize;
   /** Input variant */
@@ -39,12 +42,12 @@ interface FileInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
  */
 const getButtonSizeClasses = (size: FileInputSize): string => {
   switch (size) {
-    case 'sm':
-      return 'px-3 py-1.5 text-sm';
-    case 'md':
-      return 'px-4 py-2 text-base';
-    case 'lg':
-      return 'px-6 py-3 text-lg';
+    case "sm":
+      return "px-3 py-1.5 text-sm";
+    case "md":
+      return "px-4 py-2 text-base";
+    case "lg":
+      return "px-6 py-3 text-lg";
   }
 };
 
@@ -53,12 +56,12 @@ const getButtonSizeClasses = (size: FileInputSize): string => {
  */
 const getDropzoneSizeClasses = (size: FileInputSize): string => {
   switch (size) {
-    case 'sm':
-      return 'p-6';
-    case 'md':
-      return 'p-8';
-    case 'lg':
-      return 'p-12';
+    case "sm":
+      return "p-6";
+    case "md":
+      return "p-8";
+    case "lg":
+      return "p-12";
   }
 };
 
@@ -84,23 +87,23 @@ const getDropzoneSizeClasses = (size: FileInputSize): string => {
 const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
   (
     {
-      size = 'md',
-      variant = 'button',
+      size = "md",
+      variant = "button",
       error = false,
       helperText,
-      buttonText = 'Choose File',
-      dropzoneText = 'Drop files here or click to upload',
+      buttonText = "Choose File",
+      dropzoneText = "Drop files here or click to upload",
       dropzoneSubtext,
       icon,
       onFilesChange,
       disabled,
-      className = '',
+      className = "",
       accept,
       multiple,
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -157,7 +160,7 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
 
     const defaultIcon = (
       <svg
-        className={`${size === 'sm' ? 'w-6 h-6' : size === 'md' ? 'w-8 h-8' : 'w-10 h-10'} text-gray-400`}
+        className={`${size === "sm" ? "w-6 h-6" : size === "md" ? "w-8 h-8" : "w-10 h-10"} text-gray-400`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -171,23 +174,23 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
       </svg>
     );
 
-    if (variant === 'dropzone') {
+    if (variant === "dropzone") {
       const dropzoneClasses = [
-        'flex flex-col items-center justify-center',
+        "flex flex-col items-center justify-center",
         getDropzoneSizeClasses(size),
-        'border-2 border-dashed rounded-xl',
-        'transition-colors duration-200',
-        'cursor-pointer',
+        "border-2 border-dashed rounded-xl",
+        "transition-colors duration-200",
+        "cursor-pointer",
         isDragging
-          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20"
           : error
-            ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20'
-            : 'border-gray-300 dark:border-slate-600 hover:border-gray-400 dark:hover:border-slate-500',
-        disabled ? 'opacity-50 cursor-not-allowed' : '',
+            ? "border-rose-500 bg-rose-50 dark:bg-rose-900/20"
+            : "border-gray-300 dark:border-slate-600 hover:border-gray-400 dark:hover:border-slate-500",
+        disabled ? "opacity-50 cursor-not-allowed" : "",
         className,
       ]
         .filter(Boolean)
-        .join(' ');
+        .join(" ");
 
       return (
         <div
@@ -211,14 +214,14 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
           />
           {icon || defaultIcon}
           <p className="mt-2 text-sm font-medium text-gray-700 dark:text-slate-300">
-            {selectedFiles.length > 0 ? selectedFiles.join(', ') : dropzoneText}
+            {selectedFiles.length > 0 ? selectedFiles.join(", ") : dropzoneText}
           </p>
           {dropzoneSubtext && (
             <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">{dropzoneSubtext}</p>
           )}
           {helperText && (
             <p
-              className={`mt-2 text-xs ${error ? 'text-rose-500' : 'text-gray-500 dark:text-slate-400'}`}
+              className={`mt-2 text-xs ${error ? "text-rose-500" : "text-gray-500 dark:text-slate-400"}`}
             >
               {helperText}
             </p>
@@ -229,19 +232,19 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
 
     // Button variant
     const buttonClasses = [
-      'inline-flex items-center justify-center gap-2',
+      "inline-flex items-center justify-center gap-2",
       getButtonSizeClasses(size),
-      'rounded-lg',
-      'transition-colors duration-200',
-      'cursor-pointer',
-      'bg-gray-200 dark:bg-slate-700',
-      'text-gray-700 dark:text-slate-300',
-      'hover:bg-gray-300 dark:hover:bg-slate-600',
-      error ? 'ring-2 ring-rose-500' : '',
-      disabled ? 'opacity-50 cursor-not-allowed' : '',
+      "rounded-lg",
+      "transition-colors duration-200",
+      "cursor-pointer",
+      "bg-gray-200 dark:bg-slate-700",
+      "text-gray-700 dark:text-slate-300",
+      "hover:bg-gray-300 dark:hover:bg-slate-600",
+      error ? "ring-2 ring-rose-500" : "",
+      disabled ? "opacity-50 cursor-not-allowed" : "",
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     return (
       <div className={`flex flex-col ${className}`} data-hook={dataHook}>
@@ -266,8 +269,11 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
             {buttonText}
           </button>
           {selectedFiles.length > 0 && (
-            <span className="text-sm text-gray-600 dark:text-slate-400 truncate max-w-xs" data-hook={dataHook ? `${dataHook}-selected-files` : undefined}>
-              {selectedFiles.join(', ')}
+            <span
+              className="text-sm text-gray-600 dark:text-slate-400 truncate max-w-xs"
+              data-hook={dataHook ? `${dataHook}-selected-files` : undefined}
+            >
+              {selectedFiles.join(", ")}
             </span>
           )}
         </div>
@@ -284,16 +290,16 @@ const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
         />
         {helperText && (
           <p
-            className={`mt-1 text-sm ${error ? 'text-rose-500' : 'text-gray-500 dark:text-slate-400'}`}
+            className={`mt-1 text-sm ${error ? "text-rose-500" : "text-gray-500 dark:text-slate-400"}`}
           >
             {helperText}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
-FileInput.displayName = 'FileInput';
+FileInput.displayName = "FileInput";
 
 export default FileInput;

@@ -1,9 +1,10 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 /**
  * Allowed HTML elements for Box component.
  */
-type BoxElement = 'div' | 'span' | 'section' | 'article' | 'aside' | 'main' | 'header' | 'footer' | 'nav';
+type BoxElement =
+  "div" | "span" | "section" | "article" | "aside" | "main" | "header" | "footer" | "nav";
 
 interface BoxProps extends React.HTMLAttributes<HTMLElement> {
   /** Box content */
@@ -39,13 +40,13 @@ interface BoxProps extends React.HTMLAttributes<HTMLElement> {
   /** Margin left */
   ml?: number;
   /** Border radius */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
   /** Background color class */
   bg?: string;
   /** Width */
-  w?: 'full' | 'auto' | 'screen' | 'fit';
+  w?: "full" | "auto" | "screen" | "fit";
   /** Height */
-  h?: 'full' | 'auto' | 'screen' | 'fit';
+  h?: "full" | "auto" | "screen" | "fit";
   /** Additional CSS classes */
   className?: string;
   /** Test data hook selector */
@@ -76,35 +77,35 @@ const buildSpacingClasses = (props: BoxProps): string => {
   if (props.mb !== undefined) classes.push(`mb-${props.mb}`);
   if (props.ml !== undefined) classes.push(`ml-${props.ml}`);
 
-  return classes.join(' ');
+  return classes.join(" ");
 };
 
 /**
  * Get rounded classes.
  */
-const getRoundedClasses = (rounded?: BoxProps['rounded']): string => {
-  if (!rounded) return '';
-  if (rounded === 'none') return 'rounded-none';
+const getRoundedClasses = (rounded?: BoxProps["rounded"]): string => {
+  if (!rounded) return "";
+  if (rounded === "none") return "rounded-none";
   return `rounded-${rounded}`;
 };
 
 /**
  * Get dimension classes.
  */
-const getDimensionClasses = (w?: BoxProps['w'], h?: BoxProps['h']): string => {
+const getDimensionClasses = (w?: BoxProps["w"], h?: BoxProps["h"]): string => {
   const classes: string[] = [];
 
-  if (w === 'full') classes.push('w-full');
-  else if (w === 'auto') classes.push('w-auto');
-  else if (w === 'screen') classes.push('w-screen');
-  else if (w === 'fit') classes.push('w-fit');
+  if (w === "full") classes.push("w-full");
+  else if (w === "auto") classes.push("w-auto");
+  else if (w === "screen") classes.push("w-screen");
+  else if (w === "fit") classes.push("w-fit");
 
-  if (h === 'full') classes.push('h-full');
-  else if (h === 'auto') classes.push('h-auto');
-  else if (h === 'screen') classes.push('h-screen');
-  else if (h === 'fit') classes.push('h-fit');
+  if (h === "full") classes.push("h-full");
+  else if (h === "auto") classes.push("h-auto");
+  else if (h === "screen") classes.push("h-screen");
+  else if (h === "fit") classes.push("h-fit");
 
-  return classes.join(' ');
+  return classes.join(" ");
 };
 
 /**
@@ -114,7 +115,7 @@ const Box = forwardRef<HTMLElement, BoxProps>(
   (
     {
       children,
-      as: Element = 'div',
+      as: Element = "div",
       p,
       px,
       py,
@@ -133,15 +134,27 @@ const Box = forwardRef<HTMLElement, BoxProps>(
       bg,
       w,
       h,
-      className = '',
+      className = "",
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const spacingClasses = buildSpacingClasses({
-      p, px, py, pt, pr, pb, pl,
-      m, mx, my, mt, mr, mb, ml,
+      p,
+      px,
+      py,
+      pt,
+      pr,
+      pb,
+      pl,
+      m,
+      mx,
+      my,
+      mt,
+      mr,
+      mb,
+      ml,
       children: null,
     });
 
@@ -149,21 +162,21 @@ const Box = forwardRef<HTMLElement, BoxProps>(
       spacingClasses,
       getRoundedClasses(rounded),
       getDimensionClasses(w, h),
-      bg || '',
+      bg || "",
       className,
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     return React.createElement(
       Element,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { ...props, 'data-hook': dataHook, className: classes, ref } as any,
-      children
+      { ...props, "data-hook": dataHook, className: classes, ref } as any,
+      children,
     );
-  }
+  },
 );
 
-Box.displayName = 'Box';
+Box.displayName = "Box";
 
 export default Box;

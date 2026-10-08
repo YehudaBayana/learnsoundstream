@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * ButtonGroup orientation options.
  */
-export type ButtonGroupOrientation = 'horizontal' | 'vertical';
+export type ButtonGroupOrientation = "horizontal" | "vertical";
 
 /**
  * ButtonGroup size options (applied to all children).
  */
-export type ButtonGroupSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ButtonGroupSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 interface ButtonGroupProps {
   /** Button elements to group together */
@@ -30,7 +30,7 @@ interface ButtonGroupProps {
  * Get gap classes based on gap size.
  */
 const getGapClasses = (gap: number): string => {
-  if (gap === 0) return '';
+  if (gap === 0) return "";
   return `gap-${gap}`;
 };
 
@@ -39,7 +39,7 @@ const getGapClasses = (gap: number): string => {
  * When buttons are attached, we remove border-radius from inner edges.
  */
 const getAttachedClasses = (orientation: ButtonGroupOrientation): string => {
-  if (orientation === 'horizontal') {
+  if (orientation === "horizontal") {
     return `
       [&>*:not(:first-child):not(:last-child)]:rounded-none
       [&>*:first-child]:rounded-r-none
@@ -90,21 +90,21 @@ const getAttachedClasses = (orientation: ButtonGroupOrientation): string => {
  */
 const ButtonGroup: React.FC<ButtonGroupProps> = ({
   children,
-  orientation = 'horizontal',
+  orientation = "horizontal",
   attached = false,
   gap = 2,
   fullWidth = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const baseClasses = [
-    fullWidth ? 'flex' : 'inline-flex',
-    orientation === 'horizontal' ? 'flex-row' : 'flex-col',
+    fullWidth ? "flex" : "inline-flex",
+    orientation === "horizontal" ? "flex-row" : "flex-col",
     attached ? getAttachedClasses(orientation) : getGapClasses(gap),
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <div className={baseClasses} role="group" data-hook={dataHook}>

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 /**
  * ListItem padding options.
  */
-export type ListItemPadding = 'none' | 'sm' | 'md' | 'lg';
+export type ListItemPadding = "none" | "sm" | "md" | "lg";
 
 interface ListItemProps extends React.HTMLAttributes<HTMLElement> {
   /** List item content */
@@ -39,14 +39,14 @@ interface ListItemProps extends React.HTMLAttributes<HTMLElement> {
  */
 const getPaddingClasses = (padding: ListItemPadding): string => {
   switch (padding) {
-    case 'none':
-      return '';
-    case 'sm':
-      return 'px-3 py-2';
-    case 'md':
-      return 'px-4 py-3';
-    case 'lg':
-      return 'px-6 py-4';
+    case "none":
+      return "";
+    case "sm":
+      return "px-3 py-2";
+    case "md":
+      return "px-4 py-3";
+    case "lg":
+      return "px-6 py-4";
   }
 };
 
@@ -101,14 +101,14 @@ const ListItem: React.FC<ListItemProps> = ({
   leading,
   trailing,
   secondaryText,
-  padding = 'md',
+  padding = "md",
   interactive = false,
   selected = false,
   disabled = false,
   onClick,
   to,
   as,
-  className = '',
+  className = "",
   dataHook,
   ...props
 }) => {
@@ -125,7 +125,7 @@ const ListItem: React.FC<ListItemProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!disabled && (onClick || to) && (e.key === 'Enter' || e.key === ' ')) {
+    if (!disabled && (onClick || to) && (e.key === "Enter" || e.key === " ")) {
       if (!to) e.preventDefault();
       if (onClick) onClick();
     }
@@ -134,24 +134,24 @@ const ListItem: React.FC<ListItemProps> = ({
   const baseClasses = `
     flex items-center gap-3
     ${getPaddingClasses(padding)}
-    ${selected ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}
-    ${isClickable && !disabled ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : ''}
-    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+    ${selected ? "bg-emerald-50 dark:bg-emerald-900/20" : ""}
+    ${isClickable && !disabled ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50" : ""}
+    ${disabled ? "opacity-50 cursor-not-allowed" : ""}
     transition-colors
   `;
 
-  const Element = as || (to ? Link : (isClickable ? 'button' : 'li'));
+  const Element = as || (to ? Link : isClickable ? "button" : "li");
 
   return (
     <Element
-      className={`${baseClasses} ${className} ${isClickable ? 'w-full text-left' : ''}`}
+      className={`${baseClasses} ${className} ${isClickable ? "w-full text-left" : ""}`}
       data-hook={dataHook}
       onClick={isClickable ? handleClick : undefined}
       onKeyDown={isClickable ? handleKeyDown : undefined}
-      disabled={disabled && (Element === 'button' || Element === 'input')}
+      disabled={disabled && (Element === "button" || Element === "input")}
       to={to}
-      type={Element === 'button' ? 'button' : undefined}
-      role={isClickable ? 'button' : undefined}
+      type={Element === "button" ? "button" : undefined}
+      role={isClickable ? "button" : undefined}
       tabIndex={isClickable && !disabled ? 0 : undefined}
       {...props}
     >
@@ -160,9 +160,7 @@ const ListItem: React.FC<ListItemProps> = ({
       <div className="flex-1 min-w-0">
         <div className="text-gray-900 dark:text-white truncate font-medium">{children}</div>
         {secondaryText && (
-          <div className="text-sm text-gray-500 dark:text-slate-400 truncate">
-            {secondaryText}
-          </div>
+          <div className="text-sm text-gray-500 dark:text-slate-400 truncate">{secondaryText}</div>
         )}
       </div>
 

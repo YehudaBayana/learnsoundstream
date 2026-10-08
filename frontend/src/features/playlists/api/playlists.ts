@@ -16,20 +16,15 @@ export async function getPopularPlaylists(): Promise<Playlist[]> {
   return data.results;
 }
 
-export async function getPlaylistDetails(
-  playlistId: string,
-): Promise<Playlist> {
+export async function getPlaylistDetails(playlistId: string): Promise<Playlist> {
   return apiClient<Playlist>("/api/playlist-details", {
     params: { playlist_id: playlistId },
   });
 }
 
 export async function getPlaylistTracks(playlistId: string): Promise<Track[]> {
-  const data = await apiClient<PlaylistTracksApiResponse>(
-    "/api/playlist-tracks",
-    {
-      params: { playlist_id: playlistId },
-    },
-  );
+  const data = await apiClient<PlaylistTracksApiResponse>("/api/playlist-tracks", {
+    params: { playlist_id: playlistId },
+  });
   return data.tracks;
 }

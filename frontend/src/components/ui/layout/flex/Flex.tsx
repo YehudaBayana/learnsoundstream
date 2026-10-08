@@ -1,29 +1,41 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Flex direction options.
  */
-export type FlexDirection = 'row' | 'row-reverse' | 'col' | 'col-reverse';
+export type FlexDirection = "row" | "row-reverse" | "col" | "col-reverse";
 
 /**
  * Flex alignment options.
  */
-export type FlexAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline';
+export type FlexAlign = "start" | "center" | "end" | "stretch" | "baseline";
 
 /**
  * Flex justify options.
  */
-export type FlexJustify = 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly';
+export type FlexJustify = "start" | "center" | "end" | "between" | "around" | "evenly";
 
 /**
  * Flex wrap options.
  */
-export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
+export type FlexWrap = "nowrap" | "wrap" | "wrap-reverse";
 
 /**
  * Allowed HTML elements for Flex component.
  */
-type FlexElement = 'div' | 'span' | 'section' | 'article' | 'aside' | 'main' | 'header' | 'footer' | 'nav' | 'ul' | 'ol' | 'li';
+type FlexElement =
+  | "div"
+  | "span"
+  | "section"
+  | "article"
+  | "aside"
+  | "main"
+  | "header"
+  | "footer"
+  | "nav"
+  | "ul"
+  | "ol"
+  | "li";
 
 interface FlexProps {
   /** Flex content */
@@ -56,14 +68,14 @@ interface FlexProps {
  */
 const getDirectionClasses = (direction: FlexDirection): string => {
   switch (direction) {
-    case 'row':
-      return 'flex-row';
-    case 'row-reverse':
-      return 'flex-row-reverse';
-    case 'col':
-      return 'flex-col';
-    case 'col-reverse':
-      return 'flex-col-reverse';
+    case "row":
+      return "flex-row";
+    case "row-reverse":
+      return "flex-row-reverse";
+    case "col":
+      return "flex-col";
+    case "col-reverse":
+      return "flex-col-reverse";
   }
 };
 
@@ -72,16 +84,16 @@ const getDirectionClasses = (direction: FlexDirection): string => {
  */
 const getAlignClasses = (align: FlexAlign): string => {
   switch (align) {
-    case 'start':
-      return 'items-start';
-    case 'center':
-      return 'items-center';
-    case 'end':
-      return 'items-end';
-    case 'stretch':
-      return 'items-stretch';
-    case 'baseline':
-      return 'items-baseline';
+    case "start":
+      return "items-start";
+    case "center":
+      return "items-center";
+    case "end":
+      return "items-end";
+    case "stretch":
+      return "items-stretch";
+    case "baseline":
+      return "items-baseline";
   }
 };
 
@@ -90,18 +102,18 @@ const getAlignClasses = (align: FlexAlign): string => {
  */
 const getJustifyClasses = (justify: FlexJustify): string => {
   switch (justify) {
-    case 'start':
-      return 'justify-start';
-    case 'center':
-      return 'justify-center';
-    case 'end':
-      return 'justify-end';
-    case 'between':
-      return 'justify-between';
-    case 'around':
-      return 'justify-around';
-    case 'evenly':
-      return 'justify-evenly';
+    case "start":
+      return "justify-start";
+    case "center":
+      return "justify-center";
+    case "end":
+      return "justify-end";
+    case "between":
+      return "justify-between";
+    case "around":
+      return "justify-around";
+    case "evenly":
+      return "justify-evenly";
   }
 };
 
@@ -110,12 +122,12 @@ const getJustifyClasses = (justify: FlexJustify): string => {
  */
 const getWrapClasses = (wrap: FlexWrap): string => {
   switch (wrap) {
-    case 'nowrap':
-      return 'flex-nowrap';
-    case 'wrap':
-      return 'flex-wrap';
-    case 'wrap-reverse':
-      return 'flex-wrap-reverse';
+    case "nowrap":
+      return "flex-nowrap";
+    case "wrap":
+      return "flex-wrap";
+    case "wrap-reverse":
+      return "flex-wrap-reverse";
   }
 };
 
@@ -124,35 +136,39 @@ const getWrapClasses = (wrap: FlexWrap): string => {
  */
 const Flex: React.FC<FlexProps> = ({
   children,
-  direction = 'row',
-  align = 'stretch',
-  justify = 'start',
-  wrap = 'nowrap',
+  direction = "row",
+  align = "stretch",
+  justify = "start",
+  wrap = "nowrap",
   gap,
   grow,
   shrink,
   inline = false,
-  as = 'div',
-  className = '',
+  as = "div",
+  className = "",
   dataHook,
 }) => {
   const Element = as;
 
   const classes = [
-    inline ? 'inline-flex' : 'flex',
+    inline ? "inline-flex" : "flex",
     getDirectionClasses(direction),
     getAlignClasses(align),
     getJustifyClasses(justify),
     getWrapClasses(wrap),
-    gap !== undefined ? `gap-${gap}` : '',
-    grow ? 'flex-grow' : '',
-    shrink === false ? 'flex-shrink-0' : '',
+    gap !== undefined ? `gap-${gap}` : "",
+    grow ? "flex-grow" : "",
+    shrink === false ? "flex-shrink-0" : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  return <Element className={classes} data-hook={dataHook}>{children}</Element>;
+  return (
+    <Element className={classes} data-hook={dataHook}>
+      {children}
+    </Element>
+  );
 };
 
 export default Flex;

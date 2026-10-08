@@ -15,7 +15,10 @@ interface DashboardShellProps {
   dataHook?: string;
 }
 
-export default function DashboardShell({ children, dataHook = "dashboard-shell" }: DashboardShellProps) {
+export default function DashboardShell({
+  children,
+  dataHook = "dashboard-shell",
+}: DashboardShellProps) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { themeDefinition, toggleTheme } = useTheme();
@@ -31,7 +34,10 @@ export default function DashboardShell({ children, dataHook = "dashboard-shell" 
   };
 
   return (
-    <Flex dataHook={dataHook} className="w-screen h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden relative transition-colors duration-300">
+    <Flex
+      dataHook={dataHook}
+      className="w-screen h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden relative transition-colors duration-300"
+    >
       {/* Mobile Drawer Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <Box
@@ -119,7 +125,9 @@ export default function DashboardShell({ children, dataHook = "dashboard-shell" 
         </Flex>
 
         {/* Dynamic Scrollable Content Pane */}
-        <Box className="flex-1 overflow-y-auto pb-32" dataHook={`${dataHook}-content`}>{children}</Box>
+        <Box className="flex-1 overflow-y-auto pb-32" dataHook={`${dataHook}-content`}>
+          {children}
+        </Box>
       </Flex>
     </Flex>
   );

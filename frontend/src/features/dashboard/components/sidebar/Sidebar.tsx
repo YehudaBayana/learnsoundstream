@@ -39,11 +39,7 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
       dataHook={dataHook}
     >
       {/* Brand Header */}
-      <Flex
-        align="center"
-        gap={3}
-        className="p-6 border-b border-[var(--border-default)]"
-      >
+      <Flex align="center" gap={3} className="p-6 border-b border-[var(--border-default)]">
         <Flex
           align="center"
           justify="center"
@@ -69,11 +65,7 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
       </Flex>
 
       {/* Navigation */}
-      <Flex
-        direction="col"
-        gap={1}
-        className="px-3 py-4 border-b border-[var(--border-default)]"
-      >
+      <Flex direction="col" gap={1} className="px-3 py-4 border-b border-[var(--border-default)]">
         {navItems.map((item, index) => {
           const isActive = pathname === item.href;
           return (
@@ -169,9 +161,7 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
         size="md"
         dataHook={`${dataHook}-create-modal`}
       >
-        <Modal.Header onClose={() => setIsModalOpen(false)}>
-          Create New Playlist
-        </Modal.Header>
+        <Modal.Header onClose={() => setIsModalOpen(false)}>Create New Playlist</Modal.Header>
       </Modal>
     </Flex>
   );

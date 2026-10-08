@@ -10,10 +10,7 @@ export type InputSize = "sm" | "md" | "lg";
  */
 export type InputVariant = "outline" | "filled" | "flushed";
 
-interface InputProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "size"
-> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
   /** Input size */
   size?: InputSize;
   /** Input style variant */
@@ -143,11 +140,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     // Calculate padding adjustments for icons
     const getIconPadding = (): string => {
       if (hasLeftIcon && hasRightIcon) {
-        return size === "sm"
-          ? "pl-9 pr-9"
-          : size === "md"
-            ? "pl-10 pr-10"
-            : "pl-12 pr-12";
+        return size === "sm" ? "pl-9 pr-9" : size === "md" ? "pl-10 pr-10" : "pl-12 pr-12";
       }
       if (hasLeftIcon) {
         return size === "sm" ? "pl-9" : size === "md" ? "pl-10" : "pl-12";
@@ -166,9 +159,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       getSizeClasses(size),
       getVariantClasses(variant, error),
       getIconPadding(),
-      disabled
-        ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900"
-        : "",
+      disabled ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900" : "",
       "focus:outline-none",
       className,
     ]
@@ -179,9 +170,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className={`relative ${wrapperClassName}`} data-hook={dataHook}>
-        {hasLeftIcon && (
-          <span className={`${iconBaseClasses} left-3`}>{leftIcon}</span>
-        )}
+        {hasLeftIcon && <span className={`${iconBaseClasses} left-3`}>{leftIcon}</span>}
         <input
           ref={ref}
           disabled={disabled}
@@ -190,9 +179,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={inputClasses}
           {...props}
         />
-        {hasRightIcon && (
-          <span className={`${iconBaseClasses} right-3`}>{rightIcon}</span>
-        )}
+        {hasRightIcon && <span className={`${iconBaseClasses} right-3`}>{rightIcon}</span>}
       </div>
     );
   },

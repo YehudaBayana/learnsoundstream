@@ -26,9 +26,7 @@ export class ContainerDriver {
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
     if (!this.renderResult)
-      throw new Error(
-        "ContainerDriver: render() must be called before querying",
-      );
+      throw new Error("ContainerDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 

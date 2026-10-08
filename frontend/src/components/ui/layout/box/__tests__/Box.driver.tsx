@@ -26,8 +26,7 @@ export class BoxDriver {
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
-    if (!this.renderResult)
-      throw new Error("BoxDriver: render() must be called before querying");
+    if (!this.renderResult) throw new Error("BoxDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 

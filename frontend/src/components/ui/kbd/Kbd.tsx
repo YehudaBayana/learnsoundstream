@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 
 export interface KbdProps {
   children: React.ReactNode;
-  size?: 'xs' | 'sm' | 'md';
+  size?: "xs" | "sm" | "md";
   className?: string;
   dataHook?: string;
 }
 
-const Kbd: React.FC<KbdProps> = ({ children, size = 'sm', className = '', dataHook }) => {
+const Kbd: React.FC<KbdProps> = ({ children, size = "sm", className = "", dataHook }) => {
   const sizeClasses = {
-    xs: 'px-1 min-w-[1.25rem] h-4 text-[9px]',
-    sm: 'px-1.5 min-w-[1.5rem] h-5 text-[11px]',
-    md: 'px-2 min-w-[2rem] h-6 text-xs',
+    xs: "px-1 min-w-[1.25rem] h-4 text-[9px]",
+    sm: "px-1.5 min-w-[1.5rem] h-5 text-[11px]",
+    md: "px-2 min-w-[2rem] h-6 text-xs",
   };
 
   return (

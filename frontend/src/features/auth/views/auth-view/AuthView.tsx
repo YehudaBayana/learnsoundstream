@@ -52,15 +52,9 @@ export default function AuthView({ dataHook = "auth-view" }: AuthViewProps) {
           </button>
         </div>
       ) : isLogin ? (
-        <Login
-          onSwitchToRegister={() => setIsLogin(false)}
-          dataHook={`${dataHook}-login`}
-        />
+        <Login onSwitchToRegister={() => setIsLogin(false)} dataHook={`${dataHook}-login`} />
       ) : (
-        <Register
-          onSwitchToLogin={() => setIsLogin(true)}
-          dataHook={`${dataHook}-register`}
-        />
+        <Register onSwitchToLogin={() => setIsLogin(true)} dataHook={`${dataHook}-register`} />
       )}
     </div>
   );

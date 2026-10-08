@@ -57,12 +57,7 @@ const FormField: React.FC<FormFieldProps> = ({
   return (
     <div className={`flex flex-col gap-1.5 ${className}`} data-hook={dataHook}>
       {label && (
-        <Text
-          as="label"
-          variant="label"
-          htmlFor={htmlFor}
-          className="flex items-center gap-1"
-        >
+        <Text as="label" variant="label" htmlFor={htmlFor} className="flex items-center gap-1">
           {label}
           {required && (
             <span className="text-rose-500" aria-hidden="true">

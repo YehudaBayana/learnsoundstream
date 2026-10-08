@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Skeleton variant options.
  */
-export type SkeletonVariant = 'text' | 'circular' | 'rectangular' | 'rounded';
+export type SkeletonVariant = "text" | "circular" | "rectangular" | "rounded";
 
 interface SkeletonProps {
   /** Skeleton shape variant */
@@ -26,14 +26,14 @@ interface SkeletonProps {
  */
 const getVariantClasses = (variant: SkeletonVariant): string => {
   switch (variant) {
-    case 'text':
-      return 'rounded h-4';
-    case 'circular':
-      return 'rounded-full';
-    case 'rectangular':
-      return '';
-    case 'rounded':
-      return 'rounded-xl';
+    case "text":
+      return "rounded h-4";
+    case "circular":
+      return "rounded-full";
+    case "rectangular":
+      return "";
+    case "rounded":
+      return "rounded-xl";
   }
 };
 
@@ -42,7 +42,7 @@ const getVariantClasses = (variant: SkeletonVariant): string => {
  */
 const toCssValue = (value: string | number | undefined): string | undefined => {
   if (value === undefined) return undefined;
-  return typeof value === 'number' ? `${value}px` : value;
+  return typeof value === "number" ? `${value}px` : value;
 };
 
 /**
@@ -74,17 +74,17 @@ const toCssValue = (value: string | number | undefined): string | undefined => {
  *   <Skeleton variant="rectangular" animate={false} />
  */
 const Skeleton: React.FC<SkeletonProps> = ({
-  variant = 'text',
+  variant = "text",
   width,
   height,
   lines = 1,
   animate = true,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const baseClasses = `
     bg-gray-200 dark:bg-slate-700
-    ${animate ? 'animate-pulse' : ''}
+    ${animate ? "animate-pulse" : ""}
     ${getVariantClasses(variant)}
     ${className}
   `;
@@ -95,7 +95,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   };
 
   // For text variant with multiple lines
-  if (variant === 'text' && lines > 1) {
+  if (variant === "text" && lines > 1) {
     return (
       <div className="space-y-2" data-hook={dataHook}>
         {Array.from({ length: lines }).map((_, index) => (
@@ -106,7 +106,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
             style={{
               ...style,
               // Last line is shorter for natural text appearance
-              width: index === lines - 1 ? '75%' : style.width,
+              width: index === lines - 1 ? "75%" : style.width,
             }}
           />
         ))}
@@ -115,7 +115,7 @@ const Skeleton: React.FC<SkeletonProps> = ({
   }
 
   // For circular variant, ensure equal width/height
-  if (variant === 'circular') {
+  if (variant === "circular") {
     const size = width || height || 40;
     return (
       <div

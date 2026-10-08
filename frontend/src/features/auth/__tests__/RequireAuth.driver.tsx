@@ -1,19 +1,24 @@
-import React from 'react';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import RequireAuth from '../components/require-auth/RequireAuth';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import RequireAuth from "../components/require-auth/RequireAuth";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class RequireAuthDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'require-auth';
+  private readonly defaultDataHook = "require-auth";
 
   render(dataHook = this.defaultDataHook): this {
-    this.renderResult = render(<RequireAuth dataHook={dataHook}><div data-hook={`${dataHook}-child`} /></RequireAuth>);
+    this.renderResult = render(
+      <RequireAuth dataHook={dataHook}>
+        <div data-hook={`${dataHook}-child`} />
+      </RequireAuth>,
+    );
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('RequireAuthDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("RequireAuthDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

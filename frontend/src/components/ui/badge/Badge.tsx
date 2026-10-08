@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Badge variant options.
  */
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
+export type BadgeVariant = "default" | "primary" | "success" | "warning" | "danger" | "info";
 
 /**
  * Badge size options.
  */
-export type BadgeSize = 'sm' | 'md' | 'lg';
+export type BadgeSize = "sm" | "md" | "lg";
 
 interface BadgeProps {
   /** Badge content */
@@ -41,34 +41,34 @@ interface BadgeProps {
 const getVariantClasses = (variant: BadgeVariant, outlined: boolean): string => {
   if (outlined) {
     switch (variant) {
-      case 'default':
-        return 'border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400';
-      case 'primary':
-        return 'border-emerald-500 text-emerald-600 dark:text-emerald-400';
-      case 'success':
-        return 'border-green-500 text-green-600 dark:text-green-400';
-      case 'warning':
-        return 'border-amber-500 text-amber-600 dark:text-amber-400';
-      case 'danger':
-        return 'border-rose-500 text-rose-600 dark:text-rose-400';
-      case 'info':
-        return 'border-blue-500 text-blue-600 dark:text-blue-400';
+      case "default":
+        return "border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-400";
+      case "primary":
+        return "border-emerald-500 text-emerald-600 dark:text-emerald-400";
+      case "success":
+        return "border-green-500 text-green-600 dark:text-green-400";
+      case "warning":
+        return "border-amber-500 text-amber-600 dark:text-amber-400";
+      case "danger":
+        return "border-rose-500 text-rose-600 dark:text-rose-400";
+      case "info":
+        return "border-blue-500 text-blue-600 dark:text-blue-400";
     }
   }
 
   switch (variant) {
-    case 'default':
-      return 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300';
-    case 'primary':
-      return 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300';
-    case 'success':
-      return 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300';
-    case 'warning':
-      return 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300';
-    case 'danger':
-      return 'bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300';
-    case 'info':
-      return 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300';
+    case "default":
+      return "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300";
+    case "primary":
+      return "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300";
+    case "success":
+      return "bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300";
+    case "warning":
+      return "bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300";
+    case "danger":
+      return "bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300";
+    case "info":
+      return "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300";
   }
 };
 
@@ -77,12 +77,12 @@ const getVariantClasses = (variant: BadgeVariant, outlined: boolean): string => 
  */
 const getSizeClasses = (size: BadgeSize): string => {
   switch (size) {
-    case 'sm':
-      return 'px-1.5 py-0.5 text-xs';
-    case 'md':
-      return 'px-2 py-0.5 text-xs';
-    case 'lg':
-      return 'px-2.5 py-1 text-sm';
+    case "sm":
+      return "px-1.5 py-0.5 text-xs";
+    case "md":
+      return "px-2 py-0.5 text-xs";
+    case "lg":
+      return "px-2.5 py-1 text-sm";
   }
 };
 
@@ -91,12 +91,12 @@ const getSizeClasses = (size: BadgeSize): string => {
  */
 const getDotSizeClasses = (size: BadgeSize): string => {
   switch (size) {
-    case 'sm':
-      return 'w-1.5 h-1.5';
-    case 'md':
-      return 'w-2 h-2';
-    case 'lg':
-      return 'w-2.5 h-2.5';
+    case "sm":
+      return "w-1.5 h-1.5";
+    case "md":
+      return "w-2 h-2";
+    case "lg":
+      return "w-2.5 h-2.5";
   }
 };
 
@@ -105,18 +105,18 @@ const getDotSizeClasses = (size: BadgeSize): string => {
  */
 const getDotColorClasses = (variant: BadgeVariant): string => {
   switch (variant) {
-    case 'default':
-      return 'bg-gray-500';
-    case 'primary':
-      return 'bg-emerald-500';
-    case 'success':
-      return 'bg-green-500';
-    case 'warning':
-      return 'bg-amber-500';
-    case 'danger':
-      return 'bg-rose-500';
-    case 'info':
-      return 'bg-blue-500';
+    case "default":
+      return "bg-gray-500";
+    case "primary":
+      return "bg-emerald-500";
+    case "success":
+      return "bg-green-500";
+    case "warning":
+      return "bg-amber-500";
+    case "danger":
+      return "bg-rose-500";
+    case "info":
+      return "bg-blue-500";
   }
 };
 
@@ -157,27 +157,27 @@ const getDotColorClasses = (variant: BadgeVariant): string => {
  */
 const Badge: React.FC<BadgeProps> = ({
   children,
-  variant = 'default',
-  size = 'md',
+  variant = "default",
+  size = "md",
   outlined = false,
   pill = false,
   dot = false,
   icon,
   removable = false,
   onRemove,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const classes = [
-    'inline-flex items-center gap-1 font-medium',
-    pill ? 'rounded-full' : 'rounded-md',
-    outlined ? 'border bg-transparent' : '',
+    "inline-flex items-center gap-1 font-medium",
+    pill ? "rounded-full" : "rounded-md",
+    outlined ? "border bg-transparent" : "",
     getVariantClasses(variant, outlined),
     getSizeClasses(size),
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <span className={classes} data-hook={dataHook}>
@@ -202,7 +202,11 @@ const Badge: React.FC<BadgeProps> = ({
           aria-label="Remove"
         >
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
           </svg>
         </button>
       )}

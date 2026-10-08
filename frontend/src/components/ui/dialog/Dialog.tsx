@@ -5,12 +5,7 @@ import Button from "../button/Button";
 /**
  * Dialog variant types.
  */
-export type DialogVariant =
-  | "info"
-  | "success"
-  | "warning"
-  | "danger"
-  | "primary";
+export type DialogVariant = "info" | "success" | "warning" | "danger" | "primary";
 
 /**
  * Icon component for dialog variants.
@@ -47,12 +42,7 @@ const DialogIcon: React.FC<{ variant: DialogVariant }> = ({ variant }) => {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
       );
@@ -231,12 +221,7 @@ const Dialog: React.FC<DialogProps> = ({
             aria-label="Close modal"
             data-hook={dataHook ? `${dataHook}-close-btn` : "dialog-close-btn"}
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -260,9 +245,7 @@ const Dialog: React.FC<DialogProps> = ({
             {description && (
               <div
                 className="mt-2 text-sm text-gray-500 dark:text-slate-400"
-                data-hook={
-                  dataHook ? `${dataHook}-description` : "dialog-description"
-                }
+                data-hook={dataHook ? `${dataHook}-description` : "dialog-description"}
               >
                 {description}
               </div>
@@ -277,9 +260,7 @@ const Dialog: React.FC<DialogProps> = ({
               variant="ghost"
               onClick={onClose}
               disabled={loading}
-              dataHook={
-                dataHook ? `${dataHook}-cancel-btn` : "dialog-cancel-btn"
-              }
+              dataHook={dataHook ? `${dataHook}-cancel-btn` : "dialog-cancel-btn"}
             >
               {cancelText}
             </Button>
@@ -289,9 +270,7 @@ const Dialog: React.FC<DialogProps> = ({
             onClick={handleConfirm}
             loading={loading}
             loadingText={loadingText}
-            dataHook={
-              dataHook ? `${dataHook}-confirm-btn` : "dialog-confirm-btn"
-            }
+            dataHook={dataHook ? `${dataHook}-confirm-btn` : "dialog-confirm-btn"}
           >
             {confirmText}
           </Button>

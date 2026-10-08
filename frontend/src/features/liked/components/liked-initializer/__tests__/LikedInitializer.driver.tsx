@@ -17,9 +17,7 @@ export class LikedInitializerDriver {
 
   private getContainer(): HTMLElement {
     if (!this.renderResult)
-      throw new Error(
-        "LikedInitializerDriver: render() must be called before querying",
-      );
+      throw new Error("LikedInitializerDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

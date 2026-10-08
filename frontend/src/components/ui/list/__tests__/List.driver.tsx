@@ -1,7 +1,7 @@
-import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
-import List, { ListSpacing, ListVariant } from '../List';
-import { getByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { render, RenderResult } from "@testing-library/react";
+import List, { ListSpacing, ListVariant } from "../List";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface ListDriverProps {
   dataHook?: string;
@@ -12,20 +12,20 @@ export interface ListDriverProps {
 
 export class ListDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-list';
+  private readonly defaultDataHook = "test-list";
 
   render(props: ListDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
     this.renderResult = render(
       <List {...props} dataHook={dataHook}>
         <li data-hook={`${dataHook}-item`}>First item</li>
-      </List>
+      </List>,
     );
     return this;
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
-    if (!this.renderResult) throw new Error('ListDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("ListDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 
@@ -38,7 +38,7 @@ export class ListDriver {
   }
 
   hasItem(dataHook = this.defaultDataHook): boolean {
-    if (!this.renderResult) throw new Error('ListDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("ListDriver: render() must be called before querying");
     return this.renderResult.container.querySelector(`[data-hook="${dataHook}-item"]`) !== null;
   }
 }

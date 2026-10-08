@@ -1,1 +1,1 @@
-export { default } from './audio-player-volume/AudioPlayerVolume';
+export { default } from "./audio-player-volume/AudioPlayerVolume";

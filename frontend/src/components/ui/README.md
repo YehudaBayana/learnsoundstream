@@ -5,11 +5,13 @@ This directory contains the atomic UI components for the SoundStream application
 ## 🏗 Architecture
 
 We follow an **Atomic Design** philosophy for our UI components:
+
 - **Atoms**: Basic building blocks (Button, Text, Input, Spinner)
 - **Molecules/Compounds**: Groups of atoms working together (FormField, Card, Modal)
 - **Layout**: Structural components (Stack, Grid, Container)
 
 ### Folder Structure
+
 ```
 components/ui/
 ├── layout/           # Structural components (Stack, Grid, etc.)
@@ -35,6 +37,7 @@ import { colors, spacing } from './tokens';
 ## 🔧 Common Component Patterns
 
 ### 1. Compound Components
+
 Many of our complex components use the compound component pattern for maximum flexibility.
 
 ```tsx
@@ -48,6 +51,7 @@ Many of our complex components use the compound component pattern for maximum fl
 ```
 
 ### 2. Composition over Configuration
+
 Prefer composing smaller components rather than creating one component with many props.
 
 ```tsx
@@ -63,6 +67,7 @@ Prefer composing smaller components rather than creating one component with many
 ```
 
 ### 3. Slot Pattern
+
 Use the `leftIcon` and `rightIcon` props for adding icons to buttons or inputs.
 
 ```tsx
@@ -72,20 +77,24 @@ Use the `leftIcon` and `rightIcon` props for adding icons to buttons or inputs.
 ## 📚 Component Categories
 
 ### Typography
+
 - `Text`: Multi-variant text component (body, caption, label).
 - `Heading`: Semantic heading component (h1-h6).
 
 ### Actions
+
 - `Button`: Primary action component with variants (primary, secondary, danger, ghost, link, outline).
 - `IconButton`: For icon-only actions.
 - `ButtonGroup`: To group related buttons.
 
 ### Forms
+
 - `Input`, `TextArea`, `Select`, `Checkbox`, `Radio`, `Switch`, `Slider`.
 - `FormField`: Wrapper that adds labels and error messages.
 - `Form`: Context wrapper for handling form state.
 
 ### Layout
+
 - `Stack`: Vertical or horizontal flex container with gaps.
 - `Grid`: CSS Grid wrapper.
 - `Flex`: General flexbox wrapper.
@@ -93,6 +102,7 @@ Use the `leftIcon` and `rightIcon` props for adding icons to buttons or inputs.
 - `Divider`, `Spacer`, `Box`.
 
 ### Feedback
+
 - `Spinner`: Loading indicator.
 - `Progress`: Progress bar.
 - `Skeleton`: Placeholder for loading content.
@@ -101,12 +111,14 @@ Use the `leftIcon` and `rightIcon` props for adding icons to buttons or inputs.
 - `Tooltip`: Contextual information on hover.
 
 ### Modals & Overlays
+
 - `Modal`: Base dialog window.
 - `Dialog`: Simplified modal for confirmations or alerts.
 - `Drawer`: Side-sliding panel.
 - `Menu`: Dropdown menu for actions.
 
 ### Data Display
+
 - `Card`: Container for grouped content.
 - `Avatar`: User profile image with fallback.
 - `Image`: Enhanced image component with lazy loading.

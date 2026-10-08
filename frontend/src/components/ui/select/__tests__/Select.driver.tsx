@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Select, { SelectOption, SelectSize } from '../Select';
-import { getByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Select, { SelectOption, SelectSize } from "../Select";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface SelectDriverProps {
   dataHook?: string;
@@ -15,7 +15,7 @@ export interface SelectDriverProps {
 
 export class SelectDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-select';
+  private readonly defaultDataHook = "test-select";
 
   render(props: SelectDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -24,7 +24,8 @@ export class SelectDriver {
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLSelectElement {
-    if (!this.renderResult) throw new Error('SelectDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("SelectDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook) as HTMLSelectElement;
   }
 
@@ -33,7 +34,7 @@ export class SelectDriver {
   }
 
   getOptionLabels(dataHook = this.defaultDataHook): string[] {
-    return Array.from(this.getRoot(dataHook).options, (option) => option.textContent?.trim() ?? '');
+    return Array.from(this.getRoot(dataHook).options, (option) => option.textContent?.trim() ?? "");
   }
 
   getClassName(dataHook = this.defaultDataHook): string {

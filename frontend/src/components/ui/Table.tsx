@@ -1,2 +1,2 @@
-export { default } from './table/Table';
-export * from './table/Table';
+export { default } from "./table/Table";
+export * from "./table/Table";

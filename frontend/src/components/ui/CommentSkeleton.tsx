@@ -1,1 +1,1 @@
-export { default } from './comment-skeleton/CommentSkeleton';
+export { default } from "./comment-skeleton/CommentSkeleton";

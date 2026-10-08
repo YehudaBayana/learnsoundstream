@@ -39,13 +39,7 @@ export default function AudioPlayerVolume({
           className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200"
         >
           <span>
-            {isMuted || volume === 0
-              ? "🔇"
-              : volume < 0.4
-                ? "🔈"
-                : volume < 0.7
-                  ? "🔉"
-                  : "🔊"}
+            {isMuted || volume === 0 ? "🔇" : volume < 0.4 ? "🔈" : volume < 0.7 ? "🔉" : "🔊"}
           </span>
         </IconButton>
         <Slider

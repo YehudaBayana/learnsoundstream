@@ -1,7 +1,7 @@
-import { fireEvent } from '@testing-library/react';
-import { render, RenderResult } from '@testing-library/react';
-import ConfirmationModal from '../ConfirmationModal';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
+import ConfirmationModal from "../ConfirmationModal";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface ConfirmationModalDriverProps {
   dataHook?: string;
@@ -18,7 +18,7 @@ export interface ConfirmationModalDriverProps {
 
 export class ConfirmationModalDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-confirmation-modal';
+  private readonly defaultDataHook = "test-confirmation-modal";
 
   render(props: ConfirmationModalDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -27,21 +27,21 @@ export class ConfirmationModalDriver {
         isOpen={props.isOpen ?? true}
         onClose={props.onClose ?? jest.fn()}
         onConfirm={props.onConfirm ?? jest.fn()}
-        title={props.title ?? 'Confirm action'}
-        description={props.description ?? 'Proceed with this action?'}
+        title={props.title ?? "Confirm action"}
+        description={props.description ?? "Proceed with this action?"}
         confirmLabel={props.confirmLabel}
         cancelLabel={props.cancelLabel}
         isDanger={props.isDanger}
         isLoading={props.isLoading}
         dataHook={dataHook}
-      />
+      />,
     );
     return this;
   }
 
   private getRenderResult(): RenderResult {
     if (!this.renderResult) {
-      throw new Error('ConfirmationModalDriver: render() must be called before querying elements');
+      throw new Error("ConfirmationModalDriver: render() must be called before querying elements");
     }
     return this.renderResult;
   }
@@ -51,11 +51,12 @@ export class ConfirmationModalDriver {
   }
 
   getText(dataHook = this.defaultDataHook): string {
-    return getByDataHook(document.body, dataHook).textContent?.trim() ?? '';
+    return getByDataHook(document.body, dataHook).textContent?.trim() ?? "";
   }
 
   isConfirmDisabled(dataHook = this.defaultDataHook): boolean {
-    return (getByDataHook(document.body, `${dataHook}-confirm-button`) as HTMLButtonElement).disabled;
+    return (getByDataHook(document.body, `${dataHook}-confirm-button`) as HTMLButtonElement)
+      .disabled;
   }
 
   clickConfirm(dataHook = this.defaultDataHook): void {

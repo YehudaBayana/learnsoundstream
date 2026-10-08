@@ -1,7 +1,7 @@
-import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
-import ButtonGroup, { ButtonGroupOrientation } from '../ButtonGroup';
-import { getByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { render, RenderResult } from "@testing-library/react";
+import ButtonGroup, { ButtonGroupOrientation } from "../ButtonGroup";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface ButtonGroupDriverProps {
   dataHook?: string;
@@ -13,7 +13,7 @@ export interface ButtonGroupDriverProps {
 
 export class ButtonGroupDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-button-group';
+  private readonly defaultDataHook = "test-button-group";
 
   render(props: ButtonGroupDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -21,13 +21,14 @@ export class ButtonGroupDriver {
       <ButtonGroup {...props} dataHook={dataHook}>
         <button data-hook={`${dataHook}-first`}>First</button>
         <button data-hook={`${dataHook}-second`}>Second</button>
-      </ButtonGroup>
+      </ButtonGroup>,
     );
     return this;
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
-    if (!this.renderResult) throw new Error('ButtonGroupDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("ButtonGroupDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 
@@ -36,6 +37,6 @@ export class ButtonGroupDriver {
   }
 
   getRole(dataHook = this.defaultDataHook): string | null {
-    return this.getRoot(dataHook).getAttribute('role');
+    return this.getRoot(dataHook).getAttribute("role");
   }
 }

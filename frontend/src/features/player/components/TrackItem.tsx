@@ -1,1 +1,1 @@
-export { default } from './track-item/TrackItem';
+export { default } from "./track-item/TrackItem";

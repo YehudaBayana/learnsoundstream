@@ -1,13 +1,13 @@
-import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
+import React from "react";
+import { render, RenderResult } from "@testing-library/react";
 import Heading, {
   HeadingAlign,
   HeadingColor,
   HeadingLevel,
   HeadingSize,
   HeadingWeight,
-} from '../Heading';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+} from "../Heading";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface HeadingDriverProps {
   dataHook?: string;
@@ -24,17 +24,21 @@ export interface HeadingDriverProps {
 
 export class HeadingDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-heading';
+  private readonly defaultDataHook = "test-heading";
 
   render(props: HeadingDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
-    this.renderResult = render(<Heading {...props} dataHook={dataHook}>{props.children ?? 'Heading'}</Heading>);
+    this.renderResult = render(
+      <Heading {...props} dataHook={dataHook}>
+        {props.children ?? "Heading"}
+      </Heading>,
+    );
     return this;
   }
 
   private getContainer(): HTMLElement {
     if (!this.renderResult) {
-      throw new Error('HeadingDriver: render() must be called before querying elements');
+      throw new Error("HeadingDriver: render() must be called before querying elements");
     }
     return this.renderResult.container;
   }
@@ -52,10 +56,10 @@ export class HeadingDriver {
   }
 
   getText(dataHook = this.defaultDataHook): string {
-    return getByDataHook(this.getContainer(), dataHook).textContent?.trim() ?? '';
+    return getByDataHook(this.getContainer(), dataHook).textContent?.trim() ?? "";
   }
 
   getId(dataHook = this.defaultDataHook): string | null {
-    return getByDataHook(this.getContainer(), dataHook).getAttribute('id');
+    return getByDataHook(this.getContainer(), dataHook).getAttribute("id");
   }
 }

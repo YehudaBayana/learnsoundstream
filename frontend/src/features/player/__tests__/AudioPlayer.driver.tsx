@@ -1,7 +1,7 @@
-import { render, RenderResult } from '@testing-library/react';
-import AudioPlayer from '../components/AudioPlayer';
-import { usePlaybackStore } from '../store/usePlaybackStore';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { render, RenderResult } from "@testing-library/react";
+import AudioPlayer from "../components/AudioPlayer";
+import { usePlaybackStore } from "../store/usePlaybackStore";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface AudioPlayerDriverProps {
   dataHook?: string;
@@ -10,23 +10,24 @@ export interface AudioPlayerDriverProps {
 
 export class AudioPlayerDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'audio-player';
+  private readonly defaultDataHook = "audio-player";
 
   render(props: AudioPlayerDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
     usePlaybackStore.setState({
-      currentChosenTrack: props.hasTrack ? ({ id: 'track-1' } as never) : null,
+      currentChosenTrack: props.hasTrack ? ({ id: "track-1" } as never) : null,
       isPlaying: false,
     });
     if (props.hasTrack) {
-      jest.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+      jest.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
     }
     this.renderResult = render(<AudioPlayer dataHook={dataHook} />);
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('AudioPlayerDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("AudioPlayerDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

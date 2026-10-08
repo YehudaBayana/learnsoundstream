@@ -1,6 +1,6 @@
-import { ModalDriver } from './Modal.driver';
+import { ModalDriver } from "./Modal.driver";
 
-describe('Modal', () => {
+describe("Modal", () => {
   let driver: ModalDriver;
   let originalOverflow: string;
 
@@ -13,23 +13,23 @@ describe('Modal', () => {
     document.body.style.overflow = originalOverflow;
   });
 
-  it('renders its sections under a configurable hook', () => {
-    driver.render({ dataHook: 'playlist-modal' });
-    expect(driver.isOpen('playlist-modal')).toBe(true);
-    expect(driver.hasSection('header', 'playlist-modal')).toBe(true);
-    expect(driver.hasSection('body', 'playlist-modal')).toBe(true);
-    expect(driver.hasSection('footer', 'playlist-modal')).toBe(true);
+  it("renders its sections under a configurable hook", () => {
+    driver.render({ dataHook: "playlist-modal" });
+    expect(driver.isOpen("playlist-modal")).toBe(true);
+    expect(driver.hasSection("header", "playlist-modal")).toBe(true);
+    expect(driver.hasSection("body", "playlist-modal")).toBe(true);
+    expect(driver.hasSection("footer", "playlist-modal")).toBe(true);
   });
 
-  it('hides when closed and restores body scrolling', () => {
+  it("hides when closed and restores body scrolling", () => {
     driver.render();
-    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.body.style.overflow).toBe("hidden");
     driver.setOpen(false);
     expect(driver.isOpen()).toBe(false);
-    expect(document.body.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe("");
   });
 
-  it('closes from the header button, escape key, and backdrop', () => {
+  it("closes from the header button, escape key, and backdrop", () => {
     const onClose = jest.fn();
     driver.render({ onClose });
     driver.clickCloseButton();
@@ -38,10 +38,10 @@ describe('Modal', () => {
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 
-  it('respects disabled close actions and applies modal sizing', () => {
-    driver.render({ closeOnBackdrop: false, closeOnEscape: false, size: 'lg' });
+  it("respects disabled close actions and applies modal sizing", () => {
+    driver.render({ closeOnBackdrop: false, closeOnEscape: false, size: "lg" });
     driver.clickBackdrop();
     driver.pressEscape();
-    expect(driver.getPanelClassName()).toContain('max-w-lg');
+    expect(driver.getPanelClassName()).toContain("max-w-lg");
   });
 });

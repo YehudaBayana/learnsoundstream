@@ -3,11 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
-export default function QueryProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function QueryProvider({ children }: { children: React.ReactNode }) {
   // useState ensures QueryClient is instantiated once per browser session
   // and stays isolated during Server-Side Rendering.
   const [queryClient] = useState(
@@ -22,7 +18,5 @@ export default function QueryProvider({
       }),
   );
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

@@ -36,9 +36,7 @@ export class DialogDriver {
     return getByDataHook(document.body, dataHook);
   }
 
-  private queryRootElement(
-    dataHook: string = this.defaultDataHook,
-  ): HTMLElement | null {
+  private queryRootElement(dataHook: string = this.defaultDataHook): HTMLElement | null {
     return queryByDataHook(document.body, dataHook);
   }
 

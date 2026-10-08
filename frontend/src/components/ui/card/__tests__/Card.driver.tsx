@@ -1,14 +1,14 @@
-import React from 'react';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Card, { CardPadding, CardVariant } from '../Card';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Card, { CardPadding, CardVariant } from "../Card";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface CardDriverProps {
   dataHook?: string;
   variant?: CardVariant;
   hoverable?: boolean;
   clickable?: boolean;
-  as?: 'div' | 'article' | 'section' | 'button';
+  as?: "div" | "article" | "section" | "button";
   padding?: CardPadding;
   onClick?: () => void;
   includeHeader?: boolean;
@@ -18,7 +18,7 @@ export interface CardDriverProps {
 
 export class CardDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-card';
+  private readonly defaultDataHook = "test-card";
 
   render(props: CardDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -28,14 +28,14 @@ export class CardDriver {
         {includeHeader && <Card.Header dataHook={`${dataHook}-header`}>Header</Card.Header>}
         {includeBody !== false && <Card.Body dataHook={`${dataHook}-body`}>Body</Card.Body>}
         {includeFooter && <Card.Footer dataHook={`${dataHook}-footer`}>Footer</Card.Footer>}
-      </Card>
+      </Card>,
     );
     return this;
   }
 
   private getContainer(): HTMLElement {
     if (!this.renderResult) {
-      throw new Error('CardDriver: render() must be called before querying elements');
+      throw new Error("CardDriver: render() must be called before querying elements");
     }
     return this.renderResult.container;
   }
@@ -52,8 +52,8 @@ export class CardDriver {
     return getByDataHook(this.getContainer(), dataHook).className;
   }
 
-  getPartText(part: 'header' | 'body' | 'footer', dataHook = this.defaultDataHook): string {
-    return getByDataHook(this.getContainer(), `${dataHook}-${part}`).textContent?.trim() ?? '';
+  getPartText(part: "header" | "body" | "footer", dataHook = this.defaultDataHook): string {
+    return getByDataHook(this.getContainer(), `${dataHook}-${part}`).textContent?.trim() ?? "";
   }
 
   click(dataHook = this.defaultDataHook): void {

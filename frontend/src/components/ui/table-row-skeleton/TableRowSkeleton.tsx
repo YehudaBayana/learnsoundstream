@@ -1,6 +1,6 @@
-import React from 'react';
-import Skeleton from '../Skeleton';
-import { Stack } from '../layout';
+import React from "react";
+import Skeleton from "../Skeleton";
+import { Stack } from "../layout";
 
 interface TableRowSkeletonProps {
   count?: number;
@@ -11,10 +11,7 @@ const TableRowSkeleton: React.FC<TableRowSkeletonProps> = ({ count = 1, dataHook
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
-        <tr
-          key={index}
-          data-hook={dataHook ? `${dataHook}-row-${index}` : undefined}
-        >
+        <tr key={index} data-hook={dataHook ? `${dataHook}-row-${index}` : undefined}>
           {/* Row number */}
           <td className="px-6 py-4 whitespace-nowrap">
             <Skeleton variant="text" width={16} height={16} />

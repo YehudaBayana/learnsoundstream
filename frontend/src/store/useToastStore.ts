@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+export type ToastVariant = "success" | "error" | "warning" | "info";
 
 export interface ToastAction {
   label: string;
@@ -36,10 +36,11 @@ export const useToastStore = create<ToastStoreState>((set) => {
   return {
     toasts: [],
     addToast,
-    success: (message, action) => addToast(message, 'success', action),
-    error: (message, action) => addToast(message, 'error', action),
-    warning: (message, action) => addToast(message, 'warning', action),
-    info: (message, action) => addToast(message, 'info', action),
-    removeToast: (id) => set((state) => ({ toasts: state.toasts.filter((toast) => toast.id !== id) })),
+    success: (message, action) => addToast(message, "success", action),
+    error: (message, action) => addToast(message, "error", action),
+    warning: (message, action) => addToast(message, "warning", action),
+    info: (message, action) => addToast(message, "info", action),
+    removeToast: (id) =>
+      set((state) => ({ toasts: state.toasts.filter((toast) => toast.id !== id) })),
   };
 });

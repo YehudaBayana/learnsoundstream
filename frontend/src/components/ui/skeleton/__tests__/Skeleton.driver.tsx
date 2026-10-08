@@ -1,6 +1,6 @@
-import { render, RenderResult } from '@testing-library/react';
-import Skeleton, { SkeletonVariant } from '../Skeleton';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { render, RenderResult } from "@testing-library/react";
+import Skeleton, { SkeletonVariant } from "../Skeleton";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface SkeletonDriverProps {
   dataHook?: string;
@@ -13,18 +13,19 @@ export interface SkeletonDriverProps {
 
 export class SkeletonDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-skeleton';
+  private readonly defaultDataHook = "test-skeleton";
   private lineCount = 1;
 
   render(props: SkeletonDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
-    this.lineCount = props.variant === 'text' && (props.lines ?? 1) > 1 ? props.lines ?? 1 : 1;
+    this.lineCount = props.variant === "text" && (props.lines ?? 1) > 1 ? (props.lines ?? 1) : 1;
     this.renderResult = render(<Skeleton {...props} dataHook={dataHook} />);
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('SkeletonDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("SkeletonDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -34,12 +35,12 @@ export class SkeletonDriver {
 
   getLineCount(dataHook = this.defaultDataHook): number {
     return Array.from({ length: this.lineCount }, (_, index) =>
-      queryByDataHook(this.getContainer(), `${dataHook}-line-${index}`)
+      queryByDataHook(this.getContainer(), `${dataHook}-line-${index}`),
     ).filter(Boolean).length;
   }
 
   hasAnimation(dataHook = this.defaultDataHook): boolean {
-    return this.getClassName(dataHook).includes('animate-pulse');
+    return this.getClassName(dataHook).includes("animate-pulse");
   }
 
   getWidth(dataHook = this.defaultDataHook): string {

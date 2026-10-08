@@ -25,9 +25,7 @@ export class DrawerDriver {
       <Drawer {...props} dataHook={dataHook}>
         {props.children ?? (
           <>
-            <Drawer.Header onClose={props.onClose}>
-              Navigation Drawer
-            </Drawer.Header>
+            <Drawer.Header onClose={props.onClose}>Navigation Drawer</Drawer.Header>
             <Drawer.Body>Drawer Body Content</Drawer.Body>
           </>
         )}
@@ -36,9 +34,7 @@ export class DrawerDriver {
     return this;
   }
 
-  private queryRootElement(
-    dataHook: string = this.defaultDataHook,
-  ): HTMLElement | null {
+  private queryRootElement(dataHook: string = this.defaultDataHook): HTMLElement | null {
     // Drawer renders in a React portal to document.body
     return queryByDataHook(document.body, dataHook);
   }

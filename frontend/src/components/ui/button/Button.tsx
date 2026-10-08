@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Button variant styles for different use cases.
@@ -10,12 +10,12 @@ import React from 'react';
  * - link: Text-only buttons that look like links
  * - outline: Bordered buttons with transparent background
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'link' | 'outline';
+export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "link" | "outline";
 
 /**
  * Button size options.
  */
-export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Button style variant */
@@ -49,7 +49,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  */
 const getVariantClasses = (variant: ButtonVariant): string => {
   switch (variant) {
-    case 'primary':
+    case "primary":
       return `
         bg-gradient-to-r from-emerald-600 to-teal-600
         hover:from-emerald-500 hover:to-teal-500
@@ -59,7 +59,7 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         hover:shadow-xl hover:shadow-emerald-500/30
         border-transparent
       `;
-    case 'secondary':
+    case "secondary":
       return `
         bg-gray-200 dark:bg-slate-700
         text-gray-700 dark:text-slate-300
@@ -67,7 +67,7 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         active:bg-gray-400 dark:active:bg-slate-500
         border-transparent
       `;
-    case 'danger':
+    case "danger":
       return `
         bg-rose-600
         hover:bg-rose-500
@@ -76,7 +76,7 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         shadow-lg shadow-rose-500/25
         border-transparent
       `;
-    case 'ghost':
+    case "ghost":
       return `
         bg-transparent
         text-gray-600 dark:text-slate-400
@@ -85,7 +85,7 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         active:bg-gray-200 dark:active:bg-slate-700
         border-transparent
       `;
-    case 'link':
+    case "link":
       return `
         bg-transparent
         text-emerald-600 dark:text-emerald-400
@@ -94,7 +94,7 @@ const getVariantClasses = (variant: ButtonVariant): string => {
         border-transparent
         p-0
       `;
-    case 'outline':
+    case "outline":
       return `
         bg-transparent
         border-gray-300 dark:border-slate-600
@@ -110,32 +110,32 @@ const getVariantClasses = (variant: ButtonVariant): string => {
  */
 const getSizeClasses = (size: ButtonSize, variant: ButtonVariant): string => {
   // Link variant has no padding
-  if (variant === 'link') {
+  if (variant === "link") {
     switch (size) {
-      case 'xs':
-        return 'text-xs';
-      case 'sm':
-        return 'text-sm';
-      case 'md':
-        return 'text-base';
-      case 'lg':
-        return 'text-lg';
-      case 'xl':
-        return 'text-xl';
+      case "xs":
+        return "text-xs";
+      case "sm":
+        return "text-sm";
+      case "md":
+        return "text-base";
+      case "lg":
+        return "text-lg";
+      case "xl":
+        return "text-xl";
     }
   }
 
   switch (size) {
-    case 'xs':
-      return 'px-2 py-1 text-xs rounded-md gap-1';
-    case 'sm':
-      return 'px-3 py-1.5 text-sm rounded-lg gap-1.5';
-    case 'md':
-      return 'px-4 py-2 text-base rounded-xl gap-2';
-    case 'lg':
-      return 'px-6 py-3 text-lg rounded-xl gap-2';
-    case 'xl':
-      return 'px-8 py-4 text-xl rounded-2xl gap-3';
+    case "xs":
+      return "px-2 py-1 text-xs rounded-md gap-1";
+    case "sm":
+      return "px-3 py-1.5 text-sm rounded-lg gap-1.5";
+    case "md":
+      return "px-4 py-2 text-base rounded-xl gap-2";
+    case "lg":
+      return "px-6 py-3 text-lg rounded-xl gap-2";
+    case "xl":
+      return "px-8 py-4 text-xl rounded-2xl gap-3";
   }
 };
 
@@ -144,16 +144,16 @@ const getSizeClasses = (size: ButtonSize, variant: ButtonVariant): string => {
  */
 const getSpinnerSize = (size: ButtonSize): string => {
   switch (size) {
-    case 'xs':
-      return 'w-3 h-3';
-    case 'sm':
-      return 'w-3.5 h-3.5';
-    case 'md':
-      return 'w-4 h-4';
-    case 'lg':
-      return 'w-5 h-5';
-    case 'xl':
-      return 'w-6 h-6';
+    case "xs":
+      return "w-3 h-3";
+    case "sm":
+      return "w-3.5 h-3.5";
+    case "md":
+      return "w-4 h-4";
+    case "lg":
+      return "w-5 h-5";
+    case "xl":
+      return "w-6 h-6";
   }
 };
 
@@ -190,16 +190,16 @@ const Spinner: React.FC<{ size: ButtonSize }> = ({ size }) => (
  */
 const Button: React.FC<ButtonProps> = ({
   children,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   loading = false,
   loadingText,
   leftIcon,
   rightIcon,
   fullWidth = false,
   disabled,
-  className = '',
-  type = 'button',
+  className = "",
+  type = "button",
   as,
   to,
   dataHook,
@@ -208,27 +208,27 @@ const Button: React.FC<ButtonProps> = ({
   const isDisabled = disabled || loading;
 
   const classes = [
-    'inline-flex items-center justify-center',
-    'transition-all duration-200',
-    'border',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500',
-    'dark:focus:ring-offset-slate-900',
+    "inline-flex items-center justify-center",
+    "transition-all duration-200",
+    "border",
+    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
+    "dark:focus:ring-offset-slate-900",
     getVariantClasses(variant),
     getSizeClasses(size, variant),
-    fullWidth ? 'w-full' : '',
-    isDisabled ? 'opacity-50 cursor-not-allowed' : '',
+    fullWidth ? "w-full" : "",
+    isDisabled ? "opacity-50 cursor-not-allowed" : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  const Element = as || 'button';
+  const Element = as || "button";
 
   return (
-    <Element 
-      disabled={isDisabled} 
-      type={Element === 'button' ? type : undefined} 
-      className={classes} 
+    <Element
+      disabled={isDisabled}
+      type={Element === "button" ? type : undefined}
+      className={classes}
       to={to}
       data-hook={dataHook}
       {...props}

@@ -1,7 +1,7 @@
-import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
-import PageShell from '../PageShell';
-import { queryByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { render, RenderResult } from "@testing-library/react";
+import PageShell from "../PageShell";
+import { queryByDataHook } from "@/__tests__/testUtils";
 
 export interface PageShellDriverProps {
   dataHook?: string;
@@ -14,7 +14,7 @@ export interface PageShellDriverProps {
 
 export class PageShellDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-page-shell';
+  private readonly defaultDataHook = "test-page-shell";
 
   render(props: PageShellDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -26,14 +26,14 @@ export class PageShellDriver {
         actions={props.actions ?? <span data-hook={`${dataHook}-actions`}>Actions</span>}
       >
         <span data-hook={`${dataHook}-content`}>Page content</span>
-      </PageShell>
+      </PageShell>,
     );
     return this;
   }
 
   private getContainer(): HTMLElement {
     if (!this.renderResult) {
-      throw new Error('PageShellDriver: render() must be called before querying elements');
+      throw new Error("PageShellDriver: render() must be called before querying elements");
     }
     return this.renderResult.container;
   }
@@ -42,7 +42,7 @@ export class PageShellDriver {
     return queryByDataHook(this.getContainer(), dataHook) !== null;
   }
 
-  hasElement(suffix: 'title' | 'actions' | 'content', dataHook = this.defaultDataHook): boolean {
+  hasElement(suffix: "title" | "actions" | "content", dataHook = this.defaultDataHook): boolean {
     return queryByDataHook(this.getContainer(), `${dataHook}-${suffix}`) !== null;
   }
 }

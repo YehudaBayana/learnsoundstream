@@ -25,9 +25,7 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister, dataHook }) =>
         <h2 className="text-2xl font-bold text-gray-900" data-hook="login-heading">
           Welcome Back
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Please enter your details to sign in
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Please enter your details to sign in</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4" data-hook="login-form">

@@ -1,19 +1,7 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import {
-  ThemeName,
-  ThemeDefinition,
-  themes,
-  getTheme,
-  DEFAULT_THEME,
-} from "@/config/themes";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { ThemeName, ThemeDefinition, themes, getTheme, DEFAULT_THEME } from "@/config/themes";
 
 const STORAGE_KEY = "soundstream-theme";
 
@@ -95,9 +83,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     availableThemes: themes,
   };
 
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 /** Hook to access the theme context */

@@ -1,15 +1,15 @@
-import React from 'react';
-import { CarouselDriver } from './Carousel.driver';
+import React from "react";
+import { CarouselDriver } from "./Carousel.driver";
 
-describe('Carousel Component', () => {
+describe("Carousel Component", () => {
   let driver: CarouselDriver;
 
   beforeEach(() => {
     driver = new CarouselDriver();
   });
 
-  describe('rendering', () => {
-    it('renders carousel and navigation buttons properly', () => {
+  describe("rendering", () => {
+    it("renders carousel and navigation buttons properly", () => {
       driver.render({
         children: (
           <>
@@ -24,8 +24,8 @@ describe('Carousel Component', () => {
       expect(driver.hasNextButton()).toBe(true);
     });
 
-    it('renders with custom data-hook identifier', () => {
-      const customHook = 'featured-tracks-carousel';
+    it("renders with custom data-hook identifier", () => {
+      const customHook = "featured-tracks-carousel";
       driver.render({ dataHook: customHook });
 
       expect(driver.exists(customHook)).toBe(true);
@@ -34,26 +34,26 @@ describe('Carousel Component', () => {
     });
   });
 
-  describe('navigation and interaction', () => {
-    it('handles next button click without throwing', () => {
+  describe("navigation and interaction", () => {
+    it("handles next button click without throwing", () => {
       driver.render();
       const container = driver.getScrollContainer();
       container.scrollBy = jest.fn();
 
       expect(() => driver.clickNext()).not.toThrow();
       expect(container.scrollBy).toHaveBeenCalledWith(
-        expect.objectContaining({ behavior: 'smooth' })
+        expect.objectContaining({ behavior: "smooth" }),
       );
     });
 
-    it('handles prev button click without throwing', () => {
+    it("handles prev button click without throwing", () => {
       driver.render();
       const container = driver.getScrollContainer();
       container.scrollBy = jest.fn();
 
       expect(() => driver.clickPrev()).not.toThrow();
       expect(container.scrollBy).toHaveBeenCalledWith(
-        expect.objectContaining({ behavior: 'smooth' })
+        expect.objectContaining({ behavior: "smooth" }),
       );
     });
   });

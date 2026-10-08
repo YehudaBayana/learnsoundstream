@@ -1,11 +1,11 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 /**
  * Slider size options.
  */
-export type SliderSize = 'sm' | 'md' | 'lg';
+export type SliderSize = "sm" | "md" | "lg";
 
-interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type"> {
   /** Slider size */
   size?: SliderSize;
   /** Show current value indicator */
@@ -13,7 +13,7 @@ interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
   /** Format function for displayed value */
   formatValue?: (value: number) => string;
   /** Slider color theme */
-  color?: 'primary' | 'secondary';
+  color?: "primary" | "secondary";
   /** Additional CSS classes */
   className?: string;
   dataHook?: string;
@@ -24,12 +24,12 @@ interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
  */
 const getSizeClasses = (size: SliderSize): string => {
   switch (size) {
-    case 'sm':
-      return 'h-1';
-    case 'md':
-      return 'h-2';
-    case 'lg':
-      return 'h-3';
+    case "sm":
+      return "h-1";
+    case "md":
+      return "h-2";
+    case "lg":
+      return "h-3";
   }
 };
 
@@ -38,29 +38,29 @@ const getSizeClasses = (size: SliderSize): string => {
  */
 const getThumbSize = (size: SliderSize): string => {
   switch (size) {
-    case 'sm':
-      return '12px';
-    case 'md':
-      return '16px';
-    case 'lg':
-      return '20px';
+    case "sm":
+      return "12px";
+    case "md":
+      return "16px";
+    case "lg":
+      return "20px";
   }
 };
 
 /**
  * Get color-specific classes.
  */
-const getColorClasses = (color: 'primary' | 'secondary'): { track: string; thumb: string } => {
+const getColorClasses = (color: "primary" | "secondary"): { track: string; thumb: string } => {
   switch (color) {
-    case 'primary':
+    case "primary":
       return {
-        track: '#10b981', // emerald-500
-        thumb: '#059669', // emerald-600
+        track: "#10b981", // emerald-500
+        thumb: "#059669", // emerald-600
       };
-    case 'secondary':
+    case "secondary":
       return {
-        track: '#14b8a6', // teal-500
-        thumb: '#0d9488', // teal-600
+        track: "#14b8a6", // teal-500
+        thumb: "#0d9488", // teal-600
       };
   }
 };
@@ -86,24 +86,24 @@ const getColorClasses = (color: 'primary' | 'secondary'): { track: string; thumb
 const Slider = forwardRef<HTMLInputElement, SliderProps>(
   (
     {
-      size = 'md',
+      size = "md",
       showValue = false,
       formatValue = (v) => String(v),
-      color = 'primary',
+      color = "primary",
       disabled,
-      className = '',
+      className = "",
       value,
       min = 0,
       max = 100,
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const colors = getColorClasses(color);
     const thumbSize = getThumbSize(size);
     const heightClass = getSizeClasses(size);
-    const currentValue = typeof value === 'number' ? value : Number(value) || 0;
+    const currentValue = typeof value === "number" ? value : Number(value) || 0;
     const percentage = ((currentValue - Number(min)) / (Number(max) - Number(min))) * 100;
 
     // Generate unique ID for the style
@@ -141,17 +141,17 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
 
     const sliderClasses = [
       `slider-${uniqueId}`,
-      'w-full',
+      "w-full",
       heightClass,
-      'rounded-full',
-      'appearance-none',
-      'cursor-pointer',
-      'transition-opacity duration-200',
-      disabled ? 'opacity-50 cursor-not-allowed' : '',
+      "rounded-full",
+      "appearance-none",
+      "cursor-pointer",
+      "transition-opacity duration-200",
+      disabled ? "opacity-50 cursor-not-allowed" : "",
       className,
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
     // Track background with filled portion
     const trackStyle: React.CSSProperties = {
@@ -174,15 +174,18 @@ const Slider = forwardRef<HTMLInputElement, SliderProps>(
           {...props}
         />
         {showValue && (
-          <span className="text-sm font-medium text-gray-700 dark:text-slate-300 min-w-[3ch] text-right" data-hook={dataHook ? `${dataHook}-value` : undefined}>
+          <span
+            className="text-sm font-medium text-gray-700 dark:text-slate-300 min-w-[3ch] text-right"
+            data-hook={dataHook ? `${dataHook}-value` : undefined}
+          >
             {formatValue(currentValue)}
           </span>
         )}
       </div>
     );
-  }
+  },
 );
 
-Slider.displayName = 'Slider';
+Slider.displayName = "Slider";
 
 export default Slider;

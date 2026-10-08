@@ -13,13 +13,7 @@ export type StackAlign = "start" | "center" | "end" | "stretch" | "baseline";
 /**
  * Stack justify options.
  */
-export type StackJustify =
-  | "start"
-  | "center"
-  | "end"
-  | "between"
-  | "around"
-  | "evenly";
+export type StackJustify = "start" | "center" | "end" | "between" | "around" | "evenly";
 
 /**
  * Stack gap options.

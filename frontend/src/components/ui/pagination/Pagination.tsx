@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Pagination size options.
  */
-export type PaginationSize = 'sm' | 'md' | 'lg';
+export type PaginationSize = "sm" | "md" | "lg";
 
 interface PaginationProps {
   /** Current page (1-indexed) */
@@ -31,8 +31,8 @@ interface PaginationProps {
 const getPageNumbers = (
   currentPage: number,
   totalPages: number,
-  siblingCount: number
-): (number | 'ellipsis')[] => {
+  siblingCount: number,
+): (number | "ellipsis")[] => {
   const totalNumbers = siblingCount * 2 + 3; // siblings + current + 2 boundary
   const totalBlocks = totalNumbers + 2; // + 2 for ellipsis
 
@@ -48,22 +48,22 @@ const getPageNumbers = (
 
   if (!showLeftEllipsis && showRightEllipsis) {
     const leftRange = Array.from({ length: 3 + siblingCount * 2 }, (_, i) => i + 1);
-    return [...leftRange, 'ellipsis', totalPages];
+    return [...leftRange, "ellipsis", totalPages];
   }
 
   if (showLeftEllipsis && !showRightEllipsis) {
     const rightRange = Array.from(
       { length: 3 + siblingCount * 2 },
-      (_, i) => totalPages - (3 + siblingCount * 2) + i + 1
+      (_, i) => totalPages - (3 + siblingCount * 2) + i + 1,
     );
-    return [1, 'ellipsis', ...rightRange];
+    return [1, "ellipsis", ...rightRange];
   }
 
   const middleRange = Array.from(
     { length: rightSiblingIndex - leftSiblingIndex + 1 },
-    (_, i) => leftSiblingIndex + i
+    (_, i) => leftSiblingIndex + i,
   );
-  return [1, 'ellipsis', ...middleRange, 'ellipsis', totalPages];
+  return [1, "ellipsis", ...middleRange, "ellipsis", totalPages];
 };
 
 /**
@@ -71,12 +71,12 @@ const getPageNumbers = (
  */
 const getSizeClasses = (size: PaginationSize): string => {
   switch (size) {
-    case 'sm':
-      return 'h-8 min-w-8 text-sm';
-    case 'md':
-      return 'h-10 min-w-10 text-sm';
-    case 'lg':
-      return 'h-12 min-w-12 text-base';
+    case "sm":
+      return "h-8 min-w-8 text-sm";
+    case "md":
+      return "h-10 min-w-10 text-sm";
+    case "lg":
+      return "h-12 min-w-12 text-base";
   }
 };
 
@@ -114,9 +114,9 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
   siblingCount = 1,
   showBoundaryPages = true,
-  size = 'md',
+  size = "md",
   disabled = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   if (totalPages <= 1) return null;
@@ -134,9 +134,10 @@ const Pagination: React.FC<PaginationProps> = ({
     focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500
   `;
 
-  const activeClasses = 'bg-emerald-500 text-white';
-  const inactiveClasses = 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800';
-  const disabledClasses = 'opacity-50 cursor-not-allowed';
+  const activeClasses = "bg-emerald-500 text-white";
+  const inactiveClasses =
+    "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800";
+  const disabledClasses = "opacity-50 cursor-not-allowed";
 
   const handlePageChange = (page: number) => {
     if (!disabled && page >= 1 && page <= totalPages && page !== currentPage) {
@@ -175,7 +176,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Page numbers */}
       {pages.map((page, index) => {
-        if (page === 'ellipsis') {
+        if (page === "ellipsis") {
           return (
             <span
               key={`ellipsis-${index}`}
@@ -197,9 +198,9 @@ const Pagination: React.FC<PaginationProps> = ({
             className={`
               ${buttonClasses}
               ${isActive ? activeClasses : inactiveClasses}
-              ${disabled ? disabledClasses : ''}
+              ${disabled ? disabledClasses : ""}
             `}
-            aria-current={isActive ? 'page' : undefined}
+            aria-current={isActive ? "page" : undefined}
             aria-label={`Page ${page}`}
             data-hook={dataHook ? `${dataHook}-page-${page}` : undefined}
           >

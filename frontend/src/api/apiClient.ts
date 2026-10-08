@@ -5,16 +5,11 @@ export interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
 }
 
-export async function apiClient<T>(
-  endpoint: string,
-  options: RequestOptions = {},
-): Promise<T> {
+export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { params, headers, ...customConfig } = options;
 
   // 1. Build URL with query parameters automatically
-  const url = new URL(
-    endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`,
-  );
+  const url = new URL(endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -43,9 +38,7 @@ export async function apiClient<T>(
     if (response.status === 401) {
       return null as T; // Return null for unauthorized access, allowing the caller to handle it
     }
-    throw new Error(
-      errorData?.message || `HTTP error! status: ${response.status}`,
-    );
+    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
   }
 
   if (response.status === 204) {

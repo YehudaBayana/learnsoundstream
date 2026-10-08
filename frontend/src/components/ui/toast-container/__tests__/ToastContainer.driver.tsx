@@ -1,10 +1,10 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import ToastContainer from '../ToastContainer';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { act, fireEvent, render, RenderResult } from "@testing-library/react";
+import ToastContainer from "../ToastContainer";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class ToastContainerDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'toast-container';
+  private readonly defaultDataHook = "toast-container";
 
   render(dataHook = this.defaultDataHook): this {
     this.renderResult = render(<ToastContainer dataHook={dataHook} />);
@@ -12,7 +12,8 @@ export class ToastContainerDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('ToastContainerDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("ToastContainerDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

@@ -89,11 +89,7 @@ const colGapMap: Record<GridGap, string> = {
   12: "gap-x-12",
 };
 
-const getColsClasses = (
-  cols: GridCols,
-  colsMobile?: GridCols,
-  colsTablet?: GridCols,
-): string => {
+const getColsClasses = (cols: GridCols, colsMobile?: GridCols, colsTablet?: GridCols): string => {
   const classes: string[] = [];
 
   // Mobile first

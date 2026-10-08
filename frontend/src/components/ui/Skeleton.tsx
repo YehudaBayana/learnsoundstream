@@ -1,2 +1,2 @@
-export { default } from './skeleton/Skeleton';
-export * from './skeleton/Skeleton';
+export { default } from "./skeleton/Skeleton";
+export * from "./skeleton/Skeleton";

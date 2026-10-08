@@ -25,8 +25,7 @@ export class GridDriver {
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLElement {
-    if (!this.renderResult)
-      throw new Error("GridDriver: render() must be called before querying");
+    if (!this.renderResult) throw new Error("GridDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook);
   }
 

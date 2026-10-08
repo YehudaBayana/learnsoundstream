@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * IconButton variant styles.
  */
-export type IconButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+export type IconButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 
 /**
  * IconButton size options.
  */
-export type IconButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type IconButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** The icon to display */
@@ -20,7 +20,7 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   /** Whether the button is in a loading state */
   loading?: boolean;
   /** Accessible label for the button (required for icon-only buttons) */
-  'aria-label': string;
+  "aria-label": string;
   /** Whether the button is round (circular) */
   rounded?: boolean;
   /** Additional CSS classes */
@@ -35,7 +35,7 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
  */
 const getVariantClasses = (variant: IconButtonVariant): string => {
   switch (variant) {
-    case 'primary':
+    case "primary":
       return `
         bg-gradient-to-r from-emerald-600 to-teal-600
         hover:from-emerald-500 hover:to-teal-500
@@ -44,14 +44,14 @@ const getVariantClasses = (variant: IconButtonVariant): string => {
         shadow-md shadow-emerald-500/20
         hover:shadow-xl hover:shadow-emerald-500/25
       `;
-    case 'secondary':
+    case "secondary":
       return `
         bg-gray-200 dark:bg-slate-700
         text-gray-700 dark:text-slate-300
         hover:bg-gray-300 dark:hover:bg-slate-600
         active:bg-gray-400 dark:active:bg-slate-500
       `;
-    case 'danger':
+    case "danger":
       return `
         bg-rose-600
         hover:bg-rose-500
@@ -59,7 +59,7 @@ const getVariantClasses = (variant: IconButtonVariant): string => {
         text-white
         shadow-md shadow-rose-500/20
       `;
-    case 'ghost':
+    case "ghost":
       return `
         bg-transparent
         text-gray-600 dark:text-slate-400
@@ -76,16 +76,16 @@ const getVariantClasses = (variant: IconButtonVariant): string => {
  */
 const getSizeClasses = (size: IconButtonSize, rounded: boolean): string => {
   switch (size) {
-    case 'xs':
-      return `w-6 h-6 text-sm ${rounded ? 'rounded-full' : 'rounded'}`;
-    case 'sm':
-      return `w-8 h-8 text-base ${rounded ? 'rounded-full' : 'rounded-md'}`;
-    case 'md':
-      return `w-10 h-10 text-lg ${rounded ? 'rounded-full' : 'rounded-lg'}`;
-    case 'lg':
-      return `w-12 h-12 text-xl ${rounded ? 'rounded-full' : 'rounded-xl'}`;
-    case 'xl':
-      return `w-14 h-14 text-2xl ${rounded ? 'rounded-full' : 'rounded-xl'}`;
+    case "xs":
+      return `w-6 h-6 text-sm ${rounded ? "rounded-full" : "rounded"}`;
+    case "sm":
+      return `w-8 h-8 text-base ${rounded ? "rounded-full" : "rounded-md"}`;
+    case "md":
+      return `w-10 h-10 text-lg ${rounded ? "rounded-full" : "rounded-lg"}`;
+    case "lg":
+      return `w-12 h-12 text-xl ${rounded ? "rounded-full" : "rounded-xl"}`;
+    case "xl":
+      return `w-14 h-14 text-2xl ${rounded ? "rounded-full" : "rounded-xl"}`;
   }
 };
 
@@ -94,16 +94,16 @@ const getSizeClasses = (size: IconButtonSize, rounded: boolean): string => {
  */
 const getSpinnerSize = (size: IconButtonSize): string => {
   switch (size) {
-    case 'xs':
-      return 'w-3 h-3';
-    case 'sm':
-      return 'w-4 h-4';
-    case 'md':
-      return 'w-5 h-5';
-    case 'lg':
-      return 'w-6 h-6';
-    case 'xl':
-      return 'w-7 h-7';
+    case "xs":
+      return "w-3 h-3";
+    case "sm":
+      return "w-4 h-4";
+    case "md":
+      return "w-5 h-5";
+    case "lg":
+      return "w-6 h-6";
+    case "xl":
+      return "w-7 h-7";
   }
 };
 
@@ -141,34 +141,34 @@ const Spinner: React.FC<{ size: IconButtonSize }> = ({ size }) => (
 const IconButton: React.FC<IconButtonProps> = ({
   icon,
   children,
-  variant = 'ghost',
-  size = 'md',
+  variant = "ghost",
+  size = "md",
   loading = false,
   rounded = false,
   disabled,
-  className = '',
-  type = 'button',
+  className = "",
+  type = "button",
   dataHook,
   ...props
 }) => {
   const isDisabled = disabled || loading;
 
   const classes = [
-    'inline-flex items-center justify-center p-0',
-    'transition-all duration-200',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500',
-    'dark:focus:ring-offset-slate-900',
+    "inline-flex items-center justify-center p-0",
+    "transition-all duration-200",
+    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
+    "dark:focus:ring-offset-slate-900",
     getVariantClasses(variant),
     getSizeClasses(size, rounded),
-    isDisabled ? 'opacity-50 cursor-not-allowed' : '',
+    isDisabled ? "opacity-50 cursor-not-allowed" : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <button disabled={isDisabled} type={type} className={classes} data-hook={dataHook} {...props}>
-      {loading ? <Spinner size={size} /> : (icon || children)}
+      {loading ? <Spinner size={size} /> : icon || children}
     </button>
   );
 };

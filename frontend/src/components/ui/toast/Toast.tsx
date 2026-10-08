@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   HiCheckCircle,
   HiExclamationCircle,
   HiExclamationTriangle,
   HiInformationCircle,
   HiXMark,
-} from 'react-icons/hi2';
-import type { Toast as ToastData, ToastVariant } from '@/store/useToastStore';
+} from "react-icons/hi2";
+import type { Toast as ToastData, ToastVariant } from "@/store/useToastStore";
 
 interface ToastProps {
   toast: ToastData;
@@ -19,13 +19,13 @@ interface ToastProps {
  */
 const getIcon = (variant: ToastVariant) => {
   switch (variant) {
-    case 'success':
+    case "success":
       return <HiCheckCircle className="w-5 h-5 text-emerald-500" />;
-    case 'error':
+    case "error":
       return <HiExclamationCircle className="w-5 h-5 text-rose-500" />;
-    case 'warning':
+    case "warning":
       return <HiExclamationTriangle className="w-5 h-5 text-amber-500" />;
-    case 'info':
+    case "info":
       return <HiInformationCircle className="w-5 h-5 text-blue-500" />;
   }
 };
@@ -35,14 +35,14 @@ const getIcon = (variant: ToastVariant) => {
  */
 const getVariantStyles = (variant: ToastVariant): string => {
   switch (variant) {
-    case 'success':
-      return 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-900/20';
-    case 'error':
-      return 'border-l-rose-500 bg-rose-50 dark:bg-rose-900/20';
-    case 'warning':
-      return 'border-l-amber-500 bg-amber-50 dark:bg-amber-900/20';
-    case 'info':
-      return 'border-l-blue-500 bg-blue-50 dark:bg-blue-900/20';
+    case "success":
+      return "border-l-emerald-500 bg-emerald-50 dark:bg-emerald-900/20";
+    case "error":
+      return "border-l-rose-500 bg-rose-50 dark:bg-rose-900/20";
+    case "warning":
+      return "border-l-amber-500 bg-amber-50 dark:bg-amber-900/20";
+    case "info":
+      return "border-l-blue-500 bg-blue-50 dark:bg-blue-900/20";
   }
 };
 
@@ -83,7 +83,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onDismiss, dataHook }) => {
         w-full max-w-sm bg-white dark:bg-slate-800 rounded-lg shadow-lg
         border-l-4 ${getVariantStyles(toast.variant)}
         transform transition-all duration-200 ease-out
-        ${isVisible && !isLeaving ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}
+        ${isVisible && !isLeaving ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}
       `}
     >
       <div className="p-4 flex items-start gap-3">

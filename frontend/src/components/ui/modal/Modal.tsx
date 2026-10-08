@@ -42,9 +42,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
       `}
       data-hook={dataHook}
     >
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        {children}
-      </h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{children}</h2>
       {showCloseButton && onClose && (
         <button
           type="button"
@@ -60,12 +58,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
           aria-label="Close modal"
           data-hook={dataHook ? `${dataHook}-close-button` : undefined}
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -94,11 +87,7 @@ interface ModalBodyProps {
 /**
  * Modal.Body - Main content area of the modal.
  */
-const ModalBody: React.FC<ModalBodyProps> = ({
-  children,
-  className = "",
-  dataHook,
-}) => {
+const ModalBody: React.FC<ModalBodyProps> = ({ children, className = "", dataHook }) => {
   return (
     <div className={`px-4 py-4 sm:px-6 ${className}`} data-hook={dataHook}>
       {children}
@@ -327,10 +316,7 @@ const Modal: React.FC<ModalProps> & {
 
   // Clone children to pass onClose to Header
   const enhancedChildren = React.Children.map(children, (child) => {
-    if (
-      React.isValidElement<ModalHeaderProps>(child) &&
-      child.type === ModalHeader
-    ) {
+    if (React.isValidElement<ModalHeaderProps>(child) && child.type === ModalHeader) {
       return React.cloneElement(child, {
         onClose: child.props.onClose || onClose,
       });

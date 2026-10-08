@@ -1,6 +1,6 @@
-import { render, RenderResult } from '@testing-library/react';
-import PlaylistDetailView from '../views/PlaylistDetailView';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { render, RenderResult } from "@testing-library/react";
+import PlaylistDetailView from "../views/PlaylistDetailView";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface PlaylistDetailViewDriverProps {
   dataHook?: string;
@@ -8,15 +8,18 @@ export interface PlaylistDetailViewDriverProps {
 
 export class PlaylistDetailViewDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'playlist-detail-view';
+  private readonly defaultDataHook = "playlist-detail-view";
 
   render(props: PlaylistDetailViewDriverProps = {}): this {
-    this.renderResult = render(<PlaylistDetailView dataHook={props.dataHook ?? this.defaultDataHook} />);
+    this.renderResult = render(
+      <PlaylistDetailView dataHook={props.dataHook ?? this.defaultDataHook} />,
+    );
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('PlaylistDetailViewDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("PlaylistDetailViewDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -37,6 +40,6 @@ export class PlaylistDetailViewDriver {
   }
 
   getTrackError(dataHook = this.defaultDataHook): string {
-    return getByDataHook(this.getContainer(), `${dataHook}-tracks-error`).textContent?.trim() ?? '';
+    return getByDataHook(this.getContainer(), `${dataHook}-tracks-error`).textContent?.trim() ?? "";
   }
 }

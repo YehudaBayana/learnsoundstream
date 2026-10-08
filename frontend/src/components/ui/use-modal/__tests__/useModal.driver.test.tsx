@@ -1,13 +1,13 @@
-import { UseModalDriver } from './useModal.driver';
+import { UseModalDriver } from "./useModal.driver";
 
-describe('useModal', () => {
+describe("useModal", () => {
   let driver: UseModalDriver;
 
   beforeEach(() => {
     driver = new UseModalDriver();
   });
 
-  it('supports open and close actions from its default closed state', () => {
+  it("supports open and close actions from its default closed state", () => {
     driver.render();
     expect(driver.isOpen()).toBe(false);
     driver.open();
@@ -16,7 +16,7 @@ describe('useModal', () => {
     expect(driver.isOpen()).toBe(false);
   });
 
-  it('supports initial state, toggle, and direct state changes', () => {
+  it("supports initial state, toggle, and direct state changes", () => {
     driver.render(true);
     expect(driver.isOpen()).toBe(true);
     driver.toggle();

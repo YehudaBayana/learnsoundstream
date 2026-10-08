@@ -17,46 +17,38 @@ interface HomeViewProps {
 export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
   return (
     <Box dataHook={dataHook}>
-    <Container className="px-6 py-8 max-w-[1200px] space-y-12">
-      {/* Server Status Widget */}
-      <ServerStatus />
+      <Container className="px-6 py-8 max-w-[1200px] space-y-12">
+        {/* Server Status Widget */}
+        <ServerStatus />
 
-      {/* Grid for Featured Showcase & Recently Played */}
-      <Grid gap={8} cols={2} colsMobile={1}>
-        {/* Featured Tracks Showcase */}
-        <Flex direction="col" gap={4}>
-          <Flex align="center" justify="between" className="px-1">
-            <Heading
-              level={3}
-              size="md"
-              className="font-bold text-[var(--text-primary)]"
-            >
-              Featured Showcase
-            </Heading>
-            <Text variant="caption" color="muted">
-              Handpicked Jams
-            </Text>
+        {/* Grid for Featured Showcase & Recently Played */}
+        <Grid gap={8} cols={2} colsMobile={1}>
+          {/* Featured Tracks Showcase */}
+          <Flex direction="col" gap={4}>
+            <Flex align="center" justify="between" className="px-1">
+              <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
+                Featured Showcase
+              </Heading>
+              <Text variant="caption" color="muted">
+                Handpicked Jams
+              </Text>
+            </Flex>
           </Flex>
-        </Flex>
 
-        {/* Recently Played */}
-        <Flex direction="col" gap={4}>
-          <Flex align="center" justify="between" className="px-1">
-            <Heading
-              level={3}
-              size="md"
-              className="font-bold text-[var(--text-primary)]"
-            >
-              Recently Played
-            </Heading>
-            {/* {history1.length > 0 && (
+          {/* Recently Played */}
+          <Flex direction="col" gap={4}>
+            <Flex align="center" justify="between" className="px-1">
+              <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
+                Recently Played
+              </Heading>
+              {/* {history1.length > 0 && (
               <Text variant="caption" color="muted">
                 Your History1
               </Text>
             )} */}
-          </Flex>
+            </Flex>
 
-          {/* <Flex
+            {/* <Flex
             direction="col"
             gap={2}
             className="bg-[var(--bg-surface)] border border-[var(--border-default)] p-4 rounded-2xl justify-center min-h-[220px]"
@@ -82,30 +74,26 @@ export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
               </Flex>
             ) : null}
           </Flex> */}
-        </Flex>
-      </Grid>
-
-      {/* Popular Playlists Section */}
-      <Flex direction="col" gap={4}>
-        <Flex align="center" justify="between" className="px-1">
-          <Flex align="center" gap={3}>
-            <Heading
-              level={3}
-              size="md"
-              className="font-bold text-[var(--text-primary)]"
-            >
-              Popular Playlists
-            </Heading>
-            <Badge variant="success" size="sm">
-              Top 5
-            </Badge>
           </Flex>
-          <Text variant="caption" color="muted">
-            Curated from YouTube
-          </Text>
-        </Flex>
+        </Grid>
 
-        {/* {isLoadingPopularPlaylists ? (
+        {/* Popular Playlists Section */}
+        <Flex direction="col" gap={4}>
+          <Flex align="center" justify="between" className="px-1">
+            <Flex align="center" gap={3}>
+              <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
+                Popular Playlists
+              </Heading>
+              <Badge variant="success" size="sm">
+                Top 5
+              </Badge>
+            </Flex>
+            <Text variant="caption" color="muted">
+              Curated from YouTube
+            </Text>
+          </Flex>
+
+          {/* {isLoadingPopularPlaylists ? (
           <Flex
             align="center"
             justify="center"
@@ -149,11 +137,11 @@ export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
             ))}
           </Grid>
         )} */}
-      </Flex>
+        </Flex>
 
-      {/* Global Footer */}
-      <Footer />
-    </Container>
+        {/* Global Footer */}
+        <Footer />
+      </Container>
     </Box>
   );
 }

@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * List variant options.
  */
-export type ListVariant = 'default' | 'divided' | 'bordered' | 'card';
+export type ListVariant = "default" | "divided" | "bordered" | "card";
 
 /**
  * List spacing options.
  */
-export type ListSpacing = 'none' | 'sm' | 'md' | 'lg';
+export type ListSpacing = "none" | "sm" | "md" | "lg";
 
 interface ListProps {
   /** List content (typically ListItem components) */
@@ -29,14 +29,14 @@ interface ListProps {
  */
 const getVariantClasses = (variant: ListVariant): string => {
   switch (variant) {
-    case 'default':
-      return '';
-    case 'divided':
-      return '[&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-100 dark:[&>*:not(:last-child)]:border-slate-800';
-    case 'bordered':
-      return 'border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-200 dark:[&>*:not(:last-child)]:border-slate-700';
-    case 'card':
-      return 'bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-100 dark:[&>*:not(:last-child)]:border-slate-700';
+    case "default":
+      return "";
+    case "divided":
+      return "[&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-100 dark:[&>*:not(:last-child)]:border-slate-800";
+    case "bordered":
+      return "border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-200 dark:[&>*:not(:last-child)]:border-slate-700";
+    case "card":
+      return "bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden [&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-gray-100 dark:[&>*:not(:last-child)]:border-slate-700";
   }
 };
 
@@ -45,14 +45,14 @@ const getVariantClasses = (variant: ListVariant): string => {
  */
 const getSpacingClasses = (spacing: ListSpacing): string => {
   switch (spacing) {
-    case 'none':
-      return '';
-    case 'sm':
-      return 'space-y-1';
-    case 'md':
-      return 'space-y-2';
-    case 'lg':
-      return 'space-y-4';
+    case "none":
+      return "";
+    case "sm":
+      return "space-y-1";
+    case "md":
+      return "space-y-2";
+    case "lg":
+      return "space-y-4";
   }
 };
 
@@ -89,23 +89,27 @@ const getSpacingClasses = (spacing: ListSpacing): string => {
  */
 const List: React.FC<ListProps> = ({
   children,
-  variant = 'default',
-  spacing = 'none',
+  variant = "default",
+  spacing = "none",
   ordered = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
-  const Element = ordered ? 'ol' : 'ul';
+  const Element = ordered ? "ol" : "ul";
 
   const classes = [
     getVariantClasses(variant),
-    variant === 'default' ? getSpacingClasses(spacing) : '',
+    variant === "default" ? getSpacingClasses(spacing) : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  return <Element className={classes} data-hook={dataHook}>{children}</Element>;
+  return (
+    <Element className={classes} data-hook={dataHook}>
+      {children}
+    </Element>
+  );
 };
 
 export default List;

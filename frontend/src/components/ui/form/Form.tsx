@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   /** Form content */
@@ -33,7 +33,7 @@ const Form: React.FC<FormProps> = ({
   children,
   onSubmit,
   gap = 6,
-  className = '',
+  className = "",
   dataHook,
   ...props
 }) => {
@@ -42,13 +42,7 @@ const Form: React.FC<FormProps> = ({
     onSubmit?.(e);
   };
 
-  const formClasses = [
-    'flex flex-col',
-    `gap-${gap}`,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const formClasses = ["flex flex-col", `gap-${gap}`, className].filter(Boolean).join(" ");
 
   return (
     <form onSubmit={handleSubmit} className={formClasses} data-hook={dataHook} {...props}>

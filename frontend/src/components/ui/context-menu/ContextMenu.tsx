@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { ContextMenuContext, useContextMenuContext } from '../ContextMenuContext';
+import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { ContextMenuContext, useContextMenuContext } from "../ContextMenuContext";
 
 // ----------------------------------------------------------------------------
 // Context Menu Item
@@ -27,7 +27,7 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   onClick,
   danger = false,
   disabled = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const { close } = useContextMenuContext();
@@ -51,11 +51,12 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
         flex items-center gap-3
         px-4 py-2
         text-sm text-left
-        ${danger
-          ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20'
-          : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+        ${
+          danger
+            ? "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+            : "text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
         }
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         transition-colors
         focus:outline-none focus:bg-gray-100 dark:focus:bg-slate-800
         ${className}
@@ -71,7 +72,10 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
 // Context Menu Divider
 // ----------------------------------------------------------------------------
 
-export const ContextMenuDivider: React.FC<{ className?: string; dataHook?: string }> = ({ className = '', dataHook }) => (
+export const ContextMenuDivider: React.FC<{ className?: string; dataHook?: string }> = ({
+  className = "",
+  dataHook,
+}) => (
   <div
     role="separator"
     data-hook={dataHook}
@@ -116,18 +120,10 @@ interface ContextMenuProps {
 const ContextMenu: React.FC<ContextMenuProps> & {
   Item: typeof ContextMenuItem;
   Divider: typeof ContextMenuDivider;
-} = ({
-  children,
-  content,
-  className = '',
-  disabled = false,
-  dataHook,
-}) => {
+} = ({ children, content, className = "", disabled = false, dataHook }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-
-
 
   const close = () => {
     setIsOpen(false);
@@ -147,12 +143,12 @@ const ContextMenu: React.FC<ContextMenuProps> & {
       close();
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('scroll', handleScroll, { capture: true }); // Close on scroll
-    
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll, { capture: true }); // Close on scroll
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('scroll', handleScroll, { capture: true });
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, { capture: true });
     };
   }, [isOpen]);
 
@@ -161,13 +157,13 @@ const ContextMenu: React.FC<ContextMenuProps> & {
     if (!isOpen) return;
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         close();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
   // Adjust position if menu goes off screen
@@ -176,7 +172,7 @@ const ContextMenu: React.FC<ContextMenuProps> & {
       const rect = menuRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      
+
       let { x, y } = position;
 
       // Adjust horizontal position
@@ -191,11 +187,11 @@ const ContextMenu: React.FC<ContextMenuProps> & {
 
       // If we adjusted, update state (safely)
       if (x !== position.x || y !== position.y) {
-         // We won't update state here to avoid flicker/loop, relying on CSS max-width/height if needed 
-         // or accept slight inaccuracy. For a simple implementation, standard context menus open 
-         // towards bottom-right unless near edge.
-         // A more robust solution would measure before showing.
-         // For now, let's keep it simple.
+        // We won't update state here to avoid flicker/loop, relying on CSS max-width/height if needed
+        // or accept slight inaccuracy. For a simple implementation, standard context menus open
+        // towards bottom-right unless near edge.
+        // A more robust solution would measure before showing.
+        // For now, let's keep it simple.
       }
     }
   }, [isOpen, position]);
@@ -224,11 +220,9 @@ const ContextMenu: React.FC<ContextMenuProps> & {
           }}
           onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside menu (handled by items)
         >
-          <ContextMenuContext.Provider value={{ close }}>
-            {content}
-          </ContextMenuContext.Provider>
+          <ContextMenuContext.Provider value={{ close }}>{content}</ContextMenuContext.Provider>
         </div>,
-        document.body
+        document.body,
       )
     : null;
 
@@ -248,19 +242,19 @@ const ContextMenu: React.FC<ContextMenuProps> & {
         const scrollX = window.scrollX;
         const scrollY = window.scrollY;
 
-        setPosition({ 
-          x: e.clientX + scrollX, 
-          y: e.clientY + scrollY 
+        setPosition({
+          x: e.clientX + scrollX,
+          y: e.clientY + scrollY,
         });
         setIsOpen(true);
       }
     };
 
     // Use capture phase to intercept before any other handlers
-    document.addEventListener('contextmenu', handleNativeContextMenu, true);
-    
+    document.addEventListener("contextmenu", handleNativeContextMenu, true);
+
     return () => {
-      document.removeEventListener('contextmenu', handleNativeContextMenu, true);
+      document.removeEventListener("contextmenu", handleNativeContextMenu, true);
     };
   }, [disabled]);
 

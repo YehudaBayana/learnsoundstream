@@ -42,9 +42,7 @@ export class PlaylistCardDriver {
 
   private getContainer(): HTMLElement {
     if (!this.renderResult)
-      throw new Error(
-        "PlaylistCardDriver: render() must be called before querying",
-      );
+      throw new Error("PlaylistCardDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -58,9 +56,7 @@ export class PlaylistCardDriver {
 
   getPlaylist(): Playlist {
     if (!this.currentPlaylist)
-      throw new Error(
-        "PlaylistCardDriver: render() must be called before querying",
-      );
+      throw new Error("PlaylistCardDriver: render() must be called before querying");
     return this.currentPlaylist;
   }
 }

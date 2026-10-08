@@ -18,13 +18,7 @@ import { Box } from "../layout";
 // Shows a friendly message with an icon and optional action button
 
 export type EmptyStateType =
-  | "library"
-  | "liked"
-  | "trending"
-  | "search"
-  | "history"
-  | "playlist"
-  | "generic";
+  "library" | "liked" | "trending" | "search" | "history" | "playlist" | "generic";
 
 interface EmptyStateProps {
   type: EmptyStateType;
@@ -53,8 +47,7 @@ const emptyStateConfig: Record<
   library: {
     icon: <FaMusic size={48} />,
     title: "Your library is empty",
-    message:
-      "You haven't added any songs or playlists yet. Explore trending music to get started!",
+    message: "You haven't added any songs or playlists yet. Explore trending music to get started!",
     actionText: "Explore Trending",
     actionLink: "/trending",
     colorClass: "text-emerald-500 bg-emerald-500/10",
@@ -62,8 +55,7 @@ const emptyStateConfig: Record<
   liked: {
     icon: <FaHeart size={48} />,
     title: "No liked songs yet",
-    message:
-      "Songs you like will appear here. Start discovering music on the home page!",
+    message: "Songs you like will appear here. Start discovering music on the home page!",
     actionText: "Go to Home",
     actionLink: "/",
     colorClass: "text-rose-500 bg-rose-500/10",
@@ -85,8 +77,7 @@ const emptyStateConfig: Record<
   history: {
     icon: <FaHistory size={48} />,
     title: "No listening history",
-    message:
-      "Songs you listen to will appear here. Start streaming some music!",
+    message: "Songs you listen to will appear here. Start streaming some music!",
     actionText: "Start Listening",
     actionLink: "/",
     colorClass: "text-purple-500 bg-purple-500/10",

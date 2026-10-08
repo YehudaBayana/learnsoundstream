@@ -25,8 +25,7 @@ export class StackDriver {
   }
 
   getClassName(dataHook = this.defaultDataHook): string {
-    if (!this.renderResult)
-      throw new Error("StackDriver: render() must be called before querying");
+    if (!this.renderResult) throw new Error("StackDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook).className;
   }
 }

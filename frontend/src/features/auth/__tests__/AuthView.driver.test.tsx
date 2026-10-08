@@ -1,11 +1,11 @@
-import { AuthViewDriver } from './AuthView.driver';
-import { useRouter } from 'next/navigation';
-import * as authModule from '../query/useAuth';
+import { AuthViewDriver } from "./AuthView.driver";
+import { useRouter } from "next/navigation";
+import * as authModule from "../query/useAuth";
 
-jest.mock('next/navigation', () => ({ useRouter: jest.fn() }));
-jest.mock('../query/useAuth');
+jest.mock("next/navigation", () => ({ useRouter: jest.fn() }));
+jest.mock("../query/useAuth");
 
-describe('AuthView', () => {
+describe("AuthView", () => {
   let driver: AuthViewDriver;
 
   beforeEach(() => {
@@ -18,12 +18,12 @@ describe('AuthView', () => {
     driver = new AuthViewDriver();
   });
 
-  it('switches between Login and Register via data hooks', () => {
-    driver.render('auth-screen');
-    expect(driver.hasLogin('auth-screen')).toBe(true);
+  it("switches between Login and Register via data hooks", () => {
+    driver.render("auth-screen");
+    expect(driver.hasLogin("auth-screen")).toBe(true);
     driver.switchToRegister();
-    expect(driver.hasRegister('auth-screen')).toBe(true);
+    expect(driver.hasRegister("auth-screen")).toBe(true);
     driver.switchToLogin();
-    expect(driver.hasLogin('auth-screen')).toBe(true);
+    expect(driver.hasLogin("auth-screen")).toBe(true);
   });
 });

@@ -1,8 +1,4 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { likedKeys } from "@/shared/api/keys";
 import { getLiked, postLiked } from "../api/liked";
 import { useLikedStore } from "../store/useLikedStore";

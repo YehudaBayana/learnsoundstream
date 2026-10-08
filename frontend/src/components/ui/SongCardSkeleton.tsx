@@ -1,1 +1,1 @@
-export { default } from './song-card-skeleton/SongCardSkeleton';
+export { default } from "./song-card-skeleton/SongCardSkeleton";

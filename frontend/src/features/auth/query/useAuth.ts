@@ -6,13 +6,8 @@ import { authKeys } from "@/shared/api/keys";
 export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => login(email, password),
+    mutationFn: async ({ email, password }: { email: string; password: string }) =>
+      login(email, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
     },
@@ -22,13 +17,8 @@ export function useLogin() {
 export function useRegister() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => register(email, password),
+    mutationFn: async ({ email, password }: { email: string; password: string }) =>
+      register(email, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
     },

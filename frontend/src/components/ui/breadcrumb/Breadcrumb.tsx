@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 /**
  * Breadcrumb item data.
@@ -89,7 +89,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
   items,
   separator,
   showHome = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const Separator = separator || <ChevronSeparator />;
@@ -102,7 +102,11 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
           const isFirst = index === 0;
 
           return (
-            <li key={index} className="flex items-center gap-2" data-hook={dataHook ? `${dataHook}-item-${index}` : undefined}>
+            <li
+              key={index}
+              className="flex items-center gap-2"
+              data-hook={dataHook ? `${dataHook}-item-${index}` : undefined}
+            >
               {index > 0 && (
                 <span className="flex-shrink-0" aria-hidden="true">
                   {Separator}
@@ -131,12 +135,13 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
                 <span
                   className={`
                     inline-flex items-center gap-1
-                    ${isLast
-                      ? 'text-gray-900 dark:text-white font-medium'
-                      : 'text-gray-500 dark:text-slate-400'
+                    ${
+                      isLast
+                        ? "text-gray-900 dark:text-white font-medium"
+                        : "text-gray-500 dark:text-slate-400"
                     }
                   `}
-                  aria-current={isLast ? 'page' : undefined}
+                  aria-current={isLast ? "page" : undefined}
                   data-hook={dataHook ? `${dataHook}-current` : undefined}
                 >
                   {isFirst && showHome ? (

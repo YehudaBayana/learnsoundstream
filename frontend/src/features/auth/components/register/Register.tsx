@@ -6,7 +6,10 @@ interface RegisterProps {
   dataHook?: string;
 }
 
-export const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, dataHook = 'auth-register-view' }) => {
+export const Register: React.FC<RegisterProps> = ({
+  onSwitchToLogin,
+  dataHook = "auth-register-view",
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { mutate: register } = useRegister();
@@ -19,12 +22,13 @@ export const Register: React.FC<RegisterProps> = ({ onSwitchToLogin, dataHook = 
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100" data-hook={dataHook}>
+    <div
+      className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100"
+      data-hook={dataHook}
+    >
       <div className="mb-6 text-center">
         <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Get started with your new account
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Get started with your new account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4" data-hook={`${dataHook}-form`}>

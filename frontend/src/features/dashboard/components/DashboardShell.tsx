@@ -1,1 +1,1 @@
-export { default } from './dashboard-shell/DashboardShell';
+export { default } from "./dashboard-shell/DashboardShell";

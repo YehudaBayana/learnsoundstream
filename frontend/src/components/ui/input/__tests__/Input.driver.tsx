@@ -28,9 +28,7 @@ export class InputDriver {
 
   private getContainer(): HTMLElement {
     if (!this.renderResult) {
-      throw new Error(
-        "InputDriver: render() must be called before querying elements",
-      );
+      throw new Error("InputDriver: render() must be called before querying elements");
     }
     return this.renderResult.container;
   }
@@ -40,39 +38,24 @@ export class InputDriver {
   }
 
   getValue(dataHook = this.defaultDataHook): string {
-    return (
-      getByDataHook(
-        this.getContainer(),
-        `${dataHook}-input`,
-      ) as HTMLInputElement
-    ).value;
+    return (getByDataHook(this.getContainer(), `${dataHook}-input`) as HTMLInputElement).value;
   }
 
   isDisabled(dataHook = this.defaultDataHook): boolean {
-    return (
-      getByDataHook(
-        this.getContainer(),
-        `${dataHook}-input`,
-      ) as HTMLInputElement
-    ).disabled;
+    return (getByDataHook(this.getContainer(), `${dataHook}-input`) as HTMLInputElement).disabled;
   }
 
   isInvalid(dataHook = this.defaultDataHook): boolean {
     return (
-      getByDataHook(this.getContainer(), `${dataHook}-input`).getAttribute(
-        "aria-invalid",
-      ) === "true"
+      getByDataHook(this.getContainer(), `${dataHook}-input`).getAttribute("aria-invalid") ===
+      "true"
     );
   }
 
-  hasPlaceholder(
-    placeholder: string,
-    dataHook = this.defaultDataHook,
-  ): boolean {
+  hasPlaceholder(placeholder: string, dataHook = this.defaultDataHook): boolean {
     return (
-      getByDataHook(this.getContainer(), `${dataHook}-input`).getAttribute(
-        "placeholder",
-      ) === placeholder
+      getByDataHook(this.getContainer(), `${dataHook}-input`).getAttribute("placeholder") ===
+      placeholder
     );
   }
 

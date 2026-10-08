@@ -1,12 +1,12 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import TextArea, { TextAreaSize, TextAreaVariant } from '../TextArea';
-import { getByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import TextArea, { TextAreaSize, TextAreaVariant } from "../TextArea";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface TextAreaDriverProps {
   dataHook?: string;
   size?: TextAreaSize;
   variant?: TextAreaVariant;
-  resize?: 'none' | 'vertical' | 'horizontal' | 'both';
+  resize?: "none" | "vertical" | "horizontal" | "both";
   error?: boolean;
   disabled?: boolean;
   value?: string;
@@ -15,7 +15,7 @@ export interface TextAreaDriverProps {
 
 export class TextAreaDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-textarea';
+  private readonly defaultDataHook = "test-textarea";
 
   render(props: TextAreaDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -24,7 +24,8 @@ export class TextAreaDriver {
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLTextAreaElement {
-    if (!this.renderResult) throw new Error('TextAreaDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("TextAreaDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook) as HTMLTextAreaElement;
   }
 

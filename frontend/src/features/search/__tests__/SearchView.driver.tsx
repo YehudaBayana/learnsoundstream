@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import SearchView from '../views/SearchView';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import SearchView from "../views/SearchView";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface SearchViewDriverProps {
   dataHook?: string;
@@ -8,7 +8,7 @@ export interface SearchViewDriverProps {
 
 export class SearchViewDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'search-view';
+  private readonly defaultDataHook = "search-view";
   private currentDataHook = this.defaultDataHook;
 
   render(props: SearchViewDriverProps = {}): this {
@@ -18,7 +18,8 @@ export class SearchViewDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('SearchViewDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("SearchViewDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -34,8 +35,8 @@ export class SearchViewDriver {
 
   submitSearch(dataHook = this.currentDataHook): void {
     fireEvent.keyDown(getByDataHook(this.getContainer(), `${dataHook}-input`), {
-      key: 'Enter',
-      code: 'Enter',
+      key: "Enter",
+      code: "Enter",
     });
   }
 

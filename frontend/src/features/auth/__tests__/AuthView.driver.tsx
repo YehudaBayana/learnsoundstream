@@ -1,10 +1,10 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import AuthView from '../views/auth-view/AuthView';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import AuthView from "../views/auth-view/AuthView";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class AuthViewDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'auth-view';
+  private readonly defaultDataHook = "auth-view";
   private currentDataHook = this.defaultDataHook;
 
   render(dataHook = this.defaultDataHook): this {
@@ -14,7 +14,8 @@ export class AuthViewDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('AuthViewDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("AuthViewDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -27,10 +28,12 @@ export class AuthViewDriver {
   }
 
   switchToRegister(): void {
-    fireEvent.click(getByDataHook(this.getContainer(), 'login-switch-to-register-button'));
+    fireEvent.click(getByDataHook(this.getContainer(), "login-switch-to-register-button"));
   }
 
   switchToLogin(): void {
-    fireEvent.click(getByDataHook(this.getContainer(), `${this.currentDataHook}-register-switch-to-login-button`));
+    fireEvent.click(
+      getByDataHook(this.getContainer(), `${this.currentDataHook}-register-switch-to-login-button`),
+    );
   }
 }

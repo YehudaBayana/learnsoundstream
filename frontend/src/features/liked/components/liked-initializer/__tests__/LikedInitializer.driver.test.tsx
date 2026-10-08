@@ -27,8 +27,6 @@ describe("LikedInitializer", () => {
     const driver = new LikedInitializerDriver();
     driver.render("liked-store-initializer");
     expect(driver.exists("liked-store-initializer")).toBe(true);
-    expect(useLikedStore.getState().likedTracks).toEqual([
-      { id: "liked-track" },
-    ]);
+    expect(useLikedStore.getState().likedTracks).toEqual([{ id: "liked-track" }]);
   });
 });

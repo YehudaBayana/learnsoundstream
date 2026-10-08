@@ -32,20 +32,14 @@ export class TextDriver {
 
   private getRootElement(dataHook: string = this.defaultDataHook): HTMLElement {
     if (!this.renderResult) {
-      throw new Error(
-        "TextDriver: render() must be called before querying elements",
-      );
+      throw new Error("TextDriver: render() must be called before querying elements");
     }
     return getByDataHook(this.renderResult.container, dataHook);
   }
 
-  private queryRootElement(
-    dataHook: string = this.defaultDataHook,
-  ): HTMLElement | null {
+  private queryRootElement(dataHook: string = this.defaultDataHook): HTMLElement | null {
     if (!this.renderResult) {
-      throw new Error(
-        "TextDriver: render() must be called before querying elements",
-      );
+      throw new Error("TextDriver: render() must be called before querying elements");
     }
     return queryByDataHook(this.renderResult.container, dataHook);
   }

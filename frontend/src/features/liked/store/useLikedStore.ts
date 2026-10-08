@@ -12,9 +12,7 @@ interface LikedState {
 
   // Populate the store when the app first loads
   setLikedList: (tracks: Track[]) => void;
-  setLikedQueryState: (
-    queryState: Pick<LikedState, "isPending" | "isError" | "refetch">,
-  ) => void;
+  setLikedQueryState: (queryState: Pick<LikedState, "isPending" | "isError" | "refetch">) => void;
 
   // Toggle a video's like state locally
   toggleLike: (track: Track) => void;
@@ -34,9 +32,7 @@ export const useLikedStore = create<LikedState>((set, get) => ({
 
   toggleLike: (track) => {
     set((state) => {
-      const isLiked = state.likedTracks.some(
-        (likedTrack) => likedTrack.id === track.id,
-      );
+      const isLiked = state.likedTracks.some((likedTrack) => likedTrack.id === track.id);
       return {
         likedTracks: isLiked
           ? state.likedTracks.filter((likedTrack) => likedTrack.id !== track.id)

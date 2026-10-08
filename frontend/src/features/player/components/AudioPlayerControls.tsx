@@ -1,1 +1,1 @@
-export { default } from './audio-player-controls/AudioPlayerControls';
+export { default } from "./audio-player-controls/AudioPlayerControls";

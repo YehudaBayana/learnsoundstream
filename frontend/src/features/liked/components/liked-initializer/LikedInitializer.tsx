@@ -15,15 +15,8 @@ export default function LikedInitializer({
 }: LikedInitializerProps) {
   const setInitialLiked = useLikedStore((state) => state.setLikedList);
   const setLikedQueryState = useLikedStore((state) => state.setLikedQueryState);
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isError,
-    isFetchingNextPage,
-    isPending,
-    refetch,
-  } = useGetLiked();
+  const { data, fetchNextPage, hasNextPage, isError, isFetchingNextPage, isPending, refetch } =
+    useGetLiked();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const tracks = useMemo(() => data?.pages.flat() ?? [], [data?.pages]);
 

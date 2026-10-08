@@ -1,5 +1,5 @@
-import { act, renderHook } from '@testing-library/react';
-import { ModalState, useModal } from '../useModal';
+import { act, renderHook } from "@testing-library/react";
+import { ModalState, useModal } from "../useModal";
 
 export class UseModalDriver {
   private state: { current: ModalState } | null = null;
@@ -11,7 +11,7 @@ export class UseModalDriver {
   }
 
   private getState(): ModalState {
-    if (!this.state) throw new Error('UseModalDriver: render() must be called before querying');
+    if (!this.state) throw new Error("UseModalDriver: render() must be called before querying");
     return this.state.current;
   }
 

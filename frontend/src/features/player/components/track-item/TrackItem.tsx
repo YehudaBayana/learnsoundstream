@@ -108,10 +108,7 @@ export default function TrackItem({
             }`}
           >
             <Image
-              src={
-                track.thumbnails?.[track.thumbnails.length - 1].url ||
-                track.thumbnail
-              }
+              src={track.thumbnails?.[track.thumbnails.length - 1].url || track.thumbnail}
               alt={track.title}
               className="w-full h-full object-cover"
             />

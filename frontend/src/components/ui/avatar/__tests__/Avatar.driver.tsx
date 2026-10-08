@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Avatar, { AvatarSize, AvatarStatus } from '../Avatar';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Avatar, { AvatarSize, AvatarStatus } from "../Avatar";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface AvatarDriverProps {
   dataHook?: string;
@@ -14,7 +14,7 @@ export interface AvatarDriverProps {
 
 export class AvatarDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-avatar';
+  private readonly defaultDataHook = "test-avatar";
 
   render(props: AvatarDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
@@ -23,7 +23,8 @@ export class AvatarDriver {
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('AvatarDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("AvatarDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 
@@ -36,7 +37,7 @@ export class AvatarDriver {
   }
 
   getFallbackText(dataHook = this.defaultDataHook): string {
-    return getByDataHook(this.getContainer(), `${dataHook}-fallback`).textContent?.trim() ?? '';
+    return getByDataHook(this.getContainer(), `${dataHook}-fallback`).textContent?.trim() ?? "";
   }
 
   hasImage(dataHook = this.defaultDataHook): boolean {

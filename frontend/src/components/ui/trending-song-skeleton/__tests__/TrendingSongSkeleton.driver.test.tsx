@@ -1,9 +1,9 @@
-import { TrendingSongSkeletonDriver } from './TrendingSongSkeleton.driver';
+import { TrendingSongSkeletonDriver } from "./TrendingSongSkeleton.driver";
 
-describe('TrendingSongSkeleton', () => {
-  it('renders the requested number of hooked placeholders', () => {
+describe("TrendingSongSkeleton", () => {
+  it("renders the requested number of hooked placeholders", () => {
     const driver = new TrendingSongSkeletonDriver();
-    driver.render('trending-loading', 2);
-    expect(driver.getItemCount('trending-loading')).toBe(2);
+    driver.render("trending-loading", 2);
+    expect(driver.getItemCount("trending-loading")).toBe(2);
   });
 });

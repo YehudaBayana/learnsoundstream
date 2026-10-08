@@ -1,7 +1,7 @@
-import React from 'react';
-import { render, RenderResult, fireEvent } from '@testing-library/react';
-import { Login } from '../components/login/Login';
-import { queryByDataHook, getByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { render, RenderResult, fireEvent } from "@testing-library/react";
+import { Login } from "../components/login/Login";
+import { queryByDataHook, getByDataHook } from "@/__tests__/testUtils";
 
 export interface LoginDriverProps {
   onSwitchToRegister?: () => void;
@@ -10,13 +10,13 @@ export interface LoginDriverProps {
 
 export class LoginDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook: string = 'auth-login-view';
+  private readonly defaultDataHook: string = "auth-login-view";
 
   render(props: LoginDriverProps = {}): this {
     const dataHook = props.dataHook || this.defaultDataHook;
     const onSwitchToRegister = props.onSwitchToRegister || jest.fn();
     this.renderResult = render(
-      <Login onSwitchToRegister={onSwitchToRegister} dataHook={dataHook} />
+      <Login onSwitchToRegister={onSwitchToRegister} dataHook={dataHook} />,
     );
     return this;
   }
@@ -27,44 +27,50 @@ export class LoginDriver {
   }
 
   getHeadingText(): string {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const heading = getByDataHook(this.renderResult.container, 'login-heading');
-    return heading.textContent?.trim() ?? '';
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const heading = getByDataHook(this.renderResult.container, "login-heading");
+    return heading.textContent?.trim() ?? "";
   }
 
   getEmailValue(): string {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const input = getByDataHook(this.renderResult.container, 'login-email-input') as HTMLInputElement;
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const input = getByDataHook(
+      this.renderResult.container,
+      "login-email-input",
+    ) as HTMLInputElement;
     return input.value;
   }
 
   getPasswordValue(): string {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const input = getByDataHook(this.renderResult.container, 'login-password-input') as HTMLInputElement;
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const input = getByDataHook(
+      this.renderResult.container,
+      "login-password-input",
+    ) as HTMLInputElement;
     return input.value;
   }
 
   typeEmail(email: string): void {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const input = getByDataHook(this.renderResult.container, 'login-email-input');
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const input = getByDataHook(this.renderResult.container, "login-email-input");
     fireEvent.change(input, { target: { value: email } });
   }
 
   typePassword(password: string): void {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const input = getByDataHook(this.renderResult.container, 'login-password-input');
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const input = getByDataHook(this.renderResult.container, "login-password-input");
     fireEvent.change(input, { target: { value: password } });
   }
 
   submit(): void {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const form = getByDataHook(this.renderResult.container, 'login-form');
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const form = getByDataHook(this.renderResult.container, "login-form");
     fireEvent.submit(form);
   }
 
   clickSwitchToRegister(): void {
-    if (!this.renderResult) throw new Error('LoginDriver: render() required');
-    const button = getByDataHook(this.renderResult.container, 'login-switch-to-register-button');
+    if (!this.renderResult) throw new Error("LoginDriver: render() required");
+    const button = getByDataHook(this.renderResult.container, "login-switch-to-register-button");
     fireEvent.click(button);
   }
 }

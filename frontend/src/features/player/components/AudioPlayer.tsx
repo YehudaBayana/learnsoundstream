@@ -20,8 +20,7 @@ export default function AudioPlayer({ dataHook = "audio-player" }: AudioPlayerPr
     trackId: string | undefined;
     time: number;
   }>({ trackId: currentTrack?.id, time: 0 });
-  const currentTime =
-    playbackPosition.trackId === currentTrack?.id ? playbackPosition.time : 0;
+  const currentTime = playbackPosition.trackId === currentTrack?.id ? playbackPosition.time : 0;
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const duration = audioDuration ?? currentTrack?.duration ?? 0;
   const [volume, setVolume] = useState<number>(0.8);

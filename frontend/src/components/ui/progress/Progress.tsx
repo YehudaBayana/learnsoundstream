@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Progress size options.
  */
-export type ProgressSize = 'xs' | 'sm' | 'md' | 'lg';
+export type ProgressSize = "xs" | "sm" | "md" | "lg";
 
 /**
  * Progress variant options.
  */
-export type ProgressVariant = 'default' | 'success' | 'warning' | 'danger';
+export type ProgressVariant = "default" | "success" | "warning" | "danger";
 
 interface ProgressProps {
   /** Current progress value (0-100) */
@@ -35,14 +35,14 @@ interface ProgressProps {
  */
 const getSizeClasses = (size: ProgressSize): string => {
   switch (size) {
-    case 'xs':
-      return 'h-1';
-    case 'sm':
-      return 'h-2';
-    case 'md':
-      return 'h-3';
-    case 'lg':
-      return 'h-4';
+    case "xs":
+      return "h-1";
+    case "sm":
+      return "h-2";
+    case "md":
+      return "h-3";
+    case "lg":
+      return "h-4";
   }
 };
 
@@ -51,14 +51,14 @@ const getSizeClasses = (size: ProgressSize): string => {
  */
 const getVariantClasses = (variant: ProgressVariant): string => {
   switch (variant) {
-    case 'default':
-      return 'bg-gradient-to-r from-emerald-500 to-teal-500';
-    case 'success':
-      return 'bg-green-500';
-    case 'warning':
-      return 'bg-amber-500';
-    case 'danger':
-      return 'bg-rose-500';
+    case "default":
+      return "bg-gradient-to-r from-emerald-500 to-teal-500";
+    case "success":
+      return "bg-green-500";
+    case "warning":
+      return "bg-amber-500";
+    case "danger":
+      return "bg-rose-500";
   }
 };
 
@@ -96,12 +96,12 @@ const getVariantClasses = (variant: ProgressVariant): string => {
 const Progress: React.FC<ProgressProps> = ({
   value,
   max = 100,
-  size = 'md',
-  variant = 'default',
+  size = "md",
+  variant = "default",
   showLabel = false,
   formatLabel,
   animated = true,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   // Clamp value between 0 and max
@@ -116,7 +116,12 @@ const Progress: React.FC<ProgressProps> = ({
       {showLabel && (
         <div className="flex justify-between items-center mb-1">
           <span className="text-sm text-gray-600 dark:text-slate-400">Progress</span>
-          <span className="text-sm font-medium text-gray-900 dark:text-white" data-hook={dataHook ? `${dataHook}-label` : undefined}>{label}</span>
+          <span
+            className="text-sm font-medium text-gray-900 dark:text-white"
+            data-hook={dataHook ? `${dataHook}-label` : undefined}
+          >
+            {label}
+          </span>
         </div>
       )}
       <div
@@ -139,7 +144,7 @@ const Progress: React.FC<ProgressProps> = ({
             h-full
             rounded-full
             ${getVariantClasses(variant)}
-            ${animated ? 'transition-all duration-300 ease-out' : ''}
+            ${animated ? "transition-all duration-300 ease-out" : ""}
           `}
           data-hook={dataHook ? `${dataHook}-fill` : undefined}
           style={{ width: `${percentage}%` }}

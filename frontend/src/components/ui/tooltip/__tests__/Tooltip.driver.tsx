@@ -1,6 +1,6 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Tooltip, { TooltipPlacement } from '../Tooltip';
-import { getByDataHook, queryByDataHook } from '@/__tests__/testUtils';
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Tooltip, { TooltipPlacement } from "../Tooltip";
+import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export interface TooltipDriverProps {
   dataHook?: string;
@@ -11,20 +11,26 @@ export interface TooltipDriverProps {
 
 export class TooltipDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-tooltip';
+  private readonly defaultDataHook = "test-tooltip";
 
   render(props: TooltipDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
     this.renderResult = render(
-      <Tooltip content={props.content ?? 'Tooltip content'} disabled={props.disabled} placement={props.placement} dataHook={dataHook}>
+      <Tooltip
+        content={props.content ?? "Tooltip content"}
+        disabled={props.disabled}
+        placement={props.placement}
+        dataHook={dataHook}
+      >
         <span>Trigger</span>
-      </Tooltip>
+      </Tooltip>,
     );
     return this;
   }
 
   private getContainer(): HTMLElement {
-    if (!this.renderResult) throw new Error('TooltipDriver: render() must be called before querying');
+    if (!this.renderResult)
+      throw new Error("TooltipDriver: render() must be called before querying");
     return this.renderResult.container;
   }
 

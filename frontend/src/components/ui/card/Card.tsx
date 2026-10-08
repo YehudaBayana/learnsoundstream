@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Card variant options.
  */
-export type CardVariant = 'default' | 'elevated' | 'outlined' | 'ghost';
+export type CardVariant = "default" | "elevated" | "outlined" | "ghost";
 
 /**
  * Card padding options.
  */
-export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+export type CardPadding = "none" | "sm" | "md" | "lg";
 
 // ----------------------------------------------------------------------------
 // Card Header
@@ -29,7 +29,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({
   children,
   action,
   dataHook,
-  className = '',
+  className = "",
   ...props
 }) => {
   return (
@@ -66,14 +66,14 @@ interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 const getPaddingClasses = (padding: CardPadding): string => {
   switch (padding) {
-    case 'none':
-      return '';
-    case 'sm':
-      return 'p-3 sm:p-4';
-    case 'md':
-      return 'p-4 sm:p-6';
-    case 'lg':
-      return 'p-6 sm:p-8';
+    case "none":
+      return "";
+    case "sm":
+      return "p-3 sm:p-4";
+    case "md":
+      return "p-4 sm:p-6";
+    case "lg":
+      return "p-6 sm:p-8";
   }
 };
 
@@ -82,9 +82,9 @@ const getPaddingClasses = (padding: CardPadding): string => {
  */
 const CardBody: React.FC<CardBodyProps> = ({
   children,
-  padding = 'md',
+  padding = "md",
   dataHook,
-  className = '',
+  className = "",
   ...props
 }) => {
   return (
@@ -102,25 +102,25 @@ interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Footer content */
   children: React.ReactNode;
   /** Justify content */
-  justify?: 'start' | 'center' | 'end' | 'between';
+  justify?: "start" | "center" | "end" | "between";
   dataHook?: string;
 }
 
 /**
  * Get justify classes.
  */
-const getJustifyClasses = (justify: CardFooterProps['justify']): string => {
+const getJustifyClasses = (justify: CardFooterProps["justify"]): string => {
   switch (justify) {
-    case 'start':
-      return 'justify-start';
-    case 'center':
-      return 'justify-center';
-    case 'end':
-      return 'justify-end';
-    case 'between':
-      return 'justify-between';
+    case "start":
+      return "justify-start";
+    case "center":
+      return "justify-center";
+    case "end":
+      return "justify-end";
+    case "between":
+      return "justify-between";
     default:
-      return 'justify-end';
+      return "justify-end";
   }
 };
 
@@ -129,9 +129,9 @@ const getJustifyClasses = (justify: CardFooterProps['justify']): string => {
  */
 const CardFooter: React.FC<CardFooterProps> = ({
   children,
-  justify = 'end',
+  justify = "end",
   dataHook,
-  className = '',
+  className = "",
   ...props
 }) => {
   return (
@@ -165,7 +165,7 @@ interface CardProps extends React.HTMLAttributes<HTMLElement> {
   /** Make the entire card a clickable button */
   clickable?: boolean;
   /** HTML element to render */
-  as?: 'div' | 'article' | 'section' | 'button';
+  as?: "div" | "article" | "section" | "button";
   /** Optional padding for the whole card (if not using Card.Body) */
   padding?: CardPadding;
   dataHook?: string;
@@ -176,25 +176,25 @@ interface CardProps extends React.HTMLAttributes<HTMLElement> {
  */
 const getVariantClasses = (variant: CardVariant): string => {
   switch (variant) {
-    case 'default':
+    case "default":
       return `
         bg-white dark:bg-slate-800
         shadow-sm
         border border-gray-100 dark:border-slate-700
       `;
-    case 'elevated':
+    case "elevated":
       return `
         bg-white dark:bg-slate-800
         shadow-lg
         border-0
       `;
-    case 'outlined':
+    case "outlined":
       return `
         bg-transparent
         shadow-none
         border-2 border-gray-200 dark:border-slate-600
       `;
-    case 'ghost':
+    case "ghost":
       return `
         bg-gray-50 dark:bg-slate-800/50
         shadow-none
@@ -215,44 +215,46 @@ const Card: React.FC<CardProps> & {
   Footer: typeof CardFooter;
 } = ({
   children,
-  variant = 'default',
+  variant = "default",
   hoverable = false,
   clickable = false,
   onClick,
   as,
-  className = '',
+  className = "",
   padding,
   dataHook,
   ...props
 }) => {
-  const Element = clickable ? 'button' : (as || 'div');
+  const Element = clickable ? "button" : as || "div";
 
   const hoverClasses = hoverable
-    ? 'transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer'
-    : '';
+    ? "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
+    : "";
 
   const classes = [
-    'rounded-xl overflow-hidden',
+    "rounded-xl overflow-hidden",
     getVariantClasses(variant),
     hoverClasses,
-    padding ? getPaddingClasses(padding) : '',
-    clickable ? 'w-full text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900' : '',
+    padding ? getPaddingClasses(padding) : "",
+    clickable
+      ? "w-full text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+      : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   const elementProps: Record<string, unknown> = {
     className: classes,
-    'data-hook': dataHook,
+    "data-hook": dataHook,
     onClick,
     ...props,
   };
 
   if (clickable) {
-    elementProps.type = 'button';
+    elementProps.type = "button";
   }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return React.createElement(Element, elementProps as any, children);
 };
 

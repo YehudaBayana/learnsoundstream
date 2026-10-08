@@ -1,14 +1,14 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 /**
  * TextArea size options.
  */
-export type TextAreaSize = 'sm' | 'md' | 'lg';
+export type TextAreaSize = "sm" | "md" | "lg";
 
 /**
  * TextArea variant options.
  */
-export type TextAreaVariant = 'outline' | 'filled';
+export type TextAreaVariant = "outline" | "filled";
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /** TextArea size */
@@ -18,7 +18,7 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   /** Whether the textarea has an error */
   error?: boolean;
   /** Whether to allow resizing */
-  resize?: 'none' | 'vertical' | 'horizontal' | 'both';
+  resize?: "none" | "vertical" | "horizontal" | "both";
   /** Additional CSS classes */
   className?: string;
   dataHook?: string;
@@ -29,12 +29,12 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
  */
 const getSizeClasses = (size: TextAreaSize): string => {
   switch (size) {
-    case 'sm':
-      return 'text-sm px-3 py-2 min-h-[80px]';
-    case 'md':
-      return 'text-base px-4 py-3 min-h-[120px]';
-    case 'lg':
-      return 'text-lg px-5 py-4 min-h-[160px]';
+    case "sm":
+      return "text-sm px-3 py-2 min-h-[80px]";
+    case "md":
+      return "text-base px-4 py-3 min-h-[120px]";
+    case "lg":
+      return "text-lg px-5 py-4 min-h-[160px]";
   }
 };
 
@@ -43,19 +43,19 @@ const getSizeClasses = (size: TextAreaSize): string => {
  */
 const getVariantClasses = (variant: TextAreaVariant, error: boolean): string => {
   const focusRing = error
-    ? 'focus:ring-rose-500 focus:border-rose-500'
-    : 'focus:ring-emerald-500 focus:border-emerald-500';
+    ? "focus:ring-rose-500 focus:border-rose-500"
+    : "focus:ring-emerald-500 focus:border-emerald-500";
 
   switch (variant) {
-    case 'outline':
+    case "outline":
       return `
         bg-white dark:bg-slate-800
-        border ${error ? 'border-rose-500' : 'border-gray-300 dark:border-slate-600'}
+        border ${error ? "border-rose-500" : "border-gray-300 dark:border-slate-600"}
         rounded-lg
         ${focusRing}
         focus:ring-2 focus:ring-offset-0
       `;
-    case 'filled':
+    case "filled":
       return `
         bg-gray-100 dark:bg-slate-700
         border border-transparent
@@ -64,7 +64,7 @@ const getVariantClasses = (variant: TextAreaVariant, error: boolean): string => 
         ${focusRing}
         focus:ring-2 focus:ring-offset-0
         focus:bg-white dark:focus:bg-slate-800
-        ${error ? 'ring-2 ring-rose-500' : ''}
+        ${error ? "ring-2 ring-rose-500" : ""}
       `;
   }
 };
@@ -72,18 +72,18 @@ const getVariantClasses = (variant: TextAreaVariant, error: boolean): string => 
 /**
  * Get resize classes.
  */
-const getResizeClasses = (resize: TextAreaProps['resize']): string => {
+const getResizeClasses = (resize: TextAreaProps["resize"]): string => {
   switch (resize) {
-    case 'none':
-      return 'resize-none';
-    case 'vertical':
-      return 'resize-y';
-    case 'horizontal':
-      return 'resize-x';
-    case 'both':
-      return 'resize';
+    case "none":
+      return "resize-none";
+    case "vertical":
+      return "resize-y";
+    case "horizontal":
+      return "resize-x";
+    case "both":
+      return "resize";
     default:
-      return 'resize-y';
+      return "resize-y";
   }
 };
 
@@ -107,43 +107,45 @@ const getResizeClasses = (resize: TextAreaProps['resize']): string => {
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
-      size = 'md',
-      variant = 'outline',
+      size = "md",
+      variant = "outline",
       error = false,
-      resize = 'vertical',
+      resize = "vertical",
       disabled,
-      className = '',
+      className = "",
       dataHook,
       ...props
     },
-    ref
+    ref,
   ) => {
     const classes = [
-      'w-full',
-      'transition-colors duration-200',
-      'text-gray-900 dark:text-white',
-      'placeholder-gray-400 dark:placeholder-slate-500',
+      "w-full",
+      "transition-colors duration-200",
+      "text-gray-900 dark:text-white",
+      "placeholder-gray-400 dark:placeholder-slate-500",
       getSizeClasses(size),
       getVariantClasses(variant, error),
       getResizeClasses(resize),
-      disabled ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900' : '',
-      'focus:outline-none',
+      disabled ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-slate-900" : "",
+      "focus:outline-none",
       className,
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
-    return <textarea 
-      ref={ref} 
-      disabled={disabled} 
-      aria-invalid={error ? "true" : "false"}
-      data-hook={dataHook}
-      className={classes} 
-      {...props} 
-    />;
-  }
+    return (
+      <textarea
+        ref={ref}
+        disabled={disabled}
+        aria-invalid={error ? "true" : "false"}
+        data-hook={dataHook}
+        className={classes}
+        {...props}
+      />
+    );
+  },
 );
 
-TextArea.displayName = 'TextArea';
+TextArea.displayName = "TextArea";
 
 export default TextArea;

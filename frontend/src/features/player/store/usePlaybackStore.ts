@@ -26,23 +26,21 @@ interface PlaybackActions {
 // Store
 // ---------------------------------------------------------------------------
 
-export const usePlaybackStore = create<PlaybackState & PlaybackActions>(
-  (set,) => ({
-    // --- initial state ---
-    currentChosenTrack: null,
-    isPlaying: false,
-    currentTrackIndex: -1,
+export const usePlaybackStore = create<PlaybackState & PlaybackActions>((set) => ({
+  // --- initial state ---
+  currentChosenTrack: null,
+  isPlaying: false,
+  currentTrackIndex: -1,
 
-    // --- actions ---
+  // --- actions ---
 
-    playTrack: (track) => {
-      set({
-        currentChosenTrack: track,
-        isPlaying: true,
-        currentTrackIndex: 0,
-      });
-    },
+  playTrack: (track) => {
+    set({
+      currentChosenTrack: track,
+      isPlaying: true,
+      currentTrackIndex: 0,
+    });
+  },
 
-    setPlaying: (playing) => set({ isPlaying: playing }),
-  }),
-);
+  setPlaying: (playing) => set({ isPlaying: playing }),
+}));

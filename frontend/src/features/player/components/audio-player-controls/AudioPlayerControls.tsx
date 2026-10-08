@@ -111,9 +111,7 @@ export default function AudioPlayerControls({
           color="muted"
           className="w-[35px] text-center font-mono text-[11px] select-none"
         >
-          {currentTrack?.duration
-            ? convertSecondsToTime(currentTrack.duration)
-            : "0:00"}
+          {currentTrack?.duration ? convertSecondsToTime(currentTrack.duration) : "0:00"}
         </Text>
       </Flex>
 

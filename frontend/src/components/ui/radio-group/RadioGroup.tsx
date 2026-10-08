@@ -1,5 +1,5 @@
-import React from 'react';
-import Radio, { type RadioSize } from '../radio/Radio';
+import React from "react";
+import Radio, { type RadioSize } from "../radio/Radio";
 
 /**
  * RadioGroup option type.
@@ -14,7 +14,7 @@ export interface RadioOption {
 /**
  * RadioGroup orientation options.
  */
-export type RadioGroupOrientation = 'horizontal' | 'vertical';
+export type RadioGroupOrientation = "horizontal" | "vertical";
 
 interface RadioGroupProps {
   /** Group name (used for all radio inputs) */
@@ -68,12 +68,12 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
   value,
   options,
   onChange,
-  size = 'md',
-  orientation = 'vertical',
+  size = "md",
+  orientation = "vertical",
   disabled = false,
   error = false,
   gap = 3,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,13 +81,13 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
   };
 
   const containerClasses = [
-    'flex',
-    orientation === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
+    "flex",
+    orientation === "horizontal" ? "flex-row flex-wrap" : "flex-col",
     `gap-${gap}`,
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <div className={containerClasses} role="radiogroup" data-hook={dataHook}>

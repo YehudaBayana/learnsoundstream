@@ -1,6 +1,6 @@
-import React from 'react';
-import Modal from '../Modal';
-import Button from '../button/Button';
+import React from "react";
+import Modal from "../Modal";
+import Button from "../button/Button";
 
 interface ConfirmationModalProps {
   /** Whether the modal is open */
@@ -26,7 +26,7 @@ interface ConfirmationModalProps {
 
 /**
  * ConfirmationModal - A generic modal for confirming actions.
- * 
+ *
  * Usage:
  *   <ConfirmationModal
  *     isOpen={isOpen}
@@ -44,36 +44,32 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   description,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   isDanger = false,
   isLoading = false,
   dataHook,
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm" dataHook={dataHook}>
-      <Modal.Header onClose={onClose}>
-        {title}
-      </Modal.Header>
-      
+      <Modal.Header onClose={onClose}>{title}</Modal.Header>
+
       <Modal.Body>
-        <p className="text-gray-600 dark:text-gray-300">
-          {description}
-        </p>
+        <p className="text-gray-600 dark:text-gray-300">{description}</p>
       </Modal.Body>
-      
+
       <Modal.Footer>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={onClose}
           disabled={isLoading}
           dataHook={dataHook ? `${dataHook}-cancel-button` : undefined}
         >
           {cancelLabel}
         </Button>
-        <Button 
+        <Button
           onClick={onConfirm}
-          variant={isDanger ? 'danger' : 'primary'}
+          variant={isDanger ? "danger" : "primary"}
           loading={isLoading}
           dataHook={dataHook ? `${dataHook}-confirm-button` : undefined}
         >

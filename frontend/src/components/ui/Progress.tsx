@@ -1,2 +1,2 @@
-export { default } from './progress/Progress';
-export * from './progress/Progress';
+export { default } from "./progress/Progress";
+export * from "./progress/Progress";

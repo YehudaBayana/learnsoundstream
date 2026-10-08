@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * Tooltip placement options.
  */
-export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
+export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
 interface TooltipProps {
   /** Tooltip content */
@@ -31,28 +31,28 @@ const calculatePosition = (
   triggerRect: DOMRect,
   tooltipRect: DOMRect,
   placement: TooltipPlacement,
-  offset: number = 8
+  offset: number = 8,
 ): { top: number; left: number } => {
   const scrollX = window.scrollX;
   const scrollY = window.scrollY;
 
   switch (placement) {
-    case 'top':
+    case "top":
       return {
         top: triggerRect.top + scrollY - tooltipRect.height - offset,
         left: triggerRect.left + scrollX + (triggerRect.width - tooltipRect.width) / 2,
       };
-    case 'bottom':
+    case "bottom":
       return {
         top: triggerRect.bottom + scrollY + offset,
         left: triggerRect.left + scrollX + (triggerRect.width - tooltipRect.width) / 2,
       };
-    case 'left':
+    case "left":
       return {
         top: triggerRect.top + scrollY + (triggerRect.height - tooltipRect.height) / 2,
         left: triggerRect.left + scrollX - tooltipRect.width - offset,
       };
-    case 'right':
+    case "right":
       return {
         top: triggerRect.top + scrollY + (triggerRect.height - tooltipRect.height) / 2,
         left: triggerRect.right + scrollX + offset,
@@ -96,11 +96,11 @@ const calculatePosition = (
 const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
-  placement = 'top',
+  placement = "top",
   delay = 0,
   hideDelay = 0,
   disabled = false,
-  className = '',
+  className = "",
   dataHook,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -123,11 +123,11 @@ const Tooltip: React.FC<TooltipProps> = ({
     if (isVisible) {
       updatePosition();
       // Update position on scroll/resize
-      window.addEventListener('scroll', updatePosition, true);
-      window.addEventListener('resize', updatePosition);
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
       return () => {
-        window.removeEventListener('scroll', updatePosition, true);
-        window.removeEventListener('resize', updatePosition);
+        window.removeEventListener("scroll", updatePosition, true);
+        window.removeEventListener("resize", updatePosition);
       };
     }
   }, [isVisible, updatePosition]);
@@ -206,7 +206,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         >
           {content}
         </div>,
-        document.body
+        document.body,
       )
     : null;
 
@@ -219,7 +219,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         onMouseLeave={handleMouseLeave}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        aria-describedby={isVisible ? 'tooltip' : undefined}
+        aria-describedby={isVisible ? "tooltip" : undefined}
         className="inline-block"
       >
         {children}

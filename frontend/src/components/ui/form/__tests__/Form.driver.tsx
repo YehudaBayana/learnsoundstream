@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
-import Form from '../Form';
-import { getByDataHook } from '@/__tests__/testUtils';
+import React from "react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
+import Form from "../Form";
+import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface FormDriverProps {
   dataHook?: string;
@@ -11,20 +11,22 @@ export interface FormDriverProps {
 
 export class FormDriver {
   private renderResult: RenderResult | null = null;
-  private readonly defaultDataHook = 'test-form';
+  private readonly defaultDataHook = "test-form";
 
   render(props: FormDriverProps = {}): this {
     const dataHook = props.dataHook ?? this.defaultDataHook;
     this.renderResult = render(
       <Form {...props} dataHook={dataHook}>
-        <button type="submit" data-hook={`${dataHook}-submit`}>Submit</button>
-      </Form>
+        <button type="submit" data-hook={`${dataHook}-submit`}>
+          Submit
+        </button>
+      </Form>,
     );
     return this;
   }
 
   private getRoot(dataHook = this.defaultDataHook): HTMLFormElement {
-    if (!this.renderResult) throw new Error('FormDriver: render() must be called before querying');
+    if (!this.renderResult) throw new Error("FormDriver: render() must be called before querying");
     return getByDataHook(this.renderResult.container, dataHook) as HTMLFormElement;
   }
 

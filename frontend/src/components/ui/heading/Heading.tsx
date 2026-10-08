@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Heading levels corresponding to h1-h6 HTML elements.
@@ -10,27 +10,27 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  * Can be different from the semantic level.
  * For example: <Heading level={1} size="2xl"> renders an h1 with 2xl styling.
  */
-export type HeadingSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
+export type HeadingSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
 
 /**
  * Available heading colors.
  */
 export type HeadingColor =
-  | 'default' // Gray-900 in light, white in dark
-  | 'muted' // Gray-600/slate-300
-  | 'primary' // Brand green
-  | 'secondary' // Teal
-  | 'inherit'; // Inherit from parent
+  | "default" // Gray-900 in light, white in dark
+  | "muted" // Gray-600/slate-300
+  | "primary" // Brand green
+  | "secondary" // Teal
+  | "inherit"; // Inherit from parent
 
 /**
  * Font weight options for headings.
  */
-export type HeadingWeight = 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
+export type HeadingWeight = "normal" | "medium" | "semibold" | "bold" | "extrabold";
 
 /**
  * Text alignment options.
  */
-export type HeadingAlign = 'left' | 'center' | 'right';
+export type HeadingAlign = "left" | "center" | "right";
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   /** Heading content */
@@ -56,17 +56,17 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 const getDefaultSize = (level: HeadingLevel): HeadingSize => {
   switch (level) {
     case 1:
-      return '4xl';
+      return "4xl";
     case 2:
-      return '3xl';
+      return "3xl";
     case 3:
-      return '2xl';
+      return "2xl";
     case 4:
-      return 'xl';
+      return "xl";
     case 5:
-      return 'lg';
+      return "lg";
     case 6:
-      return 'md';
+      return "md";
   }
 };
 
@@ -75,24 +75,24 @@ const getDefaultSize = (level: HeadingLevel): HeadingSize => {
  */
 const getSizeClasses = (size: HeadingSize): string => {
   switch (size) {
-    case '5xl':
-      return 'text-5xl leading-tight tracking-tight';
-    case '4xl':
-      return 'text-4xl leading-tight tracking-tight';
-    case '3xl':
-      return 'text-3xl leading-snug';
-    case '2xl':
-      return 'text-2xl leading-snug';
-    case 'xl':
-      return 'text-xl leading-normal';
-    case 'lg':
-      return 'text-lg leading-normal';
-    case 'md':
-      return 'text-base leading-normal';
-    case 'sm':
-      return 'text-sm leading-normal';
-    case 'xs':
-      return 'text-xs leading-normal uppercase tracking-wide';
+    case "5xl":
+      return "text-5xl leading-tight tracking-tight";
+    case "4xl":
+      return "text-4xl leading-tight tracking-tight";
+    case "3xl":
+      return "text-3xl leading-snug";
+    case "2xl":
+      return "text-2xl leading-snug";
+    case "xl":
+      return "text-xl leading-normal";
+    case "lg":
+      return "text-lg leading-normal";
+    case "md":
+      return "text-base leading-normal";
+    case "sm":
+      return "text-sm leading-normal";
+    case "xs":
+      return "text-xs leading-normal uppercase tracking-wide";
   }
 };
 
@@ -101,19 +101,19 @@ const getSizeClasses = (size: HeadingSize): string => {
  */
 const getDefaultWeight = (size: HeadingSize): HeadingWeight => {
   switch (size) {
-    case '5xl':
-    case '4xl':
-      return 'extrabold';
-    case '3xl':
-    case '2xl':
-    case 'xl':
-      return 'bold';
-    case 'lg':
-    case 'md':
-      return 'semibold';
-    case 'sm':
-    case 'xs':
-      return 'medium';
+    case "5xl":
+    case "4xl":
+      return "extrabold";
+    case "3xl":
+    case "2xl":
+    case "xl":
+      return "bold";
+    case "lg":
+    case "md":
+      return "semibold";
+    case "sm":
+    case "xs":
+      return "medium";
   }
 };
 
@@ -122,16 +122,16 @@ const getDefaultWeight = (size: HeadingSize): HeadingWeight => {
  */
 const getColorClasses = (color: HeadingColor): string => {
   switch (color) {
-    case 'default':
-      return 'text-gray-900 dark:text-white';
-    case 'muted':
-      return 'text-gray-600 dark:text-slate-300';
-    case 'primary':
-      return 'text-emerald-600 dark:text-emerald-400';
-    case 'secondary':
-      return 'text-teal-600 dark:text-teal-400';
-    case 'inherit':
-      return '';
+    case "default":
+      return "text-gray-900 dark:text-white";
+    case "muted":
+      return "text-gray-600 dark:text-slate-300";
+    case "primary":
+      return "text-emerald-600 dark:text-emerald-400";
+    case "secondary":
+      return "text-teal-600 dark:text-teal-400";
+    case "inherit":
+      return "";
   }
 };
 
@@ -140,16 +140,16 @@ const getColorClasses = (color: HeadingColor): string => {
  */
 const getWeightClasses = (weight: HeadingWeight): string => {
   switch (weight) {
-    case 'normal':
-      return 'font-normal';
-    case 'medium':
-      return 'font-medium';
-    case 'semibold':
-      return 'font-semibold';
-    case 'bold':
-      return 'font-bold';
-    case 'extrabold':
-      return 'font-extrabold';
+    case "normal":
+      return "font-normal";
+    case "medium":
+      return "font-medium";
+    case "semibold":
+      return "font-semibold";
+    case "bold":
+      return "font-bold";
+    case "extrabold":
+      return "font-extrabold";
   }
 };
 
@@ -157,15 +157,15 @@ const getWeightClasses = (weight: HeadingWeight): string => {
  * Get Tailwind classes for text alignment.
  */
 const getAlignClasses = (align?: HeadingAlign): string => {
-  if (!align) return '';
+  if (!align) return "";
 
   switch (align) {
-    case 'left':
-      return 'text-left';
-    case 'center':
-      return 'text-center';
-    case 'right':
-      return 'text-right';
+    case "left":
+      return "text-left";
+    case "center":
+      return "text-center";
+    case "right":
+      return "text-right";
   }
 };
 
@@ -185,16 +185,16 @@ const Heading: React.FC<HeadingProps> = ({
   children,
   level = 2,
   size,
-  color = 'default',
+  color = "default",
   weight,
   align,
   truncate = false,
-  className = '',
+  className = "",
   id,
   dataHook,
   ...props
 }) => {
-  const Element = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  const Element = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   const actualSize = size || getDefaultSize(level);
   const actualWeight = weight || getDefaultWeight(actualSize);
 
@@ -203,13 +203,17 @@ const Heading: React.FC<HeadingProps> = ({
     getColorClasses(color),
     getWeightClasses(actualWeight),
     getAlignClasses(align),
-    truncate ? 'truncate' : '',
+    truncate ? "truncate" : "",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  return React.createElement(Element, { className: classes, id, 'data-hook': dataHook, ...props }, children);
+  return React.createElement(
+    Element,
+    { className: classes, id, "data-hook": dataHook, ...props },
+    children,
+  );
 };
 
 export default Heading;

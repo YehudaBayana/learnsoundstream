@@ -25,9 +25,7 @@ interface ServerStatusProps {
 }
 
 export default function ServerStatus({ dataHook = "server-status" }: ServerStatusProps) {
-  const [status, setStatus] = useState<"checking" | "online" | "offline">(
-    "checking",
-  );
+  const [status, setStatus] = useState<"checking" | "online" | "offline">("checking");
   const [data, setData] = useState<HealthData | null>(null);
   const [latency, setLatency] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -88,10 +86,7 @@ export default function ServerStatus({ dataHook = "server-status" }: ServerStatu
   // Handle click outside to close the panel
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(event.target as Node)
-      ) {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
@@ -126,20 +121,24 @@ export default function ServerStatus({ dataHook = "server-status" }: ServerStatu
                 : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.7)] animate-pulse"
           }`}
         />
-        <span className="text-sm font-medium text-white tracking-wide" data-hook={`${dataHook}-connection`}>
+        <span
+          className="text-sm font-medium text-white tracking-wide"
+          data-hook={`${dataHook}-connection`}
+        >
           {status === "online" && "Backend Connected"}
           {status === "offline" && "Backend Disconnected"}
           {status === "checking" && "Connecting..."}
         </span>
         {status === "online" && latency !== null && (
-          <span className="text-xs text-slate-400 font-semibold ml-1">
-            ({latency}ms)
-          </span>
+          <span className="text-xs text-slate-400 font-semibold ml-1">({latency}ms)</span>
         )}
       </Button>
 
       {isOpen && (
-        <Box dataHook={`${dataHook}-panel`} className="absolute top-[calc(100%+12px)] left-0 w-[290px] p-5 rounded-xl bg-[#0f0f0f]/92 backdrop-blur-md border border-white/8 shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 origin-top-left animate-[slideDown_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] pointer-events-auto">
+        <Box
+          dataHook={`${dataHook}-panel`}
+          className="absolute top-[calc(100%+12px)] left-0 w-[290px] p-5 rounded-xl bg-[#0f0f0f]/92 backdrop-blur-md border border-white/8 shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 origin-top-left animate-[slideDown_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] pointer-events-auto"
+        >
           <Box className="flex justify-between items-center border-b border-white/8 pb-2">
             <Text
               variant="caption"
@@ -165,11 +164,7 @@ export default function ServerStatus({ dataHook = "server-status" }: ServerStatu
               <Text variant="small" color="muted">
                 Service:
               </Text>
-              <Text
-                variant="small"
-                weight="medium"
-                className="font-mono text-white"
-              >
+              <Text variant="small" weight="medium" className="font-mono text-white">
                 Soundstream API
               </Text>
             </Box>
@@ -218,11 +213,7 @@ export default function ServerStatus({ dataHook = "server-status" }: ServerStatu
                   <Text variant="small" color="muted">
                     Version:
                   </Text>
-                  <Text
-                    variant="small"
-                    weight="medium"
-                    className="font-mono text-white"
-                  >
+                  <Text variant="small" weight="medium" className="font-mono text-white">
                     {data.version}
                   </Text>
                 </Box>
@@ -230,11 +221,7 @@ export default function ServerStatus({ dataHook = "server-status" }: ServerStatu
                   <Text variant="small" color="muted">
                     Uptime:
                   </Text>
-                  <Text
-                    variant="small"
-                    weight="medium"
-                    className="font-mono text-white"
-                  >
+                  <Text variant="small" weight="medium" className="font-mono text-white">
                     {data.uptime}
                   </Text>
                 </Box>

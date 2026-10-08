@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link as RouterLink, type LinkProps as RouterLinkProps } from 'react-router-dom';
+import React from "react";
+import { Link as RouterLink, type LinkProps as RouterLinkProps } from "react-router-dom";
 
 /**
  * Link variant options.
  */
-export type LinkVariant = 'default' | 'primary' | 'muted' | 'inherit';
+export type LinkVariant = "default" | "primary" | "muted" | "inherit";
 
 /**
  * Link size options.
  */
-export type LinkSize = 'sm' | 'md' | 'lg';
+export type LinkSize = "sm" | "md" | "lg";
 
-interface LinkProps extends Omit<RouterLinkProps, 'className'> {
+interface LinkProps extends Omit<RouterLinkProps, "className"> {
   /** Link content */
   children: React.ReactNode;
   /** Link style variant */
@@ -21,7 +21,7 @@ interface LinkProps extends Omit<RouterLinkProps, 'className'> {
   /** External link (uses <a> instead of React Router) */
   external?: boolean;
   /** Show underline */
-  underline?: 'always' | 'hover' | 'none';
+  underline?: "always" | "hover" | "none";
   /** Icon to display before text */
   leftIcon?: React.ReactNode;
   /** Icon to display after text */
@@ -36,14 +36,14 @@ interface LinkProps extends Omit<RouterLinkProps, 'className'> {
  */
 const getVariantClasses = (variant: LinkVariant): string => {
   switch (variant) {
-    case 'default':
-      return 'text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white';
-    case 'primary':
-      return 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300';
-    case 'muted':
-      return 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300';
-    case 'inherit':
-      return 'text-inherit hover:opacity-80';
+    case "default":
+      return "text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white";
+    case "primary":
+      return "text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300";
+    case "muted":
+      return "text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300";
+    case "inherit":
+      return "text-inherit hover:opacity-80";
   }
 };
 
@@ -52,28 +52,28 @@ const getVariantClasses = (variant: LinkVariant): string => {
  */
 const getSizeClasses = (size: LinkSize): string => {
   switch (size) {
-    case 'sm':
-      return 'text-sm';
-    case 'md':
-      return 'text-base';
-    case 'lg':
-      return 'text-lg';
+    case "sm":
+      return "text-sm";
+    case "md":
+      return "text-base";
+    case "lg":
+      return "text-lg";
   }
 };
 
 /**
  * Get underline classes.
  */
-const getUnderlineClasses = (underline: LinkProps['underline']): string => {
+const getUnderlineClasses = (underline: LinkProps["underline"]): string => {
   switch (underline) {
-    case 'always':
-      return 'underline underline-offset-2';
-    case 'hover':
-      return 'hover:underline underline-offset-2';
-    case 'none':
-      return 'no-underline';
+    case "always":
+      return "underline underline-offset-2";
+    case "hover":
+      return "hover:underline underline-offset-2";
+    case "none":
+      return "no-underline";
     default:
-      return 'hover:underline underline-offset-2';
+      return "hover:underline underline-offset-2";
   }
 };
 
@@ -107,28 +107,28 @@ const getUnderlineClasses = (underline: LinkProps['underline']): string => {
 const Link: React.FC<LinkProps> = ({
   children,
   to,
-  variant = 'default',
-  size = 'md',
+  variant = "default",
+  size = "md",
   external = false,
-  underline = 'hover',
+  underline = "hover",
   leftIcon,
   rightIcon,
-  className = '',
+  className = "",
   dataHook,
   ...props
 }) => {
   const classes = [
-    'inline-flex items-center gap-1',
-    'transition-colors',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2',
-    'dark:focus-visible:ring-offset-slate-900',
+    "inline-flex items-center gap-1",
+    "transition-colors",
+    "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+    "dark:focus-visible:ring-offset-slate-900",
     getVariantClasses(variant),
     getSizeClasses(size),
     getUnderlineClasses(underline),
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   const content = (
     <>
