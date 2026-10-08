@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import Image from "next/image";
+import React, { useState } from "react";
 
 /**
  * Avatar size options.
  */
-export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 /**
  * Avatar status options for online indicator.
  */
-export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
+export type AvatarStatus = "online" | "offline" | "away" | "busy";
 
 interface AvatarProps {
   /** Image source URL */
@@ -32,18 +33,18 @@ interface AvatarProps {
  */
 const getSizeClasses = (size: AvatarSize): string => {
   switch (size) {
-    case 'xs':
-      return 'w-6 h-6 text-xs';
-    case 'sm':
-      return 'w-8 h-8 text-sm';
-    case 'md':
-      return 'w-10 h-10 text-base';
-    case 'lg':
-      return 'w-12 h-12 text-lg';
-    case 'xl':
-      return 'w-16 h-16 text-xl';
-    case '2xl':
-      return 'w-20 h-20 text-2xl';
+    case "xs":
+      return "w-6 h-6 text-xs";
+    case "sm":
+      return "w-8 h-8 text-sm";
+    case "md":
+      return "w-10 h-10 text-base";
+    case "lg":
+      return "w-12 h-12 text-lg";
+    case "xl":
+      return "w-16 h-16 text-xl";
+    case "2xl":
+      return "w-20 h-20 text-2xl";
   }
 };
 
@@ -52,18 +53,18 @@ const getSizeClasses = (size: AvatarSize): string => {
  */
 const getStatusSize = (size: AvatarSize): string => {
   switch (size) {
-    case 'xs':
-      return 'w-1.5 h-1.5';
-    case 'sm':
-      return 'w-2 h-2';
-    case 'md':
-      return 'w-2.5 h-2.5';
-    case 'lg':
-      return 'w-3 h-3';
-    case 'xl':
-      return 'w-3.5 h-3.5';
-    case '2xl':
-      return 'w-4 h-4';
+    case "xs":
+      return "w-1.5 h-1.5";
+    case "sm":
+      return "w-2 h-2";
+    case "md":
+      return "w-2.5 h-2.5";
+    case "lg":
+      return "w-3 h-3";
+    case "xl":
+      return "w-3.5 h-3.5";
+    case "2xl":
+      return "w-4 h-4";
   }
 };
 
@@ -72,14 +73,14 @@ const getStatusSize = (size: AvatarSize): string => {
  */
 const getStatusColor = (status: AvatarStatus): string => {
   switch (status) {
-    case 'online':
-      return 'bg-green-500';
-    case 'offline':
-      return 'bg-gray-400';
-    case 'away':
-      return 'bg-amber-500';
-    case 'busy':
-      return 'bg-rose-500';
+    case "online":
+      return "bg-green-500";
+    case "offline":
+      return "bg-gray-400";
+    case "away":
+      return "bg-amber-500";
+    case "busy":
+      return "bg-rose-500";
   }
 };
 
@@ -99,22 +100,22 @@ const getInitials = (name: string): string => {
  */
 const getColorFromName = (name: string): string => {
   const colors = [
-    'bg-rose-500',
-    'bg-pink-500',
-    'bg-fuchsia-500',
-    'bg-purple-500',
-    'bg-violet-500',
-    'bg-indigo-500',
-    'bg-blue-500',
-    'bg-sky-500',
-    'bg-cyan-500',
-    'bg-teal-500',
-    'bg-emerald-500',
-    'bg-green-500',
-    'bg-lime-500',
-    'bg-yellow-500',
-    'bg-amber-500',
-    'bg-orange-500',
+    "bg-rose-500",
+    "bg-pink-500",
+    "bg-fuchsia-500",
+    "bg-purple-500",
+    "bg-violet-500",
+    "bg-indigo-500",
+    "bg-blue-500",
+    "bg-sky-500",
+    "bg-cyan-500",
+    "bg-teal-500",
+    "bg-emerald-500",
+    "bg-green-500",
+    "bg-lime-500",
+    "bg-yellow-500",
+    "bg-amber-500",
+    "bg-orange-500",
   ];
 
   let hash = 0;
@@ -155,22 +156,22 @@ const getColorFromName = (name: string): string => {
 const Avatar: React.FC<AvatarProps> = ({
   src,
   alt,
-  name = '',
-  size = 'md',
+  name = "",
+  size = "md",
   status,
   square = false,
-  className = '',
+  className = "",
 }) => {
   const [imageError, setImageError] = useState(false);
 
   const showImage = src && !imageError;
-  const initials = name ? getInitials(name) : '?';
-  const bgColor = name ? getColorFromName(name) : 'bg-gray-400';
+  const initials = name ? getInitials(name) : "?";
+  const bgColor = name ? getColorFromName(name) : "bg-gray-400";
 
   const baseClasses = `
     relative inline-flex items-center justify-center
     ${getSizeClasses(size)}
-    ${square ? 'rounded-lg' : 'rounded-full'}
+    ${square ? "rounded-lg" : "rounded-full"}
     overflow-hidden
     flex-shrink-0
   `;
@@ -178,9 +179,9 @@ const Avatar: React.FC<AvatarProps> = ({
   return (
     <div className={`${baseClasses} ${className}`}>
       {showImage ? (
-        <img
+        <Image
           src={src}
-          alt={alt || name || 'Avatar'}
+          alt={alt || name || "Avatar"}
           loading="lazy"
           className="w-full h-full object-cover"
           onError={() => setImageError(true)}

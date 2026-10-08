@@ -4,11 +4,6 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useGetCurrentUser } from "@/features/auth/query/useAuth";
 
-function isUnauthorized(error: unknown): boolean {
-  // apiClient currently reports HTTP failures as "HTTP error! status: <code>".
-  return error instanceof Error && /\bstatus:\s*401\b/.test(error.message);
-}
-
 export default function RequireAuth({
   children,
 }: {
@@ -16,8 +11,7 @@ export default function RequireAuth({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { data, error, isError, isPending, isLoading, refetch } =
-    useGetCurrentUser();
+  const { data, isError, isPending, isLoading, refetch } = useGetCurrentUser();
 
   const unauthorized = !isLoading && !isPending && !isError && data === null;
 

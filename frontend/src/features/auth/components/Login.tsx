@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLogin } from "../query/useAuth";
 
 interface LoginProps {
@@ -62,7 +62,7 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
       </form>
 
       <div className="mt-6 text-center text-sm text-gray-500">
-        Don't have an account?{" "}
+        Do not have an account?{" "}
         <button
           type="button"
           onClick={onSwitchToRegister}

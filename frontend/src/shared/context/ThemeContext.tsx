@@ -62,15 +62,13 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemeName>(DEFAULT_THEME);
+  const [theme, setThemeState] = useState<ThemeName>(() => {
+    return getStoredTheme() ?? DEFAULT_THEME;
+  });
 
-  // On mount, read from localStorage and apply
   useEffect(() => {
-    const stored = getStoredTheme();
-    const initialTheme = stored ?? DEFAULT_THEME;
-    setThemeState(initialTheme);
-    applyTheme(getTheme(initialTheme));
-  }, []);
+    applyTheme(getTheme(theme));
+  }, [theme]);
 
   const setTheme = useCallback((name: ThemeName) => {
     const themeDef = getTheme(name);

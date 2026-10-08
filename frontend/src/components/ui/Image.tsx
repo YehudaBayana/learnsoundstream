@@ -1,10 +1,11 @@
-"use client"
-import React, { useState, useRef, useEffect } from 'react';
+"use client";
+import NextImage from "next/image";
+import React, { useState, useRef, useEffect } from "react";
 
 /**
  * Image fit options.
  */
-export type ImageFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+export type ImageFit = "cover" | "contain" | "fill" | "none" | "scale-down";
 
 interface ImageProps {
   /** Image source URL */
@@ -24,7 +25,7 @@ interface ImageProps {
   /** Lazy load the image */
   lazy?: boolean;
   /** Border radius */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "full";
   /** Additional CSS classes */
   className?: string;
 }
@@ -34,38 +35,38 @@ interface ImageProps {
  */
 const getFitClass = (fit: ImageFit): string => {
   switch (fit) {
-    case 'cover':
-      return 'object-cover';
-    case 'contain':
-      return 'object-contain';
-    case 'fill':
-      return 'object-fill';
-    case 'none':
-      return 'object-none';
-    case 'scale-down':
-      return 'object-scale-down';
+    case "cover":
+      return "object-cover";
+    case "contain":
+      return "object-contain";
+    case "fill":
+      return "object-fill";
+    case "none":
+      return "object-none";
+    case "scale-down":
+      return "object-scale-down";
   }
 };
 
 /**
  * Get border radius class.
  */
-const getRoundedClass = (rounded: ImageProps['rounded']): string => {
+const getRoundedClass = (rounded: ImageProps["rounded"]): string => {
   switch (rounded) {
-    case 'none':
-      return '';
-    case 'sm':
-      return 'rounded-sm';
-    case 'md':
-      return 'rounded-md';
-    case 'lg':
-      return 'rounded-lg';
-    case 'xl':
-      return 'rounded-xl';
-    case 'full':
-      return 'rounded-full';
+    case "none":
+      return "";
+    case "sm":
+      return "rounded-sm";
+    case "md":
+      return "rounded-md";
+    case "lg":
+      return "rounded-lg";
+    case "xl":
+      return "rounded-xl";
+    case "full":
+      return "rounded-full";
     default:
-      return '';
+      return "";
   }
 };
 
@@ -81,7 +82,11 @@ const DefaultFallback: React.FC<{ className?: string }> = ({ className }) => (
       ${className}
     `}
   >
-    <svg className="w-1/3 h-1/3 max-w-12 max-h-12" fill="currentColor" viewBox="0 0 20 20">
+    <svg
+      className="w-1/3 h-1/3 max-w-12 max-h-12"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
       <path
         fillRule="evenodd"
         d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
@@ -129,12 +134,12 @@ const Image: React.FC<ImageProps> = ({
   alt,
   width,
   height,
-  fit = 'cover',
+  fit = "cover",
   fallbackSrc,
   showSkeleton = true,
   lazy = true,
-  rounded = 'none',
-  className = '',
+  rounded = "none",
+  className = "",
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -154,7 +159,7 @@ const Image: React.FC<ImageProps> = ({
           }
         });
       },
-      { rootMargin: '50px' }
+      { rootMargin: "50px" },
     );
 
     if (imgRef.current) {
@@ -175,8 +180,8 @@ const Image: React.FC<ImageProps> = ({
   };
 
   const containerStyle: React.CSSProperties = {
-    width: typeof width === 'number' ? `${width}px` : width,
-    height: typeof height === 'number' ? `${height}px` : height,
+    width: typeof width === "number" ? `${width}px` : width,
+    height: typeof height === "number" ? `${height}px` : height,
   };
 
   const containerClasses = `
@@ -189,7 +194,7 @@ const Image: React.FC<ImageProps> = ({
   if (hasError) {
     if (fallbackSrc) {
       return (
-        <img
+        <NextImage
           src={fallbackSrc}
           alt={alt}
           style={containerStyle}
@@ -198,11 +203,7 @@ const Image: React.FC<ImageProps> = ({
       );
     }
 
-    return (
-      <DefaultFallback
-        className={`${containerClasses} ${className}`}
-      />
-    );
+    return <DefaultFallback className={`${containerClasses} ${className}`} />;
   }
 
   return (
@@ -220,7 +221,7 @@ const Image: React.FC<ImageProps> = ({
 
       {/* Actual image */}
       {shouldLoad && src && (
-        <img
+        <NextImage
           src={src}
           alt={alt}
           onLoad={handleLoad}
@@ -228,7 +229,7 @@ const Image: React.FC<ImageProps> = ({
           className={`
             w-full h-full
             ${getFitClass(fit)}
-            ${isLoaded ? 'opacity-100' : 'opacity-0'}
+            ${isLoaded ? "opacity-100" : "opacity-0"}
             transition-opacity duration-300
           `}
         />
