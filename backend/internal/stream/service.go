@@ -65,9 +65,11 @@ func (service *Service) StreamManifest(request *http.Request, responseWriter htt
 	if directURL == "" {
 		videoURL := "https://www.youtube.com/watch?v=" + videoID
 		ytCommand := exec.CommandContext(request.Context(), service.ytDlpPath, "-f", "140", "-g", videoURL)
+		var ytStderr strings.Builder
+		ytCommand.Stderr = &ytStderr
 		ytOutput, err := ytCommand.Output()
 		if err != nil {
-			slog.Error("Failed to get direct URL with yt-dlp", "error", err, "id", videoID)
+			slog.Error("Failed to get direct URL with yt-dlp", "error", err, "stderr", ytStderr.String(), "id", videoID)
 			http.Error(responseWriter, "Failed to resolve media URL", http.StatusInternalServerError)
 			return
 		}
