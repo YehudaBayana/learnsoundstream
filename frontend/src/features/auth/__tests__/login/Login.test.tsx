@@ -1,7 +1,7 @@
 import { LoginDriver } from "./Login.driver";
-import * as useAuthModule from "../query/useAuth";
+import * as useAuthModule from "../../query/useAuth";
 
-jest.mock("../query/useAuth");
+jest.mock("../../query/useAuth");
 
 describe("Login Feature Component", () => {
   let driver: LoginDriver;

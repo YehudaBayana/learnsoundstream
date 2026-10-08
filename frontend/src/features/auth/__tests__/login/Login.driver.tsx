@@ -1,6 +1,6 @@
 import React from "react";
 import { render, RenderResult, fireEvent } from "@testing-library/react";
-import { Login } from "../components/login/Login";
+import { Login } from "../../components/login/Login";
 import { queryByDataHook, getByDataHook } from "@/__tests__/testUtils";
 
 export interface LoginDriverProps {

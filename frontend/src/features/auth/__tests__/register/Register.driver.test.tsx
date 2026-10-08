@@ -1,7 +1,7 @@
-import { RegisterDriver } from "./Register.driver";
-import * as authModule from "../query/useAuth";
+import { RegisterDriver } from "../register/Register.driver";
+import * as authModule from "../../query/useAuth";
 
-jest.mock("../query/useAuth");
+jest.mock("../../query/useAuth");
 
 describe("Register", () => {
   let driver: RegisterDriver;

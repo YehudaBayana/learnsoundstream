@@ -1,5 +1,5 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import { Register } from "../components/register/Register";
+import { Register } from "../../components/register/Register";
 import { getByDataHook } from "@/__tests__/testUtils";
 
 export interface RegisterDriverProps {

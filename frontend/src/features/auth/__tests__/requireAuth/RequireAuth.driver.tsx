@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import RequireAuth from "../components/require-auth/RequireAuth";
+import RequireAuth from "../../components/require-auth/RequireAuth";
 import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class RequireAuthDriver {

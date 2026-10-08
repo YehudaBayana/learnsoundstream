@@ -1,5 +1,5 @@
 import { fireEvent, render, RenderResult } from "@testing-library/react";
-import AuthView from "../views/auth-view/AuthView";
+import AuthView from "../../views/auth-view/AuthView";
 import { getByDataHook, queryByDataHook } from "@/__tests__/testUtils";
 
 export class AuthViewDriver {

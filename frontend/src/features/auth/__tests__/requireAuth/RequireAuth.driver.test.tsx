@@ -1,9 +1,9 @@
 import { RequireAuthDriver } from "./RequireAuth.driver";
 import { usePathname, useRouter } from "next/navigation";
-import * as authModule from "../query/useAuth";
+import * as authModule from "../../query/useAuth";
 
 jest.mock("next/navigation", () => ({ usePathname: jest.fn(), useRouter: jest.fn() }));
-jest.mock("../query/useAuth");
+jest.mock("../../query/useAuth");
 
 describe("RequireAuth", () => {
   let driver: RequireAuthDriver;

@@ -1,9 +1,9 @@
-import { AuthViewDriver } from "./AuthView.driver";
 import { useRouter } from "next/navigation";
-import * as authModule from "../query/useAuth";
+import * as authModule from "../../query/useAuth";
+import { AuthViewDriver } from "./AuthView.driver";
 
 jest.mock("next/navigation", () => ({ useRouter: jest.fn() }));
-jest.mock("../query/useAuth");
+jest.mock("../../query/useAuth");
 
 describe("AuthView", () => {
   let driver: AuthViewDriver;
