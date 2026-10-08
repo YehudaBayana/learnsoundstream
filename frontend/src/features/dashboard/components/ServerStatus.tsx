@@ -5,6 +5,7 @@ import { apiUrl } from "@/config/constants";
 import Button from "@/components/ui/Button";
 import IconButton from "@/components/ui/IconButton";
 import Text from "@/components/ui/Text";
+import { Box } from "@/components/ui/layout";
 
 interface ServicesStatus {
   database: string;
@@ -104,8 +105,8 @@ export default function ServerStatus() {
   };
 
   return (
-    <div className="fixed top-4 left-128 z-[1000] font-sans" ref={panelRef}>
-      <button
+    <Box className="fixed top-4 left-128 z-[1000] font-sans" ref={panelRef}>
+      <Button
         className="flex items-center gap-3 px-4 py-2 rounded-full bg-black/75 backdrop-blur-md border border-white/8 shadow-[0_4px_6px_rgba(0,0,0,0.15),0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 select-none cursor-pointer hover:bg-black/85 hover:border-white/20 hover:-translate-y-[1px] hover:shadow-[0_4px_6px_rgba(0,0,0,0.15),0_12px_40px_rgba(0,0,0,0.4)]"
         onClick={togglePanel}
         aria-label="Toggle server health status"
@@ -130,11 +131,11 @@ export default function ServerStatus() {
             ({latency}ms)
           </span>
         )}
-      </button>
+      </Button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+12px)] left-0 w-[290px] p-5 rounded-xl bg-[#0f0f0f]/92 backdrop-blur-md border border-white/8 shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 origin-top-left animate-[slideDown_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] pointer-events-auto">
-          <div className="flex justify-between items-center border-b border-white/8 pb-2">
+        <Box className="absolute top-[calc(100%+12px)] left-0 w-[290px] p-5 rounded-xl bg-[#0f0f0f]/92 backdrop-blur-md border border-white/8 shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col gap-3.5 origin-top-left animate-[slideDown_0.3s_cubic-bezier(0.16,1,0.3,1)_forwards] pointer-events-auto">
+          <Box className="flex justify-between items-center border-b border-white/8 pb-2">
             <Text
               variant="caption"
               weight="bold"
@@ -152,10 +153,10 @@ export default function ServerStatus() {
             >
               ✕
             </IconButton>
-          </div>
+          </Box>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-[13px]">
+          <Box className="flex flex-col gap-2">
+            <Box className="flex justify-between text-[13px]">
               <Text variant="small" color="muted">
                 Service:
               </Text>
@@ -166,9 +167,9 @@ export default function ServerStatus() {
               >
                 Soundstream API
               </Text>
-            </div>
+            </Box>
 
-            <div className="flex justify-between text-[13px]">
+            <Box className="flex justify-between text-[13px]">
               <Text variant="small" color="muted">
                 Status:
               </Text>
@@ -185,10 +186,10 @@ export default function ServerStatus() {
                 {status === "offline" && "OFFLINE"}
                 {status === "checking" && "CHECKING..."}
               </span>
-            </div>
+            </Box>
 
             {status === "online" && latency !== null && (
-              <div className="flex justify-between text-[13px]">
+              <Box className="flex justify-between text-[13px]">
                 <Text variant="small" color="muted">
                   Latency:
                 </Text>
@@ -203,12 +204,12 @@ export default function ServerStatus() {
                 >
                   {latency}ms
                 </span>
-              </div>
+              </Box>
             )}
 
             {data && (
               <>
-                <div className="flex justify-between text-[13px]">
+                <Box className="flex justify-between text-[13px]">
                   <Text variant="small" color="muted">
                     Version:
                   </Text>
@@ -219,8 +220,8 @@ export default function ServerStatus() {
                   >
                     {data.version}
                   </Text>
-                </div>
-                <div className="flex justify-between text-[13px]">
+                </Box>
+                <Box className="flex justify-between text-[13px]">
                   <Text variant="small" color="muted">
                     Uptime:
                   </Text>
@@ -231,11 +232,11 @@ export default function ServerStatus() {
                   >
                     {data.uptime}
                   </Text>
-                </div>
+                </Box>
               </>
             )}
 
-            <div className="flex justify-between text-[13px]">
+            <Box className="flex justify-between text-[13px]">
               <Text variant="small" color="muted">
                 Endpoint:
               </Text>
@@ -245,11 +246,11 @@ export default function ServerStatus() {
               >
                 {apiUrl}
               </span>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           {status === "online" && data?.services && (
-            <div className="border-t border-white/8 pt-3 flex flex-col gap-1.5">
+            <Box className="border-t border-white/8 pt-3 flex flex-col gap-1.5">
               <Text
                 variant="caption"
                 weight="bold"
@@ -258,7 +259,7 @@ export default function ServerStatus() {
               >
                 Backend Services
               </Text>
-              <div className="flex justify-between text-[13px]">
+              <Box className="flex justify-between text-[13px]">
                 <Text variant="small" color="muted">
                   Database (Postgres):
                 </Text>
@@ -267,8 +268,8 @@ export default function ServerStatus() {
                     ? "Pending Config"
                     : data.services.database}
                 </span>
-              </div>
-              <div className="flex justify-between text-[13px]">
+              </Box>
+              <Box className="flex justify-between text-[13px]">
                 <Text variant="small" color="muted">
                   Cache (Redis):
                 </Text>
@@ -277,8 +278,8 @@ export default function ServerStatus() {
                     ? "Pending Config"
                     : data.services.cache}
                 </span>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
 
           <Button
@@ -291,8 +292,8 @@ export default function ServerStatus() {
           >
             {isRefreshing ? "Checking..." : "Refresh Status"}
           </Button>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

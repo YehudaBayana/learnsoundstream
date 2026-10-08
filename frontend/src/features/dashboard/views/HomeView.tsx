@@ -7,6 +7,7 @@ import Flex from "@/components/ui/layout/Flex";
 import Badge from "@/components/ui/Badge";
 import ServerStatus from "@/features/dashboard/components/ServerStatus";
 import Footer from "@/features/dashboard/components/Footer";
+import { Grid } from "@/components/ui/layout";
 
 export default function HomeView() {
   return (
@@ -15,7 +16,7 @@ export default function HomeView() {
       <ServerStatus />
 
       {/* Grid for Featured Showcase & Recently Played */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <Grid gap={8} cols={2} colsMobile={1}>
         {/* Featured Tracks Showcase */}
         <Flex direction="col" gap={4}>
           <Flex align="center" justify="between" className="px-1">
@@ -76,7 +77,7 @@ export default function HomeView() {
             ) : null}
           </Flex> */}
         </Flex>
-      </div>
+      </Grid>
 
       {/* Popular Playlists Section */}
       <Flex direction="col" gap={4}>

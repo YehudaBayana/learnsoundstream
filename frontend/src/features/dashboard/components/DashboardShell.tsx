@@ -8,6 +8,7 @@ import Text from "@/components/ui/Text";
 import Sidebar from "@/features/dashboard/components/Sidebar";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/shared/context/ThemeContext";
+import Button from "@/components/ui/Button";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -77,7 +78,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
           {/* Right: Theme Toggle + Server indicator badge */}
           <Flex align="center" gap={3}>
             {/* Theme Toggle Button */}
-            <button
+            <Button
               onClick={toggleTheme}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)] hover:border-[var(--border-subtle)] transition-all duration-200 cursor-pointer select-none group"
               aria-label={`Switch theme (current: ${themeDefinition.label})`}
@@ -93,7 +94,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
               >
                 {themeDefinition.label}
               </Text>
-            </button>
+            </Button>
 
             {/* Server indicator badge */}
             <Flex
