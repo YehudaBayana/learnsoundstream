@@ -53,6 +53,8 @@ interface TextProps extends React.HTMLAttributes<HTMLElement> {
   className?: string;
   /** htmlFor attribute for label elements */
   htmlFor?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -195,6 +197,7 @@ const Text: React.FC<TextProps> = ({
   as,
   className = '',
   htmlFor,
+  dataHook,
   ...props
 }) => {
   const classes = [
@@ -211,6 +214,7 @@ const Text: React.FC<TextProps> = ({
   const element = as || getDefaultElement(variant);
   const elementProps: Record<string, unknown> = { 
     ...props,
+    'data-hook': dataHook,
     className: classes 
   };
   

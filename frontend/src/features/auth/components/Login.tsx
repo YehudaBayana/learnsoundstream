@@ -3,9 +3,10 @@ import { useLogin } from "../query/useAuth";
 
 interface LoginProps {
   onSwitchToRegister: () => void;
+  dataHook?: string;
 }
 
-export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
+export const Login: React.FC<LoginProps> = ({ onSwitchToRegister, dataHook }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { mutate: login } = useLogin();
@@ -16,15 +17,20 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+    <div
+      className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100"
+      data-hook={dataHook}
+    >
       <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+        <h2 className="text-2xl font-bold text-gray-900" data-hook="login-heading">
+          Welcome Back
+        </h2>
         <p className="text-sm text-gray-500 mt-1">
           Please enter your details to sign in
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-hook="login-form">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">
             Email
@@ -36,6 +42,7 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
             required
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
             placeholder="you@example.com"
+            data-hook="login-email-input"
           />
         </div>
 
@@ -50,12 +57,14 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
             required
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
             placeholder="••••••••"
+            data-hook="login-password-input"
           />
         </div>
 
         <button
           type="submit"
           className="w-full mt-2 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          data-hook="login-submit-button"
         >
           Sign In
         </button>
@@ -67,6 +76,7 @@ export const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
           type="button"
           onClick={onSwitchToRegister}
           className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none underline"
+          data-hook="login-switch-to-register-button"
         >
           Sign up
         </button>

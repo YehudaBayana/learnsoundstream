@@ -79,6 +79,8 @@ interface DialogProps {
   children?: React.ReactNode;
   /** ID for the dialog */
   id?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -154,6 +156,7 @@ const Dialog: React.FC<DialogProps> = ({
   hideCancel = false,
   children,
   id,
+  dataHook,
 }) => {
   const handleConfirm = () => {
     if (onConfirm) {
@@ -171,6 +174,7 @@ const Dialog: React.FC<DialogProps> = ({
       closeOnBackdrop={!loading}
       closeOnEscape={!loading}
       id={id}
+      dataHook={dataHook}
     >
       <div className="relative p-6">
         {/* Close button */}
@@ -180,6 +184,7 @@ const Dialog: React.FC<DialogProps> = ({
             onClick={onClose}
             className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Close modal"
+            data-hook={dataHook ? `${dataHook}-close-btn` : 'dialog-close-btn'}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -190,11 +195,18 @@ const Dialog: React.FC<DialogProps> = ({
         <div className="flex gap-4">
           {showIcon && <DialogIcon variant={variant} />}
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white" id={id ? `${id}-title` : undefined}>
+            <h3
+              className="text-lg font-semibold text-gray-900 dark:text-white"
+              id={id ? `${id}-title` : undefined}
+              data-hook={dataHook ? `${dataHook}-title` : 'dialog-title'}
+            >
               {title}
             </h3>
             {description && (
-              <div className="mt-2 text-sm text-gray-500 dark:text-slate-400">
+              <div
+                className="mt-2 text-sm text-gray-500 dark:text-slate-400"
+                data-hook={dataHook ? `${dataHook}-description` : 'dialog-description'}
+              >
                 {description}
               </div>
             )}
@@ -208,6 +220,7 @@ const Dialog: React.FC<DialogProps> = ({
               variant="ghost"
               onClick={onClose}
               disabled={loading}
+              dataHook={dataHook ? `${dataHook}-cancel-btn` : 'dialog-cancel-btn'}
             >
               {cancelText}
             </Button>
@@ -217,6 +230,7 @@ const Dialog: React.FC<DialogProps> = ({
             onClick={handleConfirm}
             loading={loading}
             loadingText={loadingText}
+            dataHook={dataHook ? `${dataHook}-confirm-btn` : 'dialog-confirm-btn'}
           >
             {confirmText}
           </Button>

@@ -13,9 +13,9 @@ interface ImageProps {
   /** Alternative text */
   alt: string;
   /** Image width */
-  width?: number | string;
+  width?: number | undefined;
   /** Image height */
-  height?: number | string;
+  height?: number | undefined;
   /** Object fit behavior */
   fit?: ImageFit;
   /** Fallback image source */
@@ -179,11 +179,6 @@ const Image: React.FC<ImageProps> = ({
     setIsLoaded(true);
   };
 
-  const containerStyle: React.CSSProperties = {
-    width: typeof width === "number" ? `${width}px` : width,
-    height: typeof height === "number" ? `${height}px` : height,
-  };
-
   const containerClasses = `
     relative overflow-hidden
     ${getRoundedClass(rounded)}
@@ -197,7 +192,10 @@ const Image: React.FC<ImageProps> = ({
         <NextImage
           src={fallbackSrc}
           alt={alt}
-          style={containerStyle}
+          width={width || 50}
+          height={height || 50}
+          onLoad={handleLoad}
+          onError={handleError}
           className={`${getFitClass(fit)} ${getRoundedClass(rounded)} ${className}`}
         />
       );
@@ -207,7 +205,7 @@ const Image: React.FC<ImageProps> = ({
   }
 
   return (
-    <div className={containerClasses} style={containerStyle} ref={imgRef}>
+    <div className={containerClasses} ref={imgRef}>
       {/* Skeleton placeholder */}
       {showSkeleton && !isLoaded && (
         <div
@@ -226,6 +224,8 @@ const Image: React.FC<ImageProps> = ({
           alt={alt}
           onLoad={handleLoad}
           onError={handleError}
+          width={width || 50}
+          height={height || 50}
           className={`
             w-full h-full
             ${getFitClass(fit)}

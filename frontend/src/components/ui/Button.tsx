@@ -40,6 +40,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   as?: React.ElementType;
   /** Link path if rendering as a link */
   to?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -200,6 +202,7 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   as,
   to,
+  dataHook,
   ...props
 }) => {
   const isDisabled = disabled || loading;
@@ -227,6 +230,7 @@ const Button: React.FC<ButtonProps> = ({
       type={Element === 'button' ? type : undefined} 
       className={classes} 
       to={to}
+      data-hook={dataHook}
       {...props}
     >
       {loading ? (

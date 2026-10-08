@@ -48,6 +48,8 @@ interface BoxProps extends React.HTMLAttributes<HTMLElement> {
   h?: 'full' | 'auto' | 'screen' | 'fit';
   /** Additional CSS classes */
   className?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -132,6 +134,7 @@ const Box = forwardRef<HTMLElement, BoxProps>(
       w,
       h,
       className = '',
+      dataHook,
       ...props
     },
     ref
@@ -155,7 +158,7 @@ const Box = forwardRef<HTMLElement, BoxProps>(
     return React.createElement(
       Element,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { ...props, className: classes, ref } as any,
+      { ...props, 'data-hook': dataHook, className: classes, ref } as any,
       children
     );
   }

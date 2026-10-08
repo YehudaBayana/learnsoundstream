@@ -31,6 +31,8 @@ interface BadgeProps {
   onRemove?: () => void;
   /** Additional CSS classes */
   className?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -164,6 +166,7 @@ const Badge: React.FC<BadgeProps> = ({
   removable = false,
   onRemove,
   className = '',
+  dataHook,
 }) => {
   const classes = [
     'inline-flex items-center gap-1 font-medium',
@@ -177,7 +180,7 @@ const Badge: React.FC<BadgeProps> = ({
     .join(' ');
 
   return (
-    <span className={classes}>
+    <span className={classes} data-hook={dataHook}>
       {dot && (
         <span
           className={`${getDotSizeClasses(size)} ${getDotColorClasses(variant)} rounded-full`}

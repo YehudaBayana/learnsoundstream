@@ -7,7 +7,8 @@
     "build": "eslint . && next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --format json | remove-unused-vars && eslint . --fix"
+    "lint:fix": "eslint . --format json | remove-unused-vars && eslint . --fix",
+    "test": "jest"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",
@@ -19,7 +20,14 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@swc/core": "^1.16.13",
+    "@swc/jest": "^0.2.39",
     "@tailwindcss/postcss": "^4.3.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -27,9 +35,13 @@
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.6",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "remove-unused-vars": "0.0.15",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
     "postcss": "^8.5.14",
+    "react-icons": "^5.7.0",
+    "remove-unused-vars": "0.0.15",
     "tailwindcss": "^4.3.0",
+    "ts-jest": "^29.4.14",
     "typescript": "^5"
   }
 }

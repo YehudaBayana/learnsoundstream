@@ -169,6 +169,8 @@ interface ModalProps {
   className?: string;
   /** ID for the modal (used for aria-labelledby) */
   id?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -238,6 +240,7 @@ const Modal: React.FC<ModalProps> & {
   preventScroll = true,
   className = '',
   id,
+  dataHook,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<Element | null>(null);
@@ -320,6 +323,7 @@ const Modal: React.FC<ModalProps> & {
       aria-modal="true"
       aria-labelledby={id ? `${id}-title` : undefined}
       data-testid={id}
+      data-hook={dataHook}
     >
       {/* Backdrop */}
       <div

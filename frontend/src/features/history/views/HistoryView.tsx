@@ -38,19 +38,19 @@ export default function HistoryView() {
   }, [fetchNextPage, hasNextPage, isError, isFetchingNextPage]);
 
   return (
-    <Box className="p-10 flex flex-col gap-4">
-      <Text variant="h1">History</Text>
-      {isPending && <Text role="status">Loading history...</Text>}
+    <Box className="p-10 flex flex-col gap-4" dataHook="history-view-container">
+      <Text variant="h1" dataHook="history-view-heading">History</Text>
+      {isPending && <Text role="status" dataHook="history-loading-text">Loading history...</Text>}
       {isError && tracks.length === 0 && (
-        <Box className="flex items-center gap-3">
-          <Text role="alert">{error.message || "Could not load history."}</Text>
-          <button type="button" onClick={() => void refetch()}>
+        <Box className="flex items-center gap-3" dataHook="history-error-container">
+          <Text role="alert" dataHook="history-error-text">{error?.message || "Could not load history."}</Text>
+          <button type="button" onClick={() => void refetch()} data-hook="history-retry-button">
             Try again
           </button>
         </Box>
       )}
       {!isPending && !isError && tracks.length === 0 && (
-        <Text>No listening history yet.</Text>
+        <Text dataHook="history-empty-text">No listening history yet.</Text>
       )}
       {tracks.map((track, index) => (
         <TrackItem
@@ -61,13 +61,13 @@ export default function HistoryView() {
         />
       ))}
       {tracks.length > 0 && hasNextPage && (
-        <div ref={loadMoreRef} className="min-h-8" aria-hidden="true" />
+        <div ref={loadMoreRef} className="min-h-8" aria-hidden="true" data-hook="history-loadmore-trigger" />
       )}
-      {isFetchingNextPage && <Text role="status">Loading more history...</Text>}
+      {isFetchingNextPage && <Text role="status" dataHook="history-fetching-more-text">Loading more history...</Text>}
       {isError && tracks.length > 0 && (
-        <Box className="flex items-center gap-3">
-          <Text role="alert">Could not load more history.</Text>
-          <button type="button" onClick={() => void fetchNextPage()}>
+        <Box className="flex items-center gap-3" dataHook="history-loadmore-error-container">
+          <Text role="alert" dataHook="history-loadmore-error-text">Could not load more history.</Text>
+          <button type="button" onClick={() => void fetchNextPage()} data-hook="history-loadmore-retry-button">
             Retry
           </button>
         </Box>

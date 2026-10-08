@@ -151,6 +151,8 @@ interface DrawerProps {
   preventScroll?: boolean;
   /** Additional CSS classes for the drawer panel */
   className?: string;
+  /** Test data hook selector */
+  dataHook?: string;
 }
 
 /**
@@ -270,6 +272,7 @@ const Drawer: React.FC<DrawerProps> & {
   closeOnEscape = true,
   preventScroll = true,
   className = '',
+  dataHook,
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<Element | null>(null);
@@ -346,6 +349,7 @@ const Drawer: React.FC<DrawerProps> & {
       className="fixed inset-0 z-[1400] overflow-hidden"
       role="dialog"
       aria-modal="true"
+      data-hook={dataHook}
     >
       {/* Backdrop */}
       <div
