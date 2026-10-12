@@ -38,6 +38,11 @@ services:
       - DB_SSLMODE=disable
       - ENV=${ENV:-development}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+      - STORAGE_DIR=/data/videos
+      - MAX_UPLOAD_BYTES=${MAX_UPLOAD_BYTES:-21474836480}
+    volumes:
+      - video_data:/data/videos
 
 volumes:
   postgres_data:
+  video_data:

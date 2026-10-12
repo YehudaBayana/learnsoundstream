@@ -28,10 +28,10 @@ export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
           <Flex direction="col" gap={4}>
             <Flex align="center" justify="between" className="px-1">
               <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
-                Featured Showcase
+                Featured Sessions
               </Heading>
               <Text variant="caption" color="muted">
-                Handpicked Jams
+                Recent clips
               </Text>
             </Flex>
           </Flex>
@@ -40,7 +40,7 @@ export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
           <Flex direction="col" gap={4}>
             <Flex align="center" justify="between" className="px-1">
               <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
-                Recently Played
+                Latest Reviews
               </Heading>
               {/* {history1.length > 0 && (
               <Text variant="caption" color="muted">
@@ -83,14 +83,14 @@ export default function HomeView({ dataHook = "home-view" }: HomeViewProps) {
           <Flex align="center" justify="between" className="px-1">
             <Flex align="center" gap={3}>
               <Heading level={3} size="md" className="font-bold text-[var(--text-primary)]">
-                Popular Playlists
+                Practice Timeline
               </Heading>
               <Badge variant="success" size="sm">
-                Top 5
+                Private
               </Badge>
             </Flex>
             <Text variant="caption" color="muted">
-              Curated from YouTube
+              Your uploaded sessions
             </Text>
           </Flex>
 

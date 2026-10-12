@@ -26,11 +26,12 @@ export default function DashboardShell({
   // Helper to resolve title in the top bar
   const getHeaderTitle = () => {
     if (pathname === "/") return "Home";
-    if (pathname === "/search") return "Search Tracks";
+    if (pathname === "/videos") return "Videos";
+    if (pathname === "/search") return "Search";
     if (pathname === "/playlists") return "Playlists";
     if (pathname?.startsWith("/playlists/")) return "Playlist";
-    if (pathname === "/auth/liked") return "Liked Tracks";
-    return "Soundstream";
+    if (pathname === "/auth/liked") return "Favorites";
+    return "Dance Journal";
   };
 
   return (

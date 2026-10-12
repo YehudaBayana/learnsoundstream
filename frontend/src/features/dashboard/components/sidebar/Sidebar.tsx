@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Text from "@/components/ui/text/Text";
 import Heading from "@/components/ui/heading/Heading";
-import IconButton from "@/components/ui/icon-button/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
 import Modal from "@/components/ui/modal/Modal";
@@ -26,10 +25,9 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
 
   const navItems = [
     { href: "/", label: "Home", icon: "🏠" },
-    { href: "/search", label: "Search", icon: "🔍" },
-    { href: "/auth/playlists", label: "Playlists", icon: "" },
-    { href: "/auth/history", label: "History", icon: "" },
-    { href: "/auth/liked", label: "Liked", icon: "" },
+    { href: "/videos", label: "Videos", icon: "🎥" },
+    { href: "/auth/liked", label: "Favorites", icon: "♥" },
+    { href: "/auth/history", label: "History", icon: "🕘" },
   ];
 
   return (
@@ -53,13 +51,13 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
             size="md"
             className="font-extrabold tracking-wide text-[var(--text-primary)]"
           >
-            SOUNDSTREAM
+            DANCE JOURNAL
           </Heading>
           <Text
             variant="caption"
             className="text-[10px] tracking-wider text-emerald-400 font-semibold -mt-0.5"
           >
-            HI-FI STREAMING
+            PRIVATE ARCHIVE
           </Text>
         </Flex>
       </Flex>
@@ -89,7 +87,7 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
         })}
       </Flex>
 
-      {/* Playlists section */}
+      {/* Journal section */}
       <Flex direction="col" className="flex-1 min-h-0 py-4 px-3">
         <Flex align="center" justify="between" className="px-4 mb-2">
           <Text
@@ -98,24 +96,14 @@ export default function Sidebar({ dataHook = "dashboard-sidebar" }: SidebarProps
             color="muted"
             className="tracking-wider uppercase text-[10px]"
           >
-            My Playlists
+            Recent Videos
           </Text>
-          <IconButton
-            size="xs"
-            variant="ghost"
-            onClick={() => setIsModalOpen(true)}
-            aria-label="Create playlist"
-            dataHook={`${dataHook}-create-playlist`}
-            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] rounded-full"
-            icon={<span>＋</span>}
-          />
         </Flex>
 
-        {/* Playlists List */}
         <Box className="flex-1 overflow-y-auto pr-1 space-y-1">
           <Box className="px-4 py-3 text-center rounded-xl bg-[var(--bg-surface)] border border-dashed border-[var(--border-default)]">
             <Text variant="caption" color="muted" className="text-[11px]">
-              Create a playlist to start collecting.
+              No videos yet. Upload your first practice session.
             </Text>
           </Box>
           {currentUser?.user ? (

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import AudioPlayer from "@/features/player/components/AudioPlayer";
 import DashboardShell from "@/features/dashboard/components/DashboardShell";
 import { ThemeProvider } from "@/shared/context/ThemeContext";
 import "./globals.css";
@@ -17,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Soundstream | High-Performance Music Streaming",
-  description: "A premium music streaming experience powered by Go and Next.js.",
+  title: "Dance Journal | Private Video Archive",
+  description: "A local private dance journal for uploading and reviewing practice videos.",
 };
 
 export default function RootLayout({
@@ -32,7 +31,6 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <DashboardShell>{children}</DashboardShell>
-            <AudioPlayer />
           </ThemeProvider>
         </QueryProvider>
       </body>
