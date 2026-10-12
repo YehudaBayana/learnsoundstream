@@ -10,8 +10,8 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import Button from "../Button";
-import Text from "../Text";
+import Button from "../button/Button";
+import Text from "../text/Text";
 import { Box } from "../layout";
 
 // EmptyState: A reusable component for displaying empty states across the app

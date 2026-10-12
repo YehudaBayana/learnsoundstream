@@ -1,9 +1,9 @@
 import React, { useSyncExternalStore } from "react";
 import { Container, Stack, Box, Flex } from "../layout";
 import Heading from "../heading/Heading";
-import Spinner from "../Spinner";
-import Breadcrumb from "../Breadcrumb";
-import type { BreadcrumbItem } from "../Breadcrumb";
+import Spinner from "../spinner/Spinner";
+import Breadcrumb from "../breadcrumb/Breadcrumb";
+import type { BreadcrumbItem } from "../breadcrumb/Breadcrumb";
 
 const subscribeToViewportResize = (onChange: () => void): (() => void) => {
   window.addEventListener("resize", onChange);

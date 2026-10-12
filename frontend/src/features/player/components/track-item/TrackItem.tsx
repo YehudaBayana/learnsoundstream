@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import Text from "@/components/ui/Text";
-import IconButton from "@/components/ui/IconButton";
+import Text from "@/components/ui/text/Text";
+import IconButton from "@/components/ui/icon-button/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
-import Menu from "@/components/ui/Menu";
+import Menu from "@/components/ui/menu/Menu";
 import { usePlaybackStore } from "@/features/player/store/usePlaybackStore";
 import { Track } from "@/types/global.types";
-import Image from "@/components/ui/Image";
+import Image from "@/components/ui/image/Image";
 import { convertSecondsToTime } from "@/shared/utils";
 import { usePostLiked } from "@/features/liked/query/useLiked";
 import { useLikedStore } from "@/features/liked/store/useLikedStore";

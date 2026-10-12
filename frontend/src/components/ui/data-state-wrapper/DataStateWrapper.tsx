@@ -1,8 +1,8 @@
 import React from "react";
 import { Flex, Box } from "../layout";
-import Spinner from "../Spinner";
-import Alert from "../Alert";
-import Button from "../Button";
+import Spinner from "../spinner/Spinner";
+import Alert from "../alert/Alert";
+import Button from "../button/Button";
 
 interface DataStateWrapperProps {
   /** Whether the data is currently loading */

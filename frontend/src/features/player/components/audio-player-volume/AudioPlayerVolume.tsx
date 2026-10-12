@@ -1,7 +1,7 @@
 import type { ChangeEvent } from "react";
 import Flex from "@/components/ui/layout/Flex";
-import IconButton from "@/components/ui/IconButton";
-import Slider from "@/components/ui/Slider";
+import IconButton from "@/components/ui/icon-button/IconButton";
+import Slider from "@/components/ui/slider/Slider";
 
 interface AudioPlayerVolumeProps {
   hasTrack: boolean;

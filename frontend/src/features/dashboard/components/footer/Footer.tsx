@@ -1,6 +1,6 @@
 "use client";
 
-import Text from "@/components/ui/Text";
+import Text from "@/components/ui/text/Text";
 import Box from "@/components/ui/layout/Box";
 
 interface FooterProps {

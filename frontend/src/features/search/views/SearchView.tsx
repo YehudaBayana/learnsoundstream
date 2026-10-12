@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useState } from "react";
 import { useSearchBy } from "../store/useSearch";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input/Input";
 import TrackItem from "@/features/player/components/TrackItem";
 import { Box } from "@/components/ui/layout";
 

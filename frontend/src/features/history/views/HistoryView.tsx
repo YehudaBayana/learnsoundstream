@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useHistory } from "../query/useHistory";
 import TrackItem from "@/features/player/components/TrackItem";
 import { Box } from "@/components/ui/layout";
-import Text from "@/components/ui/Text";
+import Text from "@/components/ui/text/Text";
 
 interface HistoryViewProps {
   dataHook?: string;

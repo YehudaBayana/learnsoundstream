@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
-import IconButton from "@/components/ui/IconButton";
-import Text from "@/components/ui/Text";
+import IconButton from "@/components/ui/icon-button/IconButton";
+import Text from "@/components/ui/text/Text";
 import Sidebar from "@/features/dashboard/components/Sidebar";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/shared/context/ThemeContext";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button/Button";
 
 interface DashboardShellProps {
   children: React.ReactNode;

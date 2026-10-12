@@ -3,11 +3,11 @@ import { useParams } from "next/navigation";
 import Container from "@/components/ui/layout/Container";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
-import Heading from "@/components/ui/Heading";
-import Text from "@/components/ui/Text";
-import Image from "@/components/ui/Image";
-import Badge from "@/components/ui/Badge";
-import Spinner from "@/components/ui/Spinner";
+import Heading from "@/components/ui/heading/Heading";
+import Text from "@/components/ui/text/Text";
+import Image from "@/components/ui/image/Image";
+import Badge from "@/components/ui/badge/Badge";
+import Spinner from "@/components/ui/spinner/Spinner";
 import TrackItem from "@/features/player/components/TrackItem";
 import { usePlaylistDetails, usePlaylistTracks } from "@/features/playlists/query/usePlaylists";
 

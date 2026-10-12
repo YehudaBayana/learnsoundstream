@@ -1,9 +1,9 @@
 import type { ChangeEvent, RefObject } from "react";
 import Box from "@/components/ui/layout/Box";
 import Flex from "@/components/ui/layout/Flex";
-import IconButton from "@/components/ui/IconButton";
-import Slider from "@/components/ui/Slider";
-import Text from "@/components/ui/Text";
+import IconButton from "@/components/ui/icon-button/IconButton";
+import Slider from "@/components/ui/slider/Slider";
+import Text from "@/components/ui/text/Text";
 import { convertSecondsToTime } from "@/shared/utils";
 import type { Track } from "@/types/global.types";
 
