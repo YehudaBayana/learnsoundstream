@@ -1,4 +1,5 @@
 import { SidebarDriver } from "./Sidebar.driver";
+import { screen } from "@testing-library/react";
 
 jest.mock("next/navigation", () => ({ usePathname: () => "/" }));
 jest.mock("next/link", () => ({
@@ -28,9 +29,8 @@ describe("Sidebar", () => {
     expect(driver.hasNavigationItem(1, "main-sidebar")).toBe(true);
   });
 
-  it("opens the create-playlist modal from its action", () => {
+  it("links to the video library", () => {
     driver.render();
-    driver.clickCreatePlaylist();
-    expect(driver.isCreateModalOpen()).toBe(true);
+    expect(screen.getByRole("link", { name: /Videos/ })).toHaveAttribute("href", "/videos");
   });
 });
