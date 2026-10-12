@@ -1,6 +1,6 @@
 import Box from "@/components/ui/layout/Box";
 import Flex from "@/components/ui/layout/Flex";
-import Text from "@/components/ui/Text";
+import Text from "@/components/ui/text/Text";
 import type { Track } from "@/types/global.types";
 
 interface AudioPlayerTrackInfoProps {

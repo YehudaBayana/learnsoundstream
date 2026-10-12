@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Text from "@/components/ui/Text";
-import Heading from "@/components/ui/Heading";
-import IconButton from "@/components/ui/IconButton";
+import Text from "@/components/ui/text/Text";
+import Heading from "@/components/ui/heading/Heading";
+import IconButton from "@/components/ui/icon-button/IconButton";
 import Flex from "@/components/ui/layout/Flex";
 import Box from "@/components/ui/layout/Box";
-import Modal from "@/components/ui/Modal";
+import Modal from "@/components/ui/modal/Modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button/Button";
 import { useGetCurrentUser, useLogout } from "@/features/auth/query/useAuth";
 
 interface SidebarProps {

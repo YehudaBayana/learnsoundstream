@@ -1,10 +1,10 @@
 "use client";
 
-import Heading from "@/components/ui/Heading";
-import Text from "@/components/ui/Text";
+import Heading from "@/components/ui/heading/Heading";
+import Text from "@/components/ui/text/Text";
 import Container from "@/components/ui/layout/Container";
 import Flex from "@/components/ui/layout/Flex";
-import Badge from "@/components/ui/Badge";
+import Badge from "@/components/ui/badge/Badge";
 import ServerStatus from "@/features/dashboard/components/ServerStatus";
 import Footer from "@/features/dashboard/components/Footer";
 import { Grid } from "@/components/ui/layout";

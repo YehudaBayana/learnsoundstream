@@ -1,6 +1,6 @@
 import React from "react";
-import Skeleton from "../Skeleton";
-import Card from "../Card";
+import Skeleton from "../skeleton/Skeleton";
+import Card from "../card/Card";
 import { Stack, Box } from "../layout";
 
 interface SongCardSkeletonProps {

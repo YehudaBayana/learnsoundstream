@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Heading from "@/components/ui/Heading";
-import Text from "@/components/ui/Text";
-import Button from "@/components/ui/Button";
+import Heading from "@/components/ui/heading/Heading";
+import Text from "@/components/ui/text/Text";
+import Button from "@/components/ui/button/Button";
 import Flex from "@/components/ui/layout/Flex";
 
 interface HeroProps {
