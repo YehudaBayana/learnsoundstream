@@ -8,17 +8,12 @@ import (
 	"time"
 )
 
-const (
-	defaultMaxUploadBytes = 20 * 1024 * 1024 * 1024
-	defaultUploadURLTTL   = time.Hour
-	defaultPlaybackURLTTL = 2 * time.Hour
-)
-
 // Config holds all environment-driven configuration for the application.
 type Config struct {
 	Port              string
 	DatabaseURL       string
 	MaxUploadBytes    int64
+	Env               string
 	R2AccountID       string
 	R2AccessKeyID     string
 	R2SecretAccessKey string
@@ -36,7 +31,7 @@ func Load() Config {
 		port = "8080"
 	}
 
-	maxUploadBytes := int64(defaultMaxUploadBytes)
+	maxUploadBytes := DefaultMaxUploadBytes
 	if value := os.Getenv("MAX_UPLOAD_BYTES"); value != "" {
 		parsed, err := strconv.ParseInt(value, 10, 64)
 		if err == nil && parsed > 0 {
@@ -68,13 +63,14 @@ func Load() Config {
 		Port:              port,
 		DatabaseURL:       dbURL,
 		MaxUploadBytes:    maxUploadBytes,
+		Env:               os.Getenv("ENV"),
 		R2AccountID:       os.Getenv("R2_ACCOUNT_ID"),
 		R2AccessKeyID:     os.Getenv("R2_ACCESS_KEY_ID"),
 		R2SecretAccessKey: os.Getenv("R2_SECRET_ACCESS_KEY"),
 		R2Bucket:          os.Getenv("R2_BUCKET"),
 		R2Endpoint:        os.Getenv("R2_ENDPOINT"),
-		UploadURLTTL:      durationFromEnv("UPLOAD_URL_TTL", defaultUploadURLTTL),
-		PlaybackURLTTL:    durationFromEnv("PLAYBACK_URL_TTL", defaultPlaybackURLTTL),
+		UploadURLTTL:      durationFromEnv("UPLOAD_URL_TTL", DefaultUploadURLTTL),
+		PlaybackURLTTL:    durationFromEnv("PLAYBACK_URL_TTL", DefaultPlaybackURLTTL),
 	}
 }
 

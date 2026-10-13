@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"backend/internal/config"
 	"encoding/json"
 	"net"
 	"net/http"
@@ -18,18 +19,18 @@ func NewHandler(repository *Repository) *Handler {
 
 func (handler *Handler) HandleRegister(responseWriter http.ResponseWriter, request *http.Request) {
 	var requestBody credentialsLoginRegister
-	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, 1<<20)).Decode(&requestBody); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, config.MaxMetadataBodyBytes)).Decode(&requestBody); err != nil {
 		writeErr(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
 		return
 	}
 
 	email := strings.ToLower(strings.TrimSpace(requestBody.Email))
-	if addr, err := mail.ParseAddress(email); err != nil || addr.Address != email || len(email) > 254 {
+	if addr, err := mail.ParseAddress(email); err != nil || addr.Address != email || len(email) > config.MaxEmailLength {
 		writeErr(responseWriter, http.StatusUnprocessableEntity, "invalid_email", "please enter a valid email address")
 		return
 	}
 	// NIST: min 4. Cap the max so nobody can DoS you with a 10 MB password.
-	if len(requestBody.Password) < 4 || len(requestBody.Password) > 50 {
+	if len(requestBody.Password) < config.MinPasswordLength || len(requestBody.Password) > config.MaxPasswordLength {
 		writeErr(responseWriter, http.StatusUnprocessableEntity, "weak_password", "password must be between 4 and 50 characters")
 		return
 	}
@@ -62,7 +63,7 @@ func (handler *Handler) HandleRegister(responseWriter http.ResponseWriter, reque
 
 func (handler *Handler) HandleLogin(responseWriter http.ResponseWriter, request *http.Request) {
 	var requestBody credentialsLoginRegister
-	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, 1<<20)).Decode(&requestBody); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, config.MaxMetadataBodyBytes)).Decode(&requestBody); err != nil {
 		writeErr(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
 		return
 	}

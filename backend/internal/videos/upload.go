@@ -1,25 +1,20 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"fmt"
 
 	"backend/internal/storage"
 )
 
-const (
-	// 64 MiB parts keep a 20 GiB file at 320 parts, far below the 10,000-part limit; R2 needs equal sizes except the last.
-	uploadPartSize              int64 = 64 << 20
-	maxPresignedPartsPerRequest       = 100
-)
-
 func partCount(sizeBytes int64) int {
-	return int((sizeBytes + uploadPartSize - 1) / uploadPartSize)
+	return int((sizeBytes + config.UploadPartBytes - 1) / config.UploadPartBytes)
 }
 
-// validatePartNumbers accepts 1..count without duplicates, at most maxPresignedPartsPerRequest at a time.
+// validatePartNumbers accepts 1..count without duplicates, at most config.MaxPresignedPartsPerRequest at a time.
 func validatePartNumbers(partNumbers []int, count int) error {
-	if len(partNumbers) == 0 || len(partNumbers) > maxPresignedPartsPerRequest {
-		return fmt.Errorf("%w: request between 1 and %d parts", ErrInvalidInput, maxPresignedPartsPerRequest)
+	if len(partNumbers) == 0 || len(partNumbers) > config.MaxPresignedPartsPerRequest {
+		return fmt.Errorf("%w: request between 1 and %d parts", ErrInvalidInput, config.MaxPresignedPartsPerRequest)
 	}
 	seen := make(map[int]bool, len(partNumbers))
 	for _, partNumber := range partNumbers {

@@ -1,21 +1,17 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"context"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
-	"time"
 
 	"backend/internal/storage"
 )
 
-const (
-	processingTimeout   = 15 * time.Minute
-	processingQueueSize = 32
-	queueFullReason     = "processing queue full"
-)
+const queueFullReason = "processing queue full"
 
 // Processor turns uploaded originals into browser-playable videos, one at a time.
 type Processor struct {
@@ -28,7 +24,7 @@ func NewProcessor(service *Service, store storage.Storage) *Processor {
 	return &Processor{
 		service: service,
 		store:   store,
-		queue:   make(chan Video, processingQueueSize),
+		queue:   make(chan Video, config.ProcessingQueueSize),
 	}
 }
 
@@ -78,7 +74,7 @@ func (processor *Processor) recoverInterrupted(ctx context.Context) {
 }
 
 func (processor *Processor) process(ctx context.Context, video Video) {
-	taskContext, cancel := context.WithTimeout(ctx, processingTimeout)
+	taskContext, cancel := context.WithTimeout(ctx, config.ProcessingTimeout)
 	defer cancel()
 
 	result, err := processor.createPlaybackAssets(taskContext, video)

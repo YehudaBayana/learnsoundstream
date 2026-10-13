@@ -1,6 +1,7 @@
 package liked
 
 import (
+	"backend/internal/config"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -13,8 +14,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const defaultLimit = 10
-
 type Handler struct {
 	repository *Repository
 }
@@ -24,7 +23,7 @@ func NewHandler(repository *Repository) *Handler {
 }
 
 func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
-	limit := defaultLimit
+	limit := config.DefaultLikedListLimit
 	offset := 0
 	if value := request.URL.Query().Get("limit"); value != "" {
 		parsedLimit, err := strconv.Atoi(value)

@@ -2,6 +2,7 @@
 package auth
 
 import (
+	"backend/internal/config"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
@@ -15,11 +16,11 @@ import (
 // OWASP-recommended baseline: m=19MiB, t=2, p=1.
 // These are a bit stronger; tune to your server's memory budget.
 const (
-	argonMemory      = 19 * 1024 // KiB = 19 MiB
-	argonIterations  = 3
-	argonParallelism = 2
-	argonSaltLen     = 16
-	argonKeyLen      = 32
+	argonMemory      = config.ArgonMemoryKiB
+	argonIterations  = config.ArgonIterations
+	argonParallelism = config.ArgonParallelism
+	argonSaltLen     = config.ArgonSaltBytes
+	argonKeyLen      = config.ArgonKeyBytes
 )
 
 var (

@@ -1,13 +1,13 @@
 package database
 
 import (
+	appconfig "backend/internal/config"
 	"context"
 	"database/sql"
 	"embed"
 	"errors"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -28,10 +28,10 @@ func InitDB(ctx context.Context, connectionString string) (*pgxpool.Pool, error)
 	}
 
 	// Configure pool parameters
-	config.MaxConns = 10
+	config.MaxConns = appconfig.DatabaseMaxConnections
 	config.MinConns = 0 // let idle connections close so Neon can scale to zero
-	config.MaxConnLifetime = 5 * time.Minute
-	config.MaxConnIdleTime = 2 * time.Minute
+	config.MaxConnLifetime = appconfig.DatabaseMaxConnLifetime
+	config.MaxConnIdleTime = appconfig.DatabaseMaxConnIdleTime
 
 	// Create the connection pool
 	pool, err := pgxpool.NewWithConfig(ctx, config)

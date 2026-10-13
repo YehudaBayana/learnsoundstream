@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"context"
 	"encoding/json"
 	"errors"
@@ -8,11 +9,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-)
-
-const (
-	maxCommandErrorBytes = 1000
-	thumbnailWidth       = 640
 )
 
 type probeResult struct {
@@ -86,7 +82,7 @@ func extractThumbnail(ctx context.Context, inputPath, outputPath string) error {
 		"-ss", "1",
 		"-i", inputPath,
 		"-frames:v", "1",
-		"-vf", fmt.Sprintf("scale=%d:-1", thumbnailWidth),
+		"-vf", fmt.Sprintf("scale=%d:-1", config.ThumbnailWidth),
 		"-q:v", "2",
 		outputPath,
 	)
@@ -100,8 +96,8 @@ func runCommand(ctx context.Context, name string, args ...string) ([]byte, error
 		var exitError *exec.ExitError
 		if errors.As(err, &exitError) && len(exitError.Stderr) > 0 {
 			stderr := strings.TrimSpace(string(exitError.Stderr))
-			if len(stderr) > maxCommandErrorBytes {
-				stderr = stderr[len(stderr)-maxCommandErrorBytes:]
+			if len(stderr) > config.MaxCommandErrorBytes {
+				stderr = stderr[len(stderr)-config.MaxCommandErrorBytes:]
 			}
 			return nil, fmt.Errorf("%s: %w: %s", name, err, stderr)
 		}
