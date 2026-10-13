@@ -2,6 +2,7 @@
 package auth
 
 import (
+	"backend/internal/config"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
@@ -36,8 +37,8 @@ type SessionStore struct {
 func NewSessionStore(db *pgxpool.Pool) *SessionStore {
 	return &SessionStore{
 		db:          db,
-		IdleTimeout: 30 * 24 * time.Hour,
-		MaxLifetime: 90 * 24 * time.Hour,
+		IdleTimeout: config.SessionIdleTimeout,
+		MaxLifetime: config.SessionMaxLifetime,
 	}
 }
 
@@ -57,11 +58,11 @@ func (sessionStore *SessionStore) Create(
 	userID uuid.UUID,
 	userAgent, ip string,
 ) (token string, csrfToken string, session *Session, err error) {
-	token, tokenHash, err := randomToken(32)
+	token, tokenHash, err := randomToken(config.SessionTokenBytes)
 	if err != nil {
 		return "", "", nil, err
 	}
-	csrfToken, csrfHash, err := randomToken(32)
+	csrfToken, csrfHash, err := randomToken(config.SessionTokenBytes)
 	if err != nil {
 		return "", "", nil, err
 	}

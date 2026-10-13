@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"backend/internal/auth"
 	"backend/internal/config"
@@ -24,7 +23,7 @@ import (
 )
 
 // newHTTPHandler wires the feature packages together. The returned processor must be started by the caller.
-func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (http.Handler, *videos.Processor, error) {
+func newHTTPHandler(db *pgxpool.Pool, cfg config.Config) (http.Handler, *videos.Processor, error) {
 	videoStore, err := storage.NewR2Storage(storage.R2Config{
 		AccountID:       cfg.R2AccountID,
 		AccessKeyID:     cfg.R2AccessKeyID,
@@ -47,7 +46,7 @@ func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (ht
 	videoH := videos.NewHandler(videoService, videoProcessor)
 
 	sessions := auth.NewSessionStore(db)
-	authRepo := auth.NewRepository(sessions, db, environment == "production")
+	authRepo := auth.NewRepository(sessions, db, cfg.Env == "production")
 	authH := auth.NewHandler(authRepo)
 
 	likedRepo := liked.NewRepository(db, videoService)
@@ -88,7 +87,6 @@ func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (ht
 }
 
 func main() {
-	environment := os.Getenv("ENV")
 	// Initialize modern structured logging (slog) using Text format for readability in development
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	slog.SetDefault(logger)
@@ -107,7 +105,7 @@ func main() {
 	appContext, stopApp := context.WithCancel(context.Background())
 	defer stopApp()
 
-	handler, videoProcessor, err := newHTTPHandler(db, environment, cfg)
+	handler, videoProcessor, err := newHTTPHandler(db, cfg)
 	if err != nil {
 		slog.Error("Failed to build HTTP handler", "error", err)
 		os.Exit(1)
@@ -118,9 +116,9 @@ func main() {
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      handler,
-		ReadTimeout:  10 * time.Second,  // Max duration for reading the entire request (prevents slowloris)
-		WriteTimeout: 10 * time.Second,  // Max duration before timing out writes of the response
-		IdleTimeout:  120 * time.Second, // Max amount of time to keep keep-alive connections idle
+		ReadTimeout:  config.ServerReadTimeout,  // Max duration for reading the entire request (prevents slowloris)
+		WriteTimeout: config.ServerWriteTimeout, // Max duration before timing out writes of the response
+		IdleTimeout:  config.ServerIdleTimeout,  // Max amount of time to keep keep-alive connections idle
 	}
 
 	// Channel to listen for HTTP server run failures
@@ -146,7 +144,7 @@ func main() {
 		slog.Info("Shutting down backend server gracefully...", "signal", sig.String())
 
 		// Create a context with a timeout to give active connections time to finish
-		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), config.ServerShutdownTimeout)
 		defer cancel()
 
 		// Shutdown stops the server, rejecting new requests and waiting for active ones to complete

@@ -44,6 +44,12 @@ Never put a helper in `handler.go` or `repository.go`. If a function is not an e
 - Receivers are descriptive too: `(handler *Handler)`, `(service *Service)`, `(repository *Repository)`.
 - Handlers are `Handle<Action>`, repository methods are verbs (`Create`, `GetByID`, `ListByOwner`, `MarkReady`).
 
+## No magic numbers
+
+- Never write a bare number as a value (`20 * 1024 * 1024 * 1024`, `15 * time.Minute`, `254`). Give it a descriptive name.
+- Every limit, size, timeout, TTL, interval and threshold lives in `internal/config/limits.go`, the single source of truth. Add new ones there and reference them as `config.<Name>`; do not declare them in feature packages.
+- Use the unit constants `KiB`, `MiB`, `GiB` and `time` units to build sizes and durations.
+
 ## Behavior rules
 
 - Privacy: every query that touches user data takes `ownerID` and filters by it. Return `ErrNotFound` (HTTP 404) for another user's data, never 403. The only unscoped query is the worker's startup recovery (`ListProcessing`), and it is named as such.

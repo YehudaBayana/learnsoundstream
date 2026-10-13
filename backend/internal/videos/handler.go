@@ -1,19 +1,16 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"fmt"
 	"net/http"
-	"time"
 
 	"backend/internal/httputil"
 )
 
 const (
-	maxMetadataBodyBytes = 1 << 20
 	playbackContentType  = "video/mp4"
 	thumbnailContentType = "image/jpeg"
-	// Browsers may reuse the redirect target until shortly before its signature expires.
-	thumbnailRedirectMaxAge = 5 * time.Minute
 )
 
 type Handler struct {
@@ -180,6 +177,6 @@ func (handler *Handler) HandleThumbnail(responseWriter http.ResponseWriter, requ
 		writeServiceError(responseWriter, err)
 		return
 	}
-	responseWriter.Header().Set("Cache-Control", fmt.Sprintf("private, max-age=%d", int(thumbnailRedirectMaxAge.Seconds())))
+	responseWriter.Header().Set("Cache-Control", fmt.Sprintf("private, max-age=%d", int(config.ThumbnailRedirectMaxAge.Seconds())))
 	http.Redirect(responseWriter, request, signedURL.URL, http.StatusFound)
 }

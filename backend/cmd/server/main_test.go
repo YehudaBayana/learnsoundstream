@@ -9,7 +9,7 @@ import (
 )
 
 func TestHTTPHandlerRegistersAPIEndpoints(t *testing.T) {
-	handler, _, err := newHTTPHandler(nil, "test", config.Config{R2AccountID: "account", R2AccessKeyID: "key", R2SecretAccessKey: "secret", R2Bucket: "bucket", MaxUploadBytes: 1 << 20})
+	handler, _, err := newHTTPHandler(nil, config.Config{R2AccountID: "account", R2AccessKeyID: "key", R2SecretAccessKey: "secret", R2Bucket: "bucket", MaxUploadBytes: 1 << 20})
 	if err != nil {
 		t.Fatalf("newHTTPHandler() error = %v", err)
 	}

@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"context"
 	"errors"
 	"fmt"
@@ -12,9 +13,6 @@ import (
 
 	"github.com/google/uuid"
 )
-
-// uploadSessionLifetime is how long a browser has to finish an upload before the janitor discards it.
-const uploadSessionLifetime = 24 * time.Hour
 
 // Settings are the limits and URL lifetimes the Service enforces.
 type Settings struct {
@@ -58,7 +56,7 @@ func (service *Service) InitUpload(ctx context.Context, ownerID uuid.UUID, input
 	if err != nil {
 		return UploadSession{}, fmt.Errorf("start upload: %w", err)
 	}
-	expiresAt := time.Now().Add(uploadSessionLifetime)
+	expiresAt := time.Now().Add(config.UploadSessionLifetime)
 	video, err := service.repository.Create(ctx, NewVideo{
 		ID:              videoID,
 		OwnerID:         ownerID,
@@ -77,7 +75,7 @@ func (service *Service) InitUpload(ctx context.Context, ownerID uuid.UUID, input
 		service.abortUpload(ctx, key, uploadID)
 		return UploadSession{}, fmt.Errorf("create video: %w", err)
 	}
-	return UploadSession{Video: video, PartSize: uploadPartSize, PartCount: partCount(video.SizeBytes)}, nil
+	return UploadSession{Video: video, PartSize: config.UploadPartBytes, PartCount: partCount(video.SizeBytes)}, nil
 }
 
 // PresignParts returns short-lived URLs the browser PUTs the requested parts to.

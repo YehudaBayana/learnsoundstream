@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"backend/internal/config"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,11 +15,6 @@ import (
 	"backend/internal/storage"
 
 	"github.com/google/uuid"
-)
-
-const (
-	defaultListLimit = 50
-	maxListLimit     = 200
 )
 
 func supportedVideoExtension(filename string) (string, bool) {
@@ -48,8 +44,8 @@ func parseRecordedAt(value string) (*time.Time, error) {
 // parsePagination falls back to defaults for missing or out-of-range values.
 func parsePagination(request *http.Request) (limit, offset int) {
 	limit, _ = strconv.Atoi(request.URL.Query().Get("limit"))
-	if limit <= 0 || limit > maxListLimit {
-		limit = defaultListLimit
+	if limit <= 0 || limit > config.MaxVideoListLimit {
+		limit = config.DefaultVideoListLimit
 	}
 	offset, _ = strconv.Atoi(request.URL.Query().Get("offset"))
 	if offset < 0 {
@@ -83,7 +79,7 @@ func ownedVideoIDs(responseWriter http.ResponseWriter, request *http.Request) (o
 
 // decodeJSONBody writes the 400 response itself when the body is malformed.
 func decodeJSONBody(responseWriter http.ResponseWriter, request *http.Request, destination any) bool {
-	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, maxMetadataBodyBytes)).Decode(destination); err != nil {
+	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, config.MaxMetadataBodyBytes)).Decode(destination); err != nil {
 		httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
 		return false
 	}
