@@ -36,14 +36,11 @@ func seedVideo(t *testing.T, repository *videos.DatabaseRepository, ownerID uuid
 func TestAuthenticatedLikedEndpointsAreIdempotentAndReturnVideos(t *testing.T) {
 	db := testutils.OpenTestDB(t)
 	fixture := testutils.SeedAuthUser(t, db)
-	store, err := storage.NewLocalStorage(t.TempDir())
-	if err != nil {
-		t.Fatalf("NewLocalStorage() error = %v", err)
-	}
+	store := storage.NewMemoryStorage()
 	videoRepository := videos.NewRepository(db)
 	likedVideo := seedVideo(t, videoRepository, fixture.ID, "Liked dance")
 
-	handler := liked.NewHandler(liked.NewRepository(db, videos.NewService(videoRepository, store)))
+	handler := liked.NewHandler(liked.NewRepository(db, videos.NewService(videoRepository, store, videos.Settings{})))
 	sessions := auth.NewSessionStore(db)
 	cookie := &http.Cookie{Name: auth.SessionCookieName, Value: fixture.Token}
 	csrfCookie := &http.Cookie{Name: auth.CSRFCookieName, Value: fixture.CSRFToken}
@@ -76,14 +73,11 @@ func TestLikingAnotherUsersVideoReturnsNotFound(t *testing.T) {
 	db := testutils.OpenTestDB(t)
 	owner := testutils.SeedAuthUser(t, db)
 	stranger := testutils.SeedAuthUser(t, db)
-	store, err := storage.NewLocalStorage(t.TempDir())
-	if err != nil {
-		t.Fatalf("NewLocalStorage() error = %v", err)
-	}
+	store := storage.NewMemoryStorage()
 	videoRepository := videos.NewRepository(db)
 	privateVideo := seedVideo(t, videoRepository, owner.ID, "Private dance")
 
-	handler := liked.NewHandler(liked.NewRepository(db, videos.NewService(videoRepository, store)))
+	handler := liked.NewHandler(liked.NewRepository(db, videos.NewService(videoRepository, store, videos.Settings{})))
 	sessions := auth.NewSessionStore(db)
 	headers := make(http.Header)
 	headers.Set(auth.CSRFHeaderName, stranger.CSRFToken)

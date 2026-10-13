@@ -2,6 +2,7 @@ package config_test
 
 import (
 	"testing"
+	"time"
 
 	"backend/internal/config"
 )
@@ -45,12 +46,20 @@ func TestLoadBuildsDatabaseURLFromParts(t *testing.T) {
 }
 
 func TestLoadReadsStorageSettings(t *testing.T) {
-	t.Setenv("STORAGE_DIR", "/tmp/soundstream-videos")
+	t.Setenv("R2_BUCKET", "dance-videos")
+	t.Setenv("PLAYBACK_URL_TTL", "30m")
+	t.Setenv("UPLOAD_URL_TTL", "not-a-duration")
 	t.Setenv("MAX_UPLOAD_BYTES", "21474836480")
 
 	got := config.Load()
-	if got.StorageDir != "/tmp/soundstream-videos" {
-		t.Fatalf("StorageDir = %q, want %q", got.StorageDir, "/tmp/soundstream-videos")
+	if got.R2Bucket != "dance-videos" {
+		t.Fatalf("R2Bucket = %q, want %q", got.R2Bucket, "dance-videos")
+	}
+	if got.PlaybackURLTTL != 30*time.Minute {
+		t.Fatalf("PlaybackURLTTL = %v, want 30m", got.PlaybackURLTTL)
+	}
+	if got.UploadURLTTL != time.Hour {
+		t.Fatalf("UploadURLTTL = %v, want the 1h default for an invalid value", got.UploadURLTTL)
 	}
 	if got.MaxUploadBytes != 21474836480 {
 		t.Fatalf("MaxUploadBytes = %d, want %d", got.MaxUploadBytes, 21474836480)

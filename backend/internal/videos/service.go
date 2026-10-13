@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log/slog"
+	"path/filepath"
 	"time"
 
 	"backend/internal/storage"
@@ -13,22 +13,121 @@ import (
 	"github.com/google/uuid"
 )
 
+// uploadSessionLifetime is how long a browser has to finish an upload before the janitor discards it.
+const uploadSessionLifetime = 24 * time.Hour
+
+// Settings are the limits and URL lifetimes the Service enforces.
+type Settings struct {
+	MaxUploadBytes int64
+	UploadURLTTL   time.Duration
+	PlaybackURLTTL time.Duration
+}
+
 type Service struct {
 	repository Repository
 	store      storage.Storage
+	settings   Settings
 }
 
-func NewService(repository Repository, store storage.Storage) *Service {
-	return &Service{repository: repository, store: store}
+func NewService(repository Repository, store storage.Storage, settings Settings) *Service {
+	return &Service{repository: repository, store: store, settings: settings}
 }
 
-func (service *Service) Create(ctx context.Context, newVideo NewVideo) (Video, error) {
-	video, err := service.repository.Create(ctx, newVideo)
-	if err != nil {
-		service.DiscardFiles(ctx, newVideo.OriginalKey)
-		return Video{}, fmt.Errorf("create video: %w", err)
+// InitUpload validates the declared file, opens a multipart upload in storage and records the pending video.
+func (service *Service) InitUpload(ctx context.Context, ownerID uuid.UUID, input InitUpload) (UploadSession, error) {
+	originalName := filepath.Base(input.Filename)
+	extension, supported := supportedVideoExtension(originalName)
+	if !supported {
+		return UploadSession{}, ErrUnsupportedFormat
 	}
-	return video, nil
+	if input.SizeBytes <= 0 {
+		return UploadSession{}, fmt.Errorf("%w: size_bytes must be positive", ErrInvalidInput)
+	}
+	if input.SizeBytes > service.settings.MaxUploadBytes {
+		return UploadSession{}, ErrUploadTooLarge
+	}
+
+	videoID := uuid.New()
+	key := originalKey(ownerID, videoID, extension)
+	mimeType := input.MimeType
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
+	uploadID, err := service.store.CreateMultipartUpload(ctx, key, mimeType)
+	if err != nil {
+		return UploadSession{}, fmt.Errorf("start upload: %w", err)
+	}
+	expiresAt := time.Now().Add(uploadSessionLifetime)
+	video, err := service.repository.Create(ctx, NewVideo{
+		ID:              videoID,
+		OwnerID:         ownerID,
+		Status:          StatusUploading,
+		UploadID:        uploadID,
+		UploadExpiresAt: &expiresAt,
+		Title:           input.Title,
+		Notes:           input.Notes,
+		RecordedAt:      input.RecordedAt,
+		OriginalName:    originalName,
+		OriginalKey:     key,
+		MimeType:        mimeType,
+		SizeBytes:       input.SizeBytes,
+	})
+	if err != nil {
+		service.abortUpload(ctx, key, uploadID)
+		return UploadSession{}, fmt.Errorf("create video: %w", err)
+	}
+	return UploadSession{Video: video, PartSize: uploadPartSize, PartCount: partCount(video.SizeBytes)}, nil
+}
+
+// PresignParts returns short-lived URLs the browser PUTs the requested parts to.
+func (service *Service) PresignParts(ctx context.Context, ownerID, videoID uuid.UUID, partNumbers []int) ([]PartURL, error) {
+	video, err := service.getUploading(ctx, ownerID, videoID)
+	if err != nil {
+		return nil, err
+	}
+	if err := validatePartNumbers(partNumbers, partCount(video.SizeBytes)); err != nil {
+		return nil, err
+	}
+
+	urls := make([]PartURL, 0, len(partNumbers))
+	for _, partNumber := range partNumbers {
+		url, err := service.store.PresignUploadPart(ctx, video.OriginalKey, video.UploadID, partNumber, service.settings.UploadURLTTL)
+		if err != nil {
+			return nil, fmt.Errorf("presign part %d: %w", partNumber, err)
+		}
+		urls = append(urls, PartURL{PartNumber: partNumber, URL: url})
+	}
+	return urls, nil
+}
+
+// CompleteUpload assembles the parts and moves the video to processing once the stored size matches the declared one.
+func (service *Service) CompleteUpload(ctx context.Context, ownerID, videoID uuid.UUID, parts []storage.CompletedPart) (Video, error) {
+	video, err := service.getUploading(ctx, ownerID, videoID)
+	if err != nil {
+		return Video{}, err
+	}
+	if err := validateCompletedParts(parts, partCount(video.SizeBytes)); err != nil {
+		return Video{}, err
+	}
+
+	if err := service.store.CompleteMultipartUpload(ctx, video.OriginalKey, video.UploadID, parts); err != nil {
+		return Video{}, fmt.Errorf("complete upload: %w", err)
+	}
+	storedSize, err := service.store.Size(ctx, video.OriginalKey)
+	if err != nil {
+		return Video{}, fmt.Errorf("check uploaded file: %w", err)
+	}
+	if storedSize != video.SizeBytes {
+		service.discardUpload(ctx, video)
+		return Video{}, fmt.Errorf("%w: uploaded size does not match the declared size", ErrInvalidUpload)
+	}
+
+	processing, err := service.repository.MarkProcessing(ctx, ownerID, videoID, storedSize)
+	if err != nil {
+		return Video{}, fmt.Errorf("mark video processing: %w", err)
+	}
+	return processing, nil
 }
 
 func (service *Service) Get(ctx context.Context, ownerID, videoID uuid.UUID) (Video, error) {
@@ -66,7 +165,8 @@ func (service *Service) Update(ctx context.Context, ownerID, videoID uuid.UUID, 
 	return video, nil
 }
 
-// Delete removes the row first, then every stored file that belonged to it.
+// Delete removes the row first, then the unfinished upload and every stored file that belonged to it.
+// It also cancels an upload the user aborted.
 func (service *Service) Delete(ctx context.Context, ownerID, videoID uuid.UUID) error {
 	video, err := service.repository.Delete(ctx, ownerID, videoID)
 	if err != nil {
@@ -74,6 +174,9 @@ func (service *Service) Delete(ctx context.Context, ownerID, videoID uuid.UUID) 
 	}
 
 	var cleanupErr error
+	if video.UploadID != "" {
+		cleanupErr = service.store.AbortMultipartUpload(ctx, video.OriginalKey, video.UploadID)
+	}
 	for _, key := range []string{video.OriginalKey, video.PlaybackKey, video.ThumbnailKey} {
 		if key == "" {
 			continue
@@ -86,43 +189,43 @@ func (service *Service) Delete(ctx context.Context, ownerID, videoID uuid.UUID) 
 	return nil
 }
 
-// OpenPlayback returns the playable file of a ready video.
-func (service *Service) OpenPlayback(ctx context.Context, ownerID, videoID uuid.UUID) (io.ReadSeekCloser, time.Time, error) {
+// PlaybackURL returns a presigned URL the browser streams the playback file from, with Range requests.
+func (service *Service) PlaybackURL(ctx context.Context, ownerID, videoID uuid.UUID) (SignedURL, error) {
 	video, err := service.Get(ctx, ownerID, videoID)
 	if err != nil {
-		return nil, time.Time{}, err
+		return SignedURL{}, err
 	}
 	if video.Status != StatusReady || video.PlaybackKey == "" {
-		return nil, time.Time{}, ErrNotReady
+		return SignedURL{}, ErrNotReady
 	}
-	return service.openFile(ctx, video.PlaybackKey)
+	return service.signGet(ctx, video.PlaybackKey, playbackContentType)
 }
 
-func (service *Service) OpenThumbnail(ctx context.Context, ownerID, videoID uuid.UUID) (io.ReadSeekCloser, time.Time, error) {
+func (service *Service) ThumbnailURL(ctx context.Context, ownerID, videoID uuid.UUID) (SignedURL, error) {
 	video, err := service.Get(ctx, ownerID, videoID)
 	if err != nil {
-		return nil, time.Time{}, err
+		return SignedURL{}, err
 	}
 	if video.ThumbnailKey == "" {
-		return nil, time.Time{}, ErrNotFound
+		return SignedURL{}, ErrNotFound
 	}
-	return service.openFile(ctx, video.ThumbnailKey)
+	return service.signGet(ctx, video.ThumbnailKey, thumbnailContentType)
 }
 
-func (service *Service) StoreOriginal(ctx context.Context, key string, reader io.Reader) (int64, error) {
-	size, err := service.store.Put(ctx, key, reader)
+// CleanupExpiredUploads discards uploads the browser never finished; failures are retried on the next run.
+func (service *Service) CleanupExpiredUploads(ctx context.Context) {
+	expired, err := service.repository.ListExpiredUploads(ctx, time.Now())
 	if err != nil {
-		return 0, fmt.Errorf("store original: %w", err)
+		slog.Error("Failed to list expired uploads", "error", err)
+		return
 	}
-	return size, nil
-}
-
-// DiscardFiles removes stored files after a failed upload; it ignores cancellation so aborted requests still clean up.
-func (service *Service) DiscardFiles(ctx context.Context, keys ...string) {
-	cleanupContext := context.WithoutCancel(ctx)
-	for _, key := range keys {
-		if err := service.store.Delete(cleanupContext, key); err != nil {
-			slog.Error("Failed to discard stored file", "key", key, "error", err)
+	for _, video := range expired {
+		if err := service.store.AbortMultipartUpload(ctx, video.OriginalKey, video.UploadID); err != nil {
+			slog.Error("Failed to abort expired upload", "video_id", video.ID, "error", err)
+			continue
+		}
+		if _, err := service.repository.Delete(ctx, video.OwnerID, video.ID); err != nil && !errors.Is(err, ErrNotFound) {
+			slog.Error("Failed to delete expired upload", "video_id", video.ID, "error", err)
 		}
 	}
 }
@@ -143,11 +246,38 @@ func (service *Service) ListProcessing(ctx context.Context) ([]Video, error) {
 	return videos, nil
 }
 
-func (service *Service) openFile(ctx context.Context, key string) (io.ReadSeekCloser, time.Time, error) {
-	file, modTime, err := service.store.Open(ctx, key)
+func (service *Service) getUploading(ctx context.Context, ownerID, videoID uuid.UUID) (Video, error) {
+	video, err := service.Get(ctx, ownerID, videoID)
 	if err != nil {
-		slog.Error("Stored file is missing or unreadable", "key", key, "error", err)
-		return nil, time.Time{}, fmt.Errorf("open stored file: %w", ErrNotFound)
+		return Video{}, err
 	}
-	return file, modTime, nil
+	if video.Status != StatusUploading {
+		return Video{}, fmt.Errorf("%w: upload is not in progress", ErrInvalidUpload)
+	}
+	return video, nil
+}
+
+func (service *Service) signGet(ctx context.Context, key, contentType string) (SignedURL, error) {
+	url, err := service.store.PresignGet(ctx, key, contentType, service.settings.PlaybackURLTTL)
+	if err != nil {
+		return SignedURL{}, fmt.Errorf("sign download url: %w", err)
+	}
+	return SignedURL{URL: url, ExpiresAt: time.Now().Add(service.settings.PlaybackURLTTL)}, nil
+}
+
+// discardUpload removes a finished-but-invalid upload; it ignores cancellation so aborted requests still clean up.
+func (service *Service) discardUpload(ctx context.Context, video Video) {
+	cleanupContext := context.WithoutCancel(ctx)
+	if err := service.store.Delete(cleanupContext, video.OriginalKey); err != nil {
+		slog.Error("Failed to discard uploaded file", "key", video.OriginalKey, "error", err)
+	}
+	if _, err := service.repository.Delete(cleanupContext, video.OwnerID, video.ID); err != nil {
+		slog.Error("Failed to delete invalid upload", "video_id", video.ID, "error", err)
+	}
+}
+
+func (service *Service) abortUpload(ctx context.Context, key, uploadID string) {
+	if err := service.store.AbortMultipartUpload(context.WithoutCancel(ctx), key, uploadID); err != nil {
+		slog.Error("Failed to abort upload", "key", key, "error", err)
+	}
 }

@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/apiClient";
 import { getCookie } from "@/features/auth/utils";
+import type { PartUrl, UploadedPart } from "@/features/videos/api/uploadParts";
 
 export interface Video {
   id: string;
@@ -7,7 +8,7 @@ export interface Video {
   title: string;
   notes: string;
   recorded_at?: string | null;
-  status: string;
+  status: "uploading" | "processing" | "ready" | "failed";
   failure_reason?: string | null;
   original_name: string;
   original_key: string;
@@ -35,28 +36,67 @@ export function getVideo(videoId: string) {
   });
 }
 
-export function getVideoStreamUrl(videoId: string) {
-  return `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/videos/${videoId}/stream`;
-}
-
 export function getVideoThumbnailUrl(videoId: string) {
   return `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/videos/${videoId}/thumbnail`;
 }
 
-export function createVideo(formData: FormData) {
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/videos`, {
+export interface SignedUrl {
+  url: string;
+  expires_at: string;
+}
+
+export interface UploadSession {
+  video: Video;
+  part_size: number;
+  part_count: number;
+}
+
+export interface InitUploadInput {
+  filename: string;
+  size_bytes: number;
+  content_type: string;
+  title: string;
+  notes: string;
+  recorded_at?: string;
+}
+
+function csrfJsonHeaders() {
+  return {
+    "X-CSRF-Token": getCookie("csrf_token") ?? "",
+    "Content-Type": "application/json",
+  };
+}
+
+export function initVideoUpload(input: InitUploadInput) {
+  return apiClient<UploadSession>("/api/videos/uploads", {
     method: "POST",
     credentials: "include",
-    body: formData,
-    headers: {
-      "X-CSRF-Token": getCookie("csrf_token") ?? "",
-    },
-  }).then(async (response) => {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.error?.message || `Upload failed: ${response.status}`);
-    }
-    return response.json() as Promise<Video>;
+    headers: csrfJsonHeaders(),
+    body: JSON.stringify(input),
+  });
+}
+
+export function getUploadPartUrls(videoId: string, partNumbers: number[]) {
+  return apiClient<PartUrl[]>(`/api/videos/${videoId}/uploads/parts`, {
+    method: "POST",
+    credentials: "include",
+    headers: csrfJsonHeaders(),
+    body: JSON.stringify({ part_numbers: partNumbers }),
+  });
+}
+
+export function completeVideoUpload(videoId: string, parts: UploadedPart[]) {
+  return apiClient<Video>(`/api/videos/${videoId}/uploads/complete`, {
+    method: "POST",
+    credentials: "include",
+    headers: csrfJsonHeaders(),
+    body: JSON.stringify({ parts }),
+  });
+}
+
+export function getPlaybackUrl(videoId: string) {
+  return apiClient<SignedUrl>(`/api/videos/${videoId}/playback-url`, {
+    credentials: "include",
   });
 }
 

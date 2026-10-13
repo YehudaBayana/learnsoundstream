@@ -25,16 +25,26 @@ import (
 
 // newHTTPHandler wires the feature packages together. The returned processor must be started by the caller.
 func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (http.Handler, *videos.Processor, error) {
-	videoStore, err := storage.NewLocalStorage(cfg.StorageDir)
+	videoStore, err := storage.NewR2Storage(storage.R2Config{
+		AccountID:       cfg.R2AccountID,
+		AccessKeyID:     cfg.R2AccessKeyID,
+		SecretAccessKey: cfg.R2SecretAccessKey,
+		Bucket:          cfg.R2Bucket,
+		Endpoint:        cfg.R2Endpoint,
+	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("initialize video storage: %w", err)
 	}
 
 	healthH := health.NewHandler(db)
 
-	videoService := videos.NewService(videos.NewRepository(db), videoStore)
+	videoService := videos.NewService(videos.NewRepository(db), videoStore, videos.Settings{
+		MaxUploadBytes: cfg.MaxUploadBytes,
+		UploadURLTTL:   cfg.UploadURLTTL,
+		PlaybackURLTTL: cfg.PlaybackURLTTL,
+	})
 	videoProcessor := videos.NewProcessor(videoService, videoStore)
-	videoH := videos.NewHandler(videoService, videoProcessor, cfg.MaxUploadBytes)
+	videoH := videos.NewHandler(videoService, videoProcessor)
 
 	sessions := auth.NewSessionStore(db)
 	authRepo := auth.NewRepository(sessions, db, environment == "production")
@@ -61,12 +71,14 @@ func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (ht
 	mux.Handle("POST /api/auth/logout", protected(authH.HandleLogout))
 	mux.Handle("GET  /api/auth/me", protected(authH.HandleMe))
 
-	mux.Handle("POST /api/videos", protected(videoH.HandleCreate))
+	mux.Handle("POST /api/videos/uploads", protected(videoH.HandleInitUpload))
+	mux.Handle("POST /api/videos/{id}/uploads/parts", protected(videoH.HandlePresignParts))
+	mux.Handle("POST /api/videos/{id}/uploads/complete", protected(videoH.HandleCompleteUpload))
 	mux.Handle("GET /api/videos", protected(videoH.HandleList))
 	mux.Handle("GET /api/videos/{id}", protected(videoH.HandleGet))
 	mux.Handle("PATCH /api/videos/{id}", protected(videoH.HandleUpdate))
 	mux.Handle("DELETE /api/videos/{id}", protected(videoH.HandleDelete))
-	mux.Handle("GET /api/videos/{id}/stream", protected(videoH.HandleStream))
+	mux.Handle("GET /api/videos/{id}/playback-url", protected(videoH.HandlePlaybackURL))
 	mux.Handle("GET /api/videos/{id}/thumbnail", protected(videoH.HandleThumbnail))
 
 	mux.Handle("GET /api/liked", protected(likedH.Handle))

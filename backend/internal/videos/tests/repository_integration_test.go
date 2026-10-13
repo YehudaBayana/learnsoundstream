@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"backend/internal/testutils"
 	"backend/internal/videos"
@@ -18,6 +19,7 @@ func newTestVideo(ownerID uuid.UUID, title string) videos.NewVideo {
 	return videos.NewVideo{
 		ID:           videoID,
 		OwnerID:      ownerID,
+		Status:       videos.StatusProcessing,
 		Title:        title,
 		OriginalName: title + ".mp4",
 		OriginalKey:  ownerID.String() + "/" + videoID.String() + "/original.mp4",
@@ -179,5 +181,48 @@ func TestRepositoryDeleteReturnsDeletedVideo(t *testing.T) {
 	}
 	if _, err := repository.GetByID(ctx, owner.ID, created.ID); !errors.Is(err, videos.ErrNotFound) {
 		t.Errorf("GetByID() after delete error = %v, want ErrNotFound", err)
+	}
+}
+
+func TestRepositoryUploadLifecycle(t *testing.T) {
+	ctx := context.Background()
+	db := testutils.OpenTestDB(t)
+	owner := testutils.SeedAuthUser(t, db)
+	stranger := testutils.SeedAuthUser(t, db)
+	repository := videos.NewRepository(db)
+
+	expired := time.Now().Add(-time.Hour)
+	pending := newTestVideo(owner.ID, "Pending")
+	pending.Status = videos.StatusUploading
+	pending.UploadID = "upload-1"
+	pending.UploadExpiresAt = &expired
+	created, err := repository.Create(ctx, pending)
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+	if created.Status != videos.StatusUploading || created.UploadID != "upload-1" {
+		t.Fatalf("Create() = %+v, want an uploading video with its upload id", created)
+	}
+
+	expiredUploads, err := repository.ListExpiredUploads(ctx, time.Now())
+	if err != nil || len(expiredUploads) != 1 || expiredUploads[0].ID != created.ID {
+		t.Fatalf("ListExpiredUploads() = %v, %v; want the pending video", expiredUploads, err)
+	}
+
+	if _, err := repository.MarkProcessing(ctx, stranger.ID, created.ID, 7); !errors.Is(err, videos.ErrNotFound) {
+		t.Errorf("MarkProcessing() as stranger error = %v, want ErrNotFound", err)
+	}
+	processing, err := repository.MarkProcessing(ctx, owner.ID, created.ID, 7)
+	if err != nil {
+		t.Fatalf("MarkProcessing() error = %v", err)
+	}
+	if processing.Status != videos.StatusProcessing || processing.UploadID != "" || processing.SizeBytes != 7 {
+		t.Errorf("MarkProcessing() = %+v", processing)
+	}
+	if _, err := repository.MarkProcessing(ctx, owner.ID, created.ID, 7); !errors.Is(err, videos.ErrNotFound) {
+		t.Errorf("second MarkProcessing() error = %v, want ErrNotFound", err)
+	}
+	if remaining, err := repository.ListExpiredUploads(ctx, time.Now()); err != nil || len(remaining) != 0 {
+		t.Errorf("ListExpiredUploads() after completion = %v, %v; want empty", remaining, err)
 	}
 }

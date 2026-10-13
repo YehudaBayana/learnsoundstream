@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
-import { useCreateVideo, useVideos } from "@/features/videos/query/useVideos";
+import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { isAbortError } from "@/features/videos/api/uploadParts";
+import { useUploadVideo, useVideos } from "@/features/videos/query/useVideos";
 
 export default function VideoLibraryView({
   dataHook = "video-library-view",
@@ -11,10 +12,13 @@ export default function VideoLibraryView({
 }) {
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
+  const [recordedAt, setRecordedAt] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const uploadAbortRef = useRef<AbortController | null>(null);
   const { data: videos = [], isLoading, isError, error: listError } = useVideos();
-  const createVideoMutation = useCreateVideo();
+  const uploadVideoMutation = useUploadVideo();
 
   const stats = useMemo(() => {
     const total = videos.length;
@@ -36,21 +40,33 @@ export default function VideoLibraryView({
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    if (title) formData.append("title", title);
-    if (notes) formData.append("notes", notes);
-
     setError(null);
+    setProgress(0);
+    const uploadAbort = new AbortController();
+    uploadAbortRef.current = uploadAbort;
     try {
-      await createVideoMutation.mutateAsync(formData);
+      await uploadVideoMutation.mutateAsync({
+        file,
+        title,
+        notes,
+        recordedAt,
+        signal: uploadAbort.signal,
+        onProgress: setProgress,
+      });
       setTitle("");
       setNotes("");
+      setRecordedAt("");
       setFile(null);
       const input = document.getElementById("video-upload-input") as HTMLInputElement | null;
       if (input) input.value = "";
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Upload failed.");
+      if (isAbortError(submitError)) {
+        setError("Upload cancelled.");
+      } else {
+        setError(submitError instanceof Error ? submitError.message : "Upload failed.");
+      }
+    } finally {
+      uploadAbortRef.current = null;
     }
   };
 
@@ -96,6 +112,8 @@ export default function VideoLibraryView({
               Recorded date
               <input
                 type="date"
+                value={recordedAt}
+                onChange={(event) => setRecordedAt(event.target.value)}
                 className="mt-2 block w-full rounded-xl border border-[var(--border-default)] bg-[var(--bg-primary)] p-3 text-sm text-[var(--text-primary)]"
               />
             </label>
@@ -114,17 +132,48 @@ export default function VideoLibraryView({
 
           {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
+          {uploadVideoMutation.isPending && (
+            <div className="mt-4">
+              <div
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress * 100)}
+                className="h-2 w-full overflow-hidden rounded-full bg-[var(--bg-primary)]"
+              >
+                <div
+                  className="h-full bg-emerald-500 transition-[width]"
+                  style={{ width: `${Math.round(progress * 100)}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-[var(--text-secondary)]">
+                Uploading {Math.round(progress * 100)}%. Keep this tab open until it finishes.
+              </p>
+            </div>
+          )}
+
           <div className="mt-5 flex items-center justify-between gap-3">
             <span className="text-xs text-[var(--text-secondary)]">
               {file ? `Selected: ${file.name}` : "No file selected"}
             </span>
-            <button
-              type="submit"
-              disabled={!file || createVideoMutation.isPending}
-              className="rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {createVideoMutation.isPending ? "Uploading..." : "Upload video"}
-            </button>
+            <div className="flex items-center gap-3">
+              {uploadVideoMutation.isPending && (
+                <button
+                  type="button"
+                  onClick={() => uploadAbortRef.current?.abort()}
+                  className="rounded-full border border-[var(--border-default)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)]"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={!file || uploadVideoMutation.isPending}
+                className="rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {uploadVideoMutation.isPending ? "Uploading..." : "Upload video"}
+              </button>
+            </div>
           </div>
         </form>
 

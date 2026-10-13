@@ -25,4 +25,5 @@ export const videoKeys = {
   all: () => ["videos"] as const,
   list: (limit: number, offset: number) => ["videos", "list", limit, offset] as const,
   detail: (videoId: string) => ["videos", "detail", videoId] as const,
+  playbackUrl: (videoId: string) => ["videos", "playback-url", videoId] as const,
 };
