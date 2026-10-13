@@ -9,7 +9,7 @@ import (
 )
 
 func TestHTTPHandlerRegistersAPIEndpoints(t *testing.T) {
-	handler, _, err := newHTTPHandler(nil, "test", config.Config{StorageDir: t.TempDir(), MaxUploadBytes: 1 << 20})
+	handler, _, err := newHTTPHandler(nil, "test", config.Config{R2AccountID: "account", R2AccessKeyID: "key", R2SecretAccessKey: "secret", R2Bucket: "bucket", MaxUploadBytes: 1 << 20})
 	if err != nil {
 		t.Fatalf("newHTTPHandler() error = %v", err)
 	}
@@ -28,9 +28,9 @@ func TestHTTPHandlerRegistersAPIEndpoints(t *testing.T) {
 		{name: "liked videos", method: http.MethodGet, target: "/api/liked", wantStatus: http.StatusUnauthorized},
 		{name: "add liked video", method: http.MethodPost, target: "/api/liked", wantStatus: http.StatusUnauthorized},
 		{name: "list videos", method: http.MethodGet, target: "/api/videos", wantStatus: http.StatusUnauthorized},
-		{name: "create video", method: http.MethodPost, target: "/api/videos", wantStatus: http.StatusUnauthorized},
+		{name: "init upload", method: http.MethodPost, target: "/api/videos/uploads", wantStatus: http.StatusUnauthorized},
 		{name: "get video", method: http.MethodGet, target: "/api/videos/123e4567-e89b-12d3-a456-426614174000", wantStatus: http.StatusUnauthorized},
-		{name: "stream video", method: http.MethodGet, target: "/api/videos/123e4567-e89b-12d3-a456-426614174000/stream", wantStatus: http.StatusUnauthorized},
+		{name: "playback url", method: http.MethodGet, target: "/api/videos/123e4567-e89b-12d3-a456-426614174000/playback-url", wantStatus: http.StatusUnauthorized},
 	}
 
 	for _, test := range tests {

@@ -5,13 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-
-	"backend/internal/storage"
 )
 
 const (
@@ -112,28 +108,4 @@ func runCommand(ctx context.Context, name string, args ...string) ([]byte, error
 		return nil, fmt.Errorf("%s: %w", name, err)
 	}
 	return output, nil
-}
-
-// writeReaderToFile copies reader into a new file at path.
-func writeReaderToFile(path string, reader io.Reader) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	if _, err := io.Copy(file, reader); err != nil {
-		_ = file.Close()
-		return err
-	}
-	return file.Close()
-}
-
-func putFileInStorage(ctx context.Context, store storage.Storage, key, path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = store.Put(ctx, key, file)
-	return err
 }

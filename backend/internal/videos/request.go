@@ -1,6 +1,7 @@
 package videos
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 
 	"backend/internal/auth"
 	"backend/internal/httputil"
+	"backend/internal/storage"
 
 	"github.com/google/uuid"
 )
@@ -77,6 +79,51 @@ func ownedVideoIDs(responseWriter http.ResponseWriter, request *http.Request) (o
 		return uuid.Nil, uuid.Nil, false
 	}
 	return ownerID, videoID, true
+}
+
+// decodeJSONBody writes the 400 response itself when the body is malformed.
+func decodeJSONBody(responseWriter http.ResponseWriter, request *http.Request, destination any) bool {
+	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, maxMetadataBodyBytes)).Decode(destination); err != nil {
+		httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
+		return false
+	}
+	return true
+}
+
+// toInitUpload falls back to the file name (without extension) when no title is given.
+func toInitUpload(request initUploadRequest) (InitUpload, error) {
+	filename := filepath.Base(strings.TrimSpace(request.Filename))
+	if filename == "." || filename == string(filepath.Separator) {
+		return InitUpload{}, fmt.Errorf("%w: filename is required", ErrInvalidInput)
+	}
+	title := strings.TrimSpace(request.Title)
+	if title == "" {
+		title = strings.TrimSuffix(filename, filepath.Ext(filename))
+	}
+
+	input := InitUpload{
+		Filename:  filename,
+		SizeBytes: request.SizeBytes,
+		MimeType:  strings.TrimSpace(request.ContentType),
+		Title:     title,
+		Notes:     strings.TrimSpace(request.Notes),
+	}
+	if request.RecordedAt != nil {
+		recordedAt, err := parseRecordedAt(*request.RecordedAt)
+		if err != nil {
+			return InitUpload{}, err
+		}
+		input.RecordedAt = recordedAt
+	}
+	return input, nil
+}
+
+func toCompletedParts(request completeUploadRequest) []storage.CompletedPart {
+	parts := make([]storage.CompletedPart, 0, len(request.Parts))
+	for _, part := range request.Parts {
+		parts = append(parts, storage.CompletedPart{PartNumber: part.PartNumber, ETag: part.ETag})
+	}
+	return parts
 }
 
 func toVideoUpdate(request updateVideoRequest) (VideoUpdate, error) {

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getVideo, getVideoStreamUrl, type Video } from "@/features/videos/api/videos";
+import { useEffect, useRef, useState } from "react";
+import { getVideo, type Video } from "@/features/videos/api/videos";
+import { usePlaybackUrl } from "@/features/videos/query/useVideos";
+
+const MAX_PLAYBACK_RECOVERIES = 3;
 
 export default function VideoWatchView() {
   const params = useParams<{ id: string }>();
@@ -11,6 +14,32 @@ export default function VideoWatchView() {
   const [video, setVideo] = useState<Video | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const videoElementRef = useRef<HTMLVideoElement>(null);
+  const resumeRef = useRef<{ time: number; paused: boolean } | null>(null);
+  const recoveriesRef = useRef(0);
+  const { data: playback, refetch: refetchPlayback } = usePlaybackUrl(
+    videoId ?? "",
+    Boolean(videoId) && video?.status === "ready",
+  );
+
+  // An expired signed URL makes the player fail on the next range request: fetch a new one and resume.
+  const handlePlaybackError = () => {
+    const element = videoElementRef.current;
+    if (!element || recoveriesRef.current >= MAX_PLAYBACK_RECOVERIES) return;
+    recoveriesRef.current += 1;
+    resumeRef.current = { time: element.currentTime, paused: element.paused };
+    void refetchPlayback();
+  };
+
+  const handleLoadedMetadata = () => {
+    recoveriesRef.current = 0;
+    const element = videoElementRef.current;
+    const resume = resumeRef.current;
+    if (!element || !resume) return;
+    resumeRef.current = null;
+    element.currentTime = resume.time;
+    if (!resume.paused) void element.play().catch(() => undefined);
+  };
 
   useEffect(() => {
     if (!videoId) {
@@ -80,14 +109,27 @@ export default function VideoWatchView() {
       </div>
 
       <div className="rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-5 shadow-sm">
-        <video
-          key={video.id}
-          controls
-          playsInline
-          preload="metadata"
-          src={getVideoStreamUrl(video.id)}
-          className="aspect-video w-full rounded-2xl bg-black"
-        />
+        {playback ? (
+          <video
+            key={video.id}
+            ref={videoElementRef}
+            controls
+            playsInline
+            preload="metadata"
+            src={playback.url}
+            onError={handlePlaybackError}
+            onLoadedMetadata={handleLoadedMetadata}
+            className="aspect-video w-full rounded-2xl bg-black"
+          />
+        ) : (
+          <p className="flex aspect-video w-full items-center justify-center rounded-2xl bg-black px-6 text-center text-sm text-[var(--text-secondary)]">
+            {video.status === "ready" && "Loading video…"}
+            {video.status === "uploading" && "This video is still uploading."}
+            {video.status === "processing" && "This video is being prepared for playback."}
+            {video.status === "failed" &&
+              `Processing failed${video.failure_reason ? `: ${video.failure_reason}` : "."}`}
+          </p>
+        )}
       </div>
 
       <div className="mt-6 rounded-3xl border border-[var(--border-default)] bg-[var(--bg-surface)] p-6">

@@ -6,26 +6,22 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"backend/internal/auth"
 	"backend/internal/storage"
 	"backend/internal/testutils"
 	"backend/internal/videos"
-
-	"github.com/google/uuid"
 )
-
-const playbackPayload = "0123456789abcdefghij"
 
 type handlerFixture struct {
 	handler    http.Handler
 	repository *videos.DatabaseRepository
-	store      *storage.LocalStorage
+	store      *storage.MemoryStorage
 	owner      testutils.AuthFixture
 	stranger   testutils.AuthFixture
 }
@@ -33,22 +29,21 @@ type handlerFixture struct {
 func newHandlerFixture(t *testing.T) handlerFixture {
 	t.Helper()
 	db := testutils.OpenTestDB(t)
-	store, err := storage.NewLocalStorage(t.TempDir())
-	if err != nil {
-		t.Fatalf("NewLocalStorage() error = %v", err)
-	}
+	store := storage.NewMemoryStorage()
 	repository := videos.NewRepository(db)
-	service := videos.NewService(repository, store)
-	videoHandler := videos.NewHandler(service, videos.NewProcessor(service, store), 1<<20)
+	service := videos.NewService(repository, store, testSettings)
+	videoHandler := videos.NewHandler(service, videos.NewProcessor(service, store))
 	sessions := auth.NewSessionStore(db)
 	protected := func(handler http.HandlerFunc) http.Handler { return sessions.Auth(sessions.CSRF(handler)) }
 
 	mux := http.NewServeMux()
-	mux.Handle("POST /api/videos", protected(videoHandler.HandleCreate))
+	mux.Handle("POST /api/videos/uploads", protected(videoHandler.HandleInitUpload))
+	mux.Handle("POST /api/videos/{id}/uploads/parts", protected(videoHandler.HandlePresignParts))
+	mux.Handle("POST /api/videos/{id}/uploads/complete", protected(videoHandler.HandleCompleteUpload))
 	mux.Handle("GET /api/videos/{id}", protected(videoHandler.HandleGet))
 	mux.Handle("PATCH /api/videos/{id}", protected(videoHandler.HandleUpdate))
 	mux.Handle("DELETE /api/videos/{id}", protected(videoHandler.HandleDelete))
-	mux.Handle("GET /api/videos/{id}/stream", protected(videoHandler.HandleStream))
+	mux.Handle("GET /api/videos/{id}/playback-url", protected(videoHandler.HandlePlaybackURL))
 	mux.Handle("GET /api/videos/{id}/thumbnail", protected(videoHandler.HandleThumbnail))
 
 	return handlerFixture{
@@ -73,26 +68,14 @@ func (fixture handlerFixture) request(t *testing.T, user testutils.AuthFixture, 
 	)
 }
 
-// seedReadyVideo stores playback and thumbnail files and inserts a ready row for the owner.
+// seedReadyVideo stores playback and thumbnail objects and inserts a ready row for the owner.
 func (fixture handlerFixture) seedReadyVideo(t *testing.T) videos.Video {
 	t.Helper()
 	ctx := context.Background()
-	newVideo := videos.NewVideo{
-		ID:           uuid.New(),
-		OwnerID:      fixture.owner.ID,
-		Title:        "Ready dance",
-		OriginalName: "ready.mp4",
-	}
+	newVideo := newTestVideo(fixture.owner.ID, "Ready dance")
 	prefix := fixture.owner.ID.String() + "/" + newVideo.ID.String() + "/"
-	newVideo.OriginalKey = prefix + "original.mp4"
-	for key, content := range map[string]string{
-		newVideo.OriginalKey:    "original",
-		prefix + "playback.mp4": playbackPayload,
-		prefix + "thumb.jpg":    "jpeg",
-	} {
-		if _, err := fixture.store.Put(ctx, key, strings.NewReader(content)); err != nil {
-			t.Fatalf("Put(%q) error = %v", key, err)
-		}
+	for _, key := range []string{newVideo.OriginalKey, prefix + "playback.mp4", prefix + "thumb.jpg"} {
+		fixture.store.PutObject(key, []byte("data"))
 	}
 	created, err := fixture.repository.Create(ctx, newVideo)
 	if err != nil {
@@ -110,28 +93,33 @@ func (fixture handlerFixture) seedReadyVideo(t *testing.T) videos.Video {
 	return ready
 }
 
-func TestStreamServesByteRanges(t *testing.T) {
+func TestPlaybackURLReturnsSignedURLForOwner(t *testing.T) {
 	fixture := newHandlerFixture(t)
 	video := fixture.seedReadyVideo(t)
-	target := "/api/videos/" + video.ID.String() + "/stream"
 
-	response := fixture.request(t, fixture.owner, http.MethodGet, target, nil, map[string]string{"Range": "bytes=5-9"})
-	if response.Code != http.StatusPartialContent {
-		t.Fatalf("status = %d, want %d", response.Code, http.StatusPartialContent)
+	response := fixture.request(t, fixture.owner, http.MethodGet, "/api/videos/"+video.ID.String()+"/playback-url", nil, nil)
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d; body: %s", response.Code, http.StatusOK, response.Body.String())
 	}
-	if got := response.Body.String(); got != "56789" {
-		t.Errorf("body = %q, want %q", got, "56789")
+	var signed videos.SignedURL
+	if err := json.Unmarshal(response.Body.Bytes(), &signed); err != nil {
+		t.Fatalf("decode response: %v", err)
 	}
-	if got := response.Header().Get("Content-Range"); got != "bytes 5-9/20" {
-		t.Errorf("Content-Range = %q, want %q", got, "bytes 5-9/20")
+	if !strings.HasSuffix(signed.URL, video.PlaybackKey) || !signed.ExpiresAt.After(time.Now()) {
+		t.Errorf("signed = %+v, want a URL for %q that has not expired", signed, video.PlaybackKey)
 	}
+}
 
-	full := fixture.request(t, fixture.owner, http.MethodGet, target, nil, nil)
-	if full.Code != http.StatusOK || full.Body.String() != playbackPayload {
-		t.Errorf("full stream = %d %q", full.Code, full.Body.String())
+func TestThumbnailRedirectsToSignedURL(t *testing.T) {
+	fixture := newHandlerFixture(t)
+	video := fixture.seedReadyVideo(t)
+
+	response := fixture.request(t, fixture.owner, http.MethodGet, "/api/videos/"+video.ID.String()+"/thumbnail", nil, nil)
+	if response.Code != http.StatusFound {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusFound)
 	}
-	if got := full.Header().Get("Accept-Ranges"); got != "bytes" {
-		t.Errorf("Accept-Ranges = %q, want bytes", got)
+	if got := response.Header().Get("Location"); !strings.HasSuffix(got, video.ThumbnailKey) {
+		t.Errorf("Location = %q, want a URL for %q", got, video.ThumbnailKey)
 	}
 }
 
@@ -142,10 +130,12 @@ func TestOtherUsersGetNotFoundForPrivateVideos(t *testing.T) {
 
 	for _, test := range []struct{ name, method, target string }{
 		{"get", http.MethodGet, base},
-		{"stream", http.MethodGet, base + "/stream"},
+		{"playback url", http.MethodGet, base + "/playback-url"},
 		{"thumbnail", http.MethodGet, base + "/thumbnail"},
 		{"update", http.MethodPatch, base},
 		{"delete", http.MethodDelete, base},
+		{"presign parts", http.MethodPost, base + "/uploads/parts"},
+		{"complete upload", http.MethodPost, base + "/uploads/complete"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			response := fixture.request(t, fixture.stranger, test.method, test.target, []byte(`{"title":"x"}`), nil)
@@ -156,14 +146,14 @@ func TestOtherUsersGetNotFoundForPrivateVideos(t *testing.T) {
 	}
 }
 
-func TestStreamRejectsVideosThatAreNotReady(t *testing.T) {
+func TestPlaybackURLRejectsVideosThatAreNotReady(t *testing.T) {
 	fixture := newHandlerFixture(t)
 	processing, err := fixture.repository.Create(context.Background(), newTestVideo(fixture.owner.ID, "Still processing"))
 	if err != nil {
 		t.Fatalf("Create() error = %v", err)
 	}
 
-	response := fixture.request(t, fixture.owner, http.MethodGet, "/api/videos/"+processing.ID.String()+"/stream", nil, nil)
+	response := fixture.request(t, fixture.owner, http.MethodGet, "/api/videos/"+processing.ID.String()+"/playback-url", nil, nil)
 	if response.Code != http.StatusConflict {
 		t.Errorf("status = %d, want %d", response.Code, http.StatusConflict)
 	}
@@ -203,31 +193,87 @@ func TestDeleteRemovesRowAndFiles(t *testing.T) {
 		t.Error("video row still exists after delete")
 	}
 	for _, key := range []string{video.OriginalKey, video.PlaybackKey, video.ThumbnailKey} {
-		if _, err := fixture.store.Stat(context.Background(), key); err == nil {
-			t.Errorf("file %q still exists after delete", key)
+		if fixture.store.HasObject(key) {
+			t.Errorf("object %q still exists after delete", key)
 		}
 	}
 }
 
-func TestCreateRejectsNonVideoUploads(t *testing.T) {
+func TestInitUploadRejectsNonVideoFiles(t *testing.T) {
 	fixture := newHandlerFixture(t)
 
-	var body bytes.Buffer
-	writer := multipart.NewWriter(&body)
-	part, err := writer.CreateFormFile("file", "notes.txt")
-	if err != nil {
-		t.Fatalf("create form file: %v", err)
-	}
-	_, _ = part.Write([]byte("not a video"))
-	_ = writer.Close()
-
-	response := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos", body.Bytes(), map[string]string{"Content-Type": writer.FormDataContentType()})
+	response := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos/uploads", []byte(`{"filename":"notes.txt","size_bytes":10}`), nil)
 	if response.Code != http.StatusUnsupportedMediaType {
 		t.Errorf("status = %d, want %d; body: %s", response.Code, http.StatusUnsupportedMediaType, response.Body.String())
 	}
+	if fixture.store.OpenUploads() != 0 {
+		t.Error("rejected file opened a multipart upload")
+	}
 
-	notMultipart := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos", []byte(`{}`), map[string]string{"Content-Type": "application/json"})
-	if notMultipart.Code != http.StatusUnsupportedMediaType {
-		t.Errorf("JSON body status = %d, want %d", notMultipart.Code, http.StatusUnsupportedMediaType)
+	malformed := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos/uploads", []byte(`not json`), nil)
+	if malformed.Code != http.StatusBadRequest {
+		t.Errorf("malformed body status = %d, want %d", malformed.Code, http.StatusBadRequest)
+	}
+}
+
+func TestDirectUploadFlowEndsInProcessing(t *testing.T) {
+	fixture := newHandlerFixture(t)
+
+	initResponse := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos/uploads", []byte(`{"filename":"spin.mov","size_bytes":5,"title":"Spin"}`), nil)
+	if initResponse.Code != http.StatusCreated {
+		t.Fatalf("init status = %d, want %d; body: %s", initResponse.Code, http.StatusCreated, initResponse.Body.String())
+	}
+	var session videos.UploadSession
+	if err := json.Unmarshal(initResponse.Body.Bytes(), &session); err != nil {
+		t.Fatalf("decode session: %v", err)
+	}
+	if session.Video.Status != videos.StatusUploading || session.PartCount != 1 {
+		t.Fatalf("session = %+v, want an uploading video with one part", session)
+	}
+	base := "/api/videos/" + session.Video.ID.String() + "/uploads"
+
+	partsResponse := fixture.request(t, fixture.owner, http.MethodPost, base+"/parts", []byte(`{"part_numbers":[1]}`), nil)
+	if partsResponse.Code != http.StatusOK {
+		t.Fatalf("parts status = %d, want %d; body: %s", partsResponse.Code, http.StatusOK, partsResponse.Body.String())
+	}
+
+	stored, err := fixture.repository.GetByID(context.Background(), fixture.owner.ID, session.Video.ID)
+	if err != nil {
+		t.Fatalf("GetByID() error = %v", err)
+	}
+	fixture.store.PutPart(stored.UploadID, 1, []byte("hello"))
+
+	completeResponse := fixture.request(t, fixture.owner, http.MethodPost, base+"/complete", []byte(`{"parts":[{"part_number":1,"etag":"etag-1"}]}`), nil)
+	if completeResponse.Code != http.StatusOK {
+		t.Fatalf("complete status = %d, want %d; body: %s", completeResponse.Code, http.StatusOK, completeResponse.Body.String())
+	}
+	finished, err := fixture.repository.GetByID(context.Background(), fixture.owner.ID, session.Video.ID)
+	if err != nil {
+		t.Fatalf("GetByID() error = %v", err)
+	}
+	if finished.Status != videos.StatusProcessing || finished.UploadID != "" || !fixture.store.HasObject(finished.OriginalKey) {
+		t.Errorf("finished = %+v, want a processing video whose original is stored", finished)
+	}
+
+	again := fixture.request(t, fixture.owner, http.MethodPost, base+"/complete", []byte(`{"parts":[{"part_number":1,"etag":"etag-1"}]}`), nil)
+	if again.Code != http.StatusBadRequest {
+		t.Errorf("repeated complete status = %d, want %d", again.Code, http.StatusBadRequest)
+	}
+}
+
+func TestDeleteAbortsAnUnfinishedUpload(t *testing.T) {
+	fixture := newHandlerFixture(t)
+	initResponse := fixture.request(t, fixture.owner, http.MethodPost, "/api/videos/uploads", []byte(`{"filename":"spin.mp4","size_bytes":5}`), nil)
+	var session videos.UploadSession
+	if err := json.Unmarshal(initResponse.Body.Bytes(), &session); err != nil {
+		t.Fatalf("decode session: %v", err)
+	}
+
+	response := fixture.request(t, fixture.owner, http.MethodDelete, "/api/videos/"+session.Video.ID.String(), nil, nil)
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusNoContent)
+	}
+	if fixture.store.OpenUploads() != 0 {
+		t.Error("multipart upload still open after delete")
 	}
 }

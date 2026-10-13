@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -13,7 +14,7 @@ import (
 // Nullable columns are COALESCEd so every row scans into plain Go values.
 const videoColumns = `
 	id, owner_id, title, notes, recorded_at, status,
-	COALESCE(failure_reason, ''), original_name, original_key,
+	COALESCE(failure_reason, ''), original_name, original_key, COALESCE(upload_id, ''),
 	COALESCE(playback_key, ''), COALESCE(thumbnail_key, ''), COALESCE(mime_type, ''),
 	size_bytes, COALESCE(duration_ms, 0), COALESCE(width, 0), COALESCE(height, 0),
 	created_at, updated_at`
@@ -28,11 +29,12 @@ func NewRepository(db *pgxpool.Pool) *DatabaseRepository {
 
 func (repository *DatabaseRepository) Create(ctx context.Context, newVideo NewVideo) (Video, error) {
 	row := repository.db.QueryRow(ctx, `
-		INSERT INTO video (id, owner_id, title, notes, recorded_at, status, original_name, original_key, mime_type, size_bytes)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		INSERT INTO video (id, owner_id, title, notes, recorded_at, status, original_name, original_key, mime_type, size_bytes, upload_id, upload_expires_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NULLIF($11, ''), $12)
 		RETURNING `+videoColumns,
-		newVideo.ID, newVideo.OwnerID, newVideo.Title, newVideo.Notes, newVideo.RecordedAt, StatusProcessing,
-		newVideo.OriginalName, newVideo.OriginalKey, newVideo.MimeType, newVideo.SizeBytes)
+		newVideo.ID, newVideo.OwnerID, newVideo.Title, newVideo.Notes, newVideo.RecordedAt, newVideo.Status,
+		newVideo.OriginalName, newVideo.OriginalKey, newVideo.MimeType, newVideo.SizeBytes,
+		newVideo.UploadID, newVideo.UploadExpiresAt)
 
 	video, err := scanVideo(row)
 	if err != nil {
@@ -166,11 +168,45 @@ func (repository *DatabaseRepository) ListProcessing(ctx context.Context) ([]Vid
 	return collectVideos(rows)
 }
 
+// MarkProcessing only moves a video that is still uploading, so a repeated completion is rejected.
+func (repository *DatabaseRepository) MarkProcessing(ctx context.Context, ownerID, videoID uuid.UUID, sizeBytes int64) (Video, error) {
+	row := repository.db.QueryRow(ctx, `
+		UPDATE video
+		SET status = $3,
+		    size_bytes = $4,
+		    upload_id = NULL,
+		    upload_expires_at = NULL,
+		    updated_at = now()
+		WHERE id = $1 AND owner_id = $2 AND status = $5
+		RETURNING `+videoColumns,
+		videoID, ownerID, StatusProcessing, sizeBytes, StatusUploading)
+
+	video, err := scanVideo(row)
+	if err != nil {
+		return Video{}, fmt.Errorf("mark video processing: %w", err)
+	}
+	return video, nil
+}
+
+// ListExpiredUploads is deliberately not owner-scoped: the janitor cleans abandoned uploads for everyone.
+func (repository *DatabaseRepository) ListExpiredUploads(ctx context.Context, expiredBefore time.Time) ([]Video, error) {
+	rows, err := repository.db.Query(ctx, `
+		SELECT `+videoColumns+`
+		FROM video
+		WHERE status = $1 AND upload_expires_at < $2
+		ORDER BY upload_expires_at`,
+		StatusUploading, expiredBefore)
+	if err != nil {
+		return nil, fmt.Errorf("select expired uploads: %w", err)
+	}
+	return collectVideos(rows)
+}
+
 func scanVideo(row pgx.Row) (Video, error) {
 	var video Video
 	err := row.Scan(
 		&video.ID, &video.OwnerID, &video.Title, &video.Notes, &video.RecordedAt, &video.Status,
-		&video.FailureReason, &video.OriginalName, &video.OriginalKey,
+		&video.FailureReason, &video.OriginalName, &video.OriginalKey, &video.UploadID,
 		&video.PlaybackKey, &video.ThumbnailKey, &video.MimeType,
 		&video.SizeBytes, &video.DurationMs, &video.Width, &video.Height,
 		&video.CreatedAt, &video.UpdatedAt,

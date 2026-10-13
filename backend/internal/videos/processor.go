@@ -32,10 +32,12 @@ func NewProcessor(service *Service, store storage.Storage) *Processor {
 	}
 }
 
-// Start runs the worker until ctx is cancelled and re-queues videos left in processing by a previous run.
+// Start runs the worker until ctx is cancelled, re-queues videos left in processing by a previous run
+// and starts the cleanup of abandoned uploads.
 func (processor *Processor) Start(ctx context.Context) {
 	go processor.work(ctx)
 	go processor.recoverInterrupted(ctx)
+	StartUploadJanitor(ctx, processor.service)
 }
 
 func (processor *Processor) Enqueue(video Video) {
@@ -105,8 +107,9 @@ func (processor *Processor) createPlaybackAssets(ctx context.Context, video Vide
 	defer os.RemoveAll(workDir)
 
 	originalPath := filepath.Join(workDir, "original"+filepath.Ext(video.OriginalKey))
-	if err := processor.downloadOriginal(ctx, video.OriginalKey, originalPath); err != nil {
-		return ProcessingResult{}, err
+	// ffmpeg needs a seekable local file, so the original is downloaded first.
+	if err := processor.store.Download(ctx, video.OriginalKey, originalPath); err != nil {
+		return ProcessingResult{}, fmt.Errorf("download original: %w", err)
 	}
 
 	probe, err := probeVideo(ctx, originalPath)
@@ -124,11 +127,11 @@ func (processor *Processor) createPlaybackAssets(ctx context.Context, video Vide
 	}
 
 	playbackStorageKey := playbackKey(video.OwnerID, video.ID)
-	if err := putFileInStorage(ctx, processor.store, playbackStorageKey, playbackPath); err != nil {
+	if err := processor.store.UploadFile(ctx, playbackStorageKey, playbackPath, playbackContentType); err != nil {
 		return ProcessingResult{}, fmt.Errorf("store playback file: %w", err)
 	}
 	thumbnailStorageKey := thumbnailKey(video.OwnerID, video.ID)
-	if err := putFileInStorage(ctx, processor.store, thumbnailStorageKey, thumbnailPath); err != nil {
+	if err := processor.store.UploadFile(ctx, thumbnailStorageKey, thumbnailPath, thumbnailContentType); err != nil {
 		return ProcessingResult{}, fmt.Errorf("store thumbnail: %w", err)
 	}
 
@@ -140,18 +143,4 @@ func (processor *Processor) createPlaybackAssets(ctx context.Context, video Vide
 		Width:        probe.Width,
 		Height:       probe.Height,
 	}, nil
-}
-
-// downloadOriginal copies the stored original to local disk because ffmpeg needs a seekable file.
-func (processor *Processor) downloadOriginal(ctx context.Context, key, destinationPath string) error {
-	original, _, err := processor.store.Open(ctx, key)
-	if err != nil {
-		return fmt.Errorf("open original: %w", err)
-	}
-	defer original.Close()
-
-	if err := writeReaderToFile(destinationPath, original); err != nil {
-		return fmt.Errorf("copy original to work directory: %w", err)
-	}
-	return nil
 }

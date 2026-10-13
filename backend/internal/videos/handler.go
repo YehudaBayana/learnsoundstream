@@ -1,76 +1,89 @@
 package videos
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
-	"strings"
+	"time"
 
 	"backend/internal/httputil"
-
-	"github.com/google/uuid"
 )
 
 const (
 	maxMetadataBodyBytes = 1 << 20
-	// Headroom for the multipart text fields and boundaries around the file itself.
-	multipartOverheadBytes = 1 << 20
-	playbackContentType    = "video/mp4"
-	thumbnailContentType   = "image/jpeg"
+	playbackContentType  = "video/mp4"
+	thumbnailContentType = "image/jpeg"
+	// Browsers may reuse the redirect target until shortly before its signature expires.
+	thumbnailRedirectMaxAge = 5 * time.Minute
 )
 
 type Handler struct {
-	service        *Service
-	processor      *Processor
-	maxUploadBytes int64
+	service   *Service
+	processor *Processor
 }
 
-func NewHandler(service *Service, processor *Processor, maxUploadBytes int64) *Handler {
-	return &Handler{service: service, processor: processor, maxUploadBytes: maxUploadBytes}
+func NewHandler(service *Service, processor *Processor) *Handler {
+	return &Handler{service: service, processor: processor}
 }
 
-func (handler *Handler) HandleCreate(responseWriter http.ResponseWriter, request *http.Request) {
+// HandleInitUpload opens a multipart upload; the browser then sends the parts straight to storage.
+func (handler *Handler) HandleInitUpload(responseWriter http.ResponseWriter, request *http.Request) {
 	ownerID, ok := authenticatedUserID(responseWriter, request)
 	if !ok {
 		return
 	}
-	if !strings.HasPrefix(request.Header.Get("Content-Type"), "multipart/form-data") {
-		httputil.WriteError(responseWriter, http.StatusUnsupportedMediaType, "unsupported_content_type", "upload must be multipart/form-data")
+	var requestBody initUploadRequest
+	if !decodeJSONBody(responseWriter, request, &requestBody) {
 		return
 	}
-
-	allowLongTransfer(responseWriter)
-	request.Body = http.MaxBytesReader(responseWriter, request.Body, handler.maxUploadBytes+multipartOverheadBytes)
-	multipartReader, err := request.MultipartReader()
-	if err != nil {
-		writeServiceError(responseWriter, ErrInvalidUpload)
-		return
-	}
-
-	videoID := uuid.New()
-	upload, err := receiveUpload(request.Context(), handler.service, multipartReader, ownerID, videoID, handler.maxUploadBytes)
+	input, err := toInitUpload(requestBody)
 	if err != nil {
 		writeServiceError(responseWriter, err)
 		return
 	}
 
-	video, err := handler.service.Create(request.Context(), NewVideo{
-		ID:           videoID,
-		OwnerID:      ownerID,
-		Title:        upload.Title,
-		Notes:        upload.Notes,
-		RecordedAt:   upload.RecordedAt,
-		OriginalName: upload.OriginalName,
-		OriginalKey:  upload.OriginalKey,
-		MimeType:     upload.MimeType,
-		SizeBytes:    upload.SizeBytes,
-	})
+	session, err := handler.service.InitUpload(request.Context(), ownerID, input)
 	if err != nil {
 		writeServiceError(responseWriter, err)
 		return
 	}
+	httputil.WriteJSON(responseWriter, http.StatusCreated, session)
+}
 
+func (handler *Handler) HandlePresignParts(responseWriter http.ResponseWriter, request *http.Request) {
+	ownerID, videoID, ok := ownedVideoIDs(responseWriter, request)
+	if !ok {
+		return
+	}
+	var requestBody presignPartsRequest
+	if !decodeJSONBody(responseWriter, request, &requestBody) {
+		return
+	}
+
+	urls, err := handler.service.PresignParts(request.Context(), ownerID, videoID, requestBody.PartNumbers)
+	if err != nil {
+		writeServiceError(responseWriter, err)
+		return
+	}
+	httputil.WriteJSON(responseWriter, http.StatusOK, urls)
+}
+
+func (handler *Handler) HandleCompleteUpload(responseWriter http.ResponseWriter, request *http.Request) {
+	ownerID, videoID, ok := ownedVideoIDs(responseWriter, request)
+	if !ok {
+		return
+	}
+	var requestBody completeUploadRequest
+	if !decodeJSONBody(responseWriter, request, &requestBody) {
+		return
+	}
+
+	video, err := handler.service.CompleteUpload(request.Context(), ownerID, videoID, toCompletedParts(requestBody))
+	if err != nil {
+		writeServiceError(responseWriter, err)
+		return
+	}
 	handler.processor.Enqueue(video)
-	httputil.WriteJSON(responseWriter, http.StatusCreated, video)
+	httputil.WriteJSON(responseWriter, http.StatusOK, video)
 }
 
 func (handler *Handler) HandleList(responseWriter http.ResponseWriter, request *http.Request) {
@@ -109,8 +122,7 @@ func (handler *Handler) HandleUpdate(responseWriter http.ResponseWriter, request
 	}
 
 	var requestBody updateVideoRequest
-	if err := json.NewDecoder(http.MaxBytesReader(responseWriter, request.Body, maxMetadataBodyBytes)).Decode(&requestBody); err != nil {
-		httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_request", "malformed request body")
+	if !decodeJSONBody(responseWriter, request, &requestBody) {
 		return
 	}
 	update, err := toVideoUpdate(requestBody)
@@ -140,40 +152,34 @@ func (handler *Handler) HandleDelete(responseWriter http.ResponseWriter, request
 	responseWriter.WriteHeader(http.StatusNoContent)
 }
 
-// HandleStream serves the playback file; http.ServeContent handles Range, If-Range and 206 responses.
-func (handler *Handler) HandleStream(responseWriter http.ResponseWriter, request *http.Request) {
+// HandlePlaybackURL returns a presigned URL; the browser's video element then makes Range requests to storage directly.
+func (handler *Handler) HandlePlaybackURL(responseWriter http.ResponseWriter, request *http.Request) {
 	ownerID, videoID, ok := ownedVideoIDs(responseWriter, request)
 	if !ok {
 		return
 	}
 
-	file, modTime, err := handler.service.OpenPlayback(request.Context(), ownerID, videoID)
+	signedURL, err := handler.service.PlaybackURL(request.Context(), ownerID, videoID)
 	if err != nil {
 		writeServiceError(responseWriter, err)
 		return
 	}
-	defer file.Close()
-
-	allowLongTransfer(responseWriter)
-	responseWriter.Header().Set("Content-Type", playbackContentType)
-	responseWriter.Header().Set("Cache-Control", "private")
-	http.ServeContent(responseWriter, request, "", modTime, file)
+	responseWriter.Header().Set("Cache-Control", "no-store")
+	httputil.WriteJSON(responseWriter, http.StatusOK, signedURL)
 }
 
+// HandleThumbnail redirects to a presigned URL so grids of <img> tags need no extra round trip to the client code.
 func (handler *Handler) HandleThumbnail(responseWriter http.ResponseWriter, request *http.Request) {
 	ownerID, videoID, ok := ownedVideoIDs(responseWriter, request)
 	if !ok {
 		return
 	}
 
-	file, modTime, err := handler.service.OpenThumbnail(request.Context(), ownerID, videoID)
+	signedURL, err := handler.service.ThumbnailURL(request.Context(), ownerID, videoID)
 	if err != nil {
 		writeServiceError(responseWriter, err)
 		return
 	}
-	defer file.Close()
-
-	responseWriter.Header().Set("Content-Type", thumbnailContentType)
-	responseWriter.Header().Set("Cache-Control", "private")
-	http.ServeContent(responseWriter, request, "", modTime, file)
+	responseWriter.Header().Set("Cache-Control", fmt.Sprintf("private, max-age=%d", int(thumbnailRedirectMaxAge.Seconds())))
+	http.Redirect(responseWriter, request, signedURL.URL, http.StatusFound)
 }

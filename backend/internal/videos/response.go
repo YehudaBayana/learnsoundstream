@@ -4,25 +4,9 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"time"
 
 	"backend/internal/httputil"
 )
-
-// longTransferDeadline replaces the server-wide 10s timeouts for uploads and streams.
-const longTransferDeadline = 24 * time.Hour
-
-// allowLongTransfer extends the per-request deadlines; response writers without deadline support are left as is.
-func allowLongTransfer(responseWriter http.ResponseWriter) {
-	controller := http.NewResponseController(responseWriter)
-	deadline := time.Now().Add(longTransferDeadline)
-	if err := controller.SetReadDeadline(deadline); err != nil && !errors.Is(err, http.ErrNotSupported) {
-		slog.Warn("Failed to extend read deadline", "error", err)
-	}
-	if err := controller.SetWriteDeadline(deadline); err != nil && !errors.Is(err, http.ErrNotSupported) {
-		slog.Warn("Failed to extend write deadline", "error", err)
-	}
-}
 
 // writeServiceError maps domain errors to HTTP responses without leaking internal details.
 func writeServiceError(responseWriter http.ResponseWriter, err error) {
@@ -35,8 +19,6 @@ func writeServiceError(responseWriter http.ResponseWriter, err error) {
 		httputil.WriteError(responseWriter, http.StatusRequestEntityTooLarge, "upload_too_large", err.Error())
 	case errors.Is(err, ErrUnsupportedFormat):
 		httputil.WriteError(responseWriter, http.StatusUnsupportedMediaType, "unsupported_video", err.Error())
-	case errors.Is(err, ErrMissingFile):
-		httputil.WriteError(responseWriter, http.StatusBadRequest, "missing_file", err.Error())
 	case errors.Is(err, ErrInvalidUpload):
 		httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_upload", err.Error())
 	case errors.Is(err, ErrInvalidInput):
