@@ -1,12 +1,19 @@
 package liked
 
 import (
-	"backend/internal/auth"
-	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
+
+	"backend/internal/auth"
+	"backend/internal/httputil"
+	"backend/internal/videos"
+
+	"github.com/google/uuid"
 )
+
+const defaultLimit = 10
 
 type Handler struct {
 	repository *Repository
@@ -17,13 +24,12 @@ func NewHandler(repository *Repository) *Handler {
 }
 
 func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http.Request) {
-	session := auth.SessionFrom(request.Context())
-	limit := 10
+	limit := defaultLimit
 	offset := 0
 	if value := request.URL.Query().Get("limit"); value != "" {
 		parsedLimit, err := strconv.Atoi(value)
 		if err != nil || parsedLimit < 1 {
-			http.Error(responseWriter, "Invalid limit", http.StatusBadRequest)
+			httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_limit", "limit must be a positive integer")
 			return
 		}
 		limit = parsedLimit
@@ -31,40 +37,47 @@ func (handler *Handler) Handle(responseWriter http.ResponseWriter, request *http
 	if value := request.URL.Query().Get("offset"); value != "" {
 		parsedOffset, err := strconv.Atoi(value)
 		if err != nil || parsedOffset < 0 {
-			http.Error(responseWriter, "Invalid offset", http.StatusBadRequest)
+			httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_offset", "offset must be zero or greater")
 			return
 		}
 		offset = parsedOffset
 	}
 
-	items, err := handler.repository.GetLikedVideos(request.Context(), session.UserID, limit, offset)
-	if err != nil {
-		slog.Error("Failed to fetch liked videos", "error", err)
-		http.Error(responseWriter, "Failed to fetch liked videos", http.StatusInternalServerError)
+	userID, ok := auth.UserIDFrom(request.Context())
+	if !ok {
+		httputil.WriteError(responseWriter, http.StatusUnauthorized, "unauthenticated", "authentication required")
 		return
 	}
 
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.WriteHeader(http.StatusOK)
-
-	if err := json.NewEncoder(responseWriter).Encode(items); err != nil {
-		slog.Error("Failed to encode liked videos", "error", err)
+	likedVideos, err := handler.repository.GetLikedVideos(request.Context(), userID, limit, offset)
+	if err != nil {
+		slog.Error("Failed to fetch liked videos", "error", err)
+		httputil.WriteError(responseWriter, http.StatusInternalServerError, "internal_error", "something went wrong")
+		return
 	}
+	httputil.WriteJSON(responseWriter, http.StatusOK, likedVideos)
 }
 
 func (handler *Handler) HandlePost(responseWriter http.ResponseWriter, request *http.Request) {
-	session := auth.SessionFrom(request.Context())
-	videoID := request.URL.Query().Get("video_id")
-
-	if videoID == "" {
-		http.Error(responseWriter, "Missing 'video_id' parameter", http.StatusBadRequest)
+	videoID, err := uuid.Parse(request.URL.Query().Get("video_id"))
+	if err != nil {
+		httputil.WriteError(responseWriter, http.StatusBadRequest, "invalid_video_id", "video_id must be a valid video id")
 		return
 	}
 
-	err := handler.repository.PostLikedVideo(request.Context(), session.UserID, videoID)
-	if err != nil {
+	userID, ok := auth.UserIDFrom(request.Context())
+	if !ok {
+		httputil.WriteError(responseWriter, http.StatusUnauthorized, "unauthenticated", "authentication required")
+		return
+	}
+
+	if err := handler.repository.PostLikedVideo(request.Context(), userID, videoID); err != nil {
+		if errors.Is(err, videos.ErrNotFound) {
+			httputil.WriteError(responseWriter, http.StatusNotFound, "video_not_found", "video not found")
+			return
+		}
 		slog.Error("Failed to add liked video", "error", err)
-		http.Error(responseWriter, "Failed to add liked video", http.StatusInternalServerError)
+		httputil.WriteError(responseWriter, http.StatusInternalServerError, "internal_error", "something went wrong")
 		return
 	}
 

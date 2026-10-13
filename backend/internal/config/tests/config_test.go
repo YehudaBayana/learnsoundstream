@@ -26,6 +26,7 @@ func TestLoadUsesDatabaseURLWhenConfigured(t *testing.T) {
 
 func TestLoadBuildsDatabaseURLFromParts(t *testing.T) {
 	t.Setenv("DB_URL", "")
+	t.Setenv("DATABASE_URL", "")
 	t.Setenv("PORT", "8080")
 	t.Setenv("DB_HOST", "127.0.0.1")
 	t.Setenv("DB_PORT", "5432")
@@ -40,5 +41,18 @@ func TestLoadBuildsDatabaseURLFromParts(t *testing.T) {
 	}
 	if got.Port != "8080" {
 		t.Errorf("Port = %q, want %q", got.Port, "8080")
+	}
+}
+
+func TestLoadReadsStorageSettings(t *testing.T) {
+	t.Setenv("STORAGE_DIR", "/tmp/soundstream-videos")
+	t.Setenv("MAX_UPLOAD_BYTES", "21474836480")
+
+	got := config.Load()
+	if got.StorageDir != "/tmp/soundstream-videos" {
+		t.Fatalf("StorageDir = %q, want %q", got.StorageDir, "/tmp/soundstream-videos")
+	}
+	if got.MaxUploadBytes != 21474836480 {
+		t.Fatalf("MaxUploadBytes = %d, want %d", got.MaxUploadBytes, 21474836480)
 	}
 }

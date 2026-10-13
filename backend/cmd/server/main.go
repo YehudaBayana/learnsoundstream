@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,35 +15,26 @@ import (
 	"backend/internal/config"
 	"backend/internal/database"
 	"backend/internal/health"
-	"backend/internal/history"
 	"backend/internal/liked"
 	"backend/internal/middleware"
-	"backend/internal/playlists"
-	"backend/internal/search"
-	"backend/internal/stream"
+	"backend/internal/storage"
 	"backend/internal/videos"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func newHTTPHandler(db *pgxpool.Pool, environment string) http.Handler {
-	// Wire up feature handlers
+// newHTTPHandler wires the feature packages together. The returned processor must be started by the caller.
+func newHTTPHandler(db *pgxpool.Pool, environment string, cfg config.Config) (http.Handler, *videos.Processor, error) {
+	videoStore, err := storage.NewLocalStorage(cfg.StorageDir)
+	if err != nil {
+		return nil, nil, fmt.Errorf("initialize video storage: %w", err)
+	}
+
 	healthH := health.NewHandler(db)
 
-	streamSvc := stream.NewService(db)
-	streamH := stream.NewHandler(streamSvc)
-
-	videoRepository := videos.NewRepository(db)
-	videoService := videos.NewService(videoRepository)
-
-	searchSvc := search.NewService(videoService)
-	searchH := search.NewHandler(searchSvc)
-
-	playlistRepo := playlists.NewRepository(videoService)
-	playlistH := playlists.NewHandler(playlistRepo)
-
-	historyRepo := history.NewRepository(db, videoService)
-	historyH := history.NewHandler(historyRepo)
+	videoService := videos.NewService(videos.NewRepository(db), videoStore)
+	videoProcessor := videos.NewProcessor(videoService, videoStore)
+	videoH := videos.NewHandler(videoService, videoProcessor, cfg.MaxUploadBytes)
 
 	sessions := auth.NewSessionStore(db)
 	authRepo := auth.NewRepository(sessions, db, environment == "production")
@@ -62,12 +54,6 @@ func newHTTPHandler(db *pgxpool.Pool, environment string) http.Handler {
 	// Register handlers
 	mux.HandleFunc("GET /health", healthH.Handle)
 	mux.HandleFunc("GET /api/health", healthH.Handle)
-	mux.HandleFunc("GET /api/playlist-details", playlistH.HandleDetails)
-	mux.HandleFunc("GET /api/popular-playlists", playlistH.HandlePopular)
-	mux.HandleFunc("GET /api/playlist-tracks", playlistH.HandleTracks)
-	mux.Handle("GET /api/stream/manifest", protected(streamH.HandleManifest))
-	mux.HandleFunc("GET /api/search", searchH.Handle)
-	mux.Handle("GET /api/playback-history", protected(historyH.Handle))
 
 	mux.HandleFunc("POST /api/auth/register", authH.HandleRegister)
 	mux.HandleFunc("POST /api/auth/login", authH.HandleLogin)
@@ -75,10 +61,18 @@ func newHTTPHandler(db *pgxpool.Pool, environment string) http.Handler {
 	mux.Handle("POST /api/auth/logout", protected(authH.HandleLogout))
 	mux.Handle("GET  /api/auth/me", protected(authH.HandleMe))
 
+	mux.Handle("POST /api/videos", protected(videoH.HandleCreate))
+	mux.Handle("GET /api/videos", protected(videoH.HandleList))
+	mux.Handle("GET /api/videos/{id}", protected(videoH.HandleGet))
+	mux.Handle("PATCH /api/videos/{id}", protected(videoH.HandleUpdate))
+	mux.Handle("DELETE /api/videos/{id}", protected(videoH.HandleDelete))
+	mux.Handle("GET /api/videos/{id}/stream", protected(videoH.HandleStream))
+	mux.Handle("GET /api/videos/{id}/thumbnail", protected(videoH.HandleThumbnail))
+
 	mux.Handle("GET /api/liked", protected(likedH.Handle))
 	mux.Handle("POST /api/liked", protected(likedH.HandlePost))
 
-	return middleware.CORSMiddleware(mux)
+	return middleware.CORSMiddleware(mux), videoProcessor, nil
 }
 
 func main() {
@@ -98,10 +92,20 @@ func main() {
 	}
 	defer db.Close()
 
+	appContext, stopApp := context.WithCancel(context.Background())
+	defer stopApp()
+
+	handler, videoProcessor, err := newHTTPHandler(db, environment, cfg)
+	if err != nil {
+		slog.Error("Failed to build HTTP handler", "error", err)
+		os.Exit(1)
+	}
+	videoProcessor.Start(appContext)
+
 	// Define our HTTP server with robust, production-ready timeouts
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      newHTTPHandler(db, environment),
+		Handler:      handler,
 		ReadTimeout:  10 * time.Second,  // Max duration for reading the entire request (prevents slowloris)
 		WriteTimeout: 10 * time.Second,  // Max duration before timing out writes of the response
 		IdleTimeout:  120 * time.Second, // Max amount of time to keep keep-alive connections idle
@@ -117,6 +121,7 @@ func main() {
 		err := server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			shutdownError <- err
+			stopApp()
 		}
 	}()
 
