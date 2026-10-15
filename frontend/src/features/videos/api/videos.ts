@@ -1,4 +1,5 @@
 import { apiClient } from "@/api/apiClient";
+import { apiUrl } from "@/config/constants";
 import { getCookie } from "@/features/auth/utils";
 import type { PartUrl, UploadedPart } from "@/features/videos/api/uploadParts";
 
@@ -37,7 +38,7 @@ export function getVideo(videoId: string) {
 }
 
 export function getVideoThumbnailUrl(videoId: string) {
-  return `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/videos/${videoId}/thumbnail`;
+  return `${apiUrl}/api/videos/${videoId}/thumbnail`;
 }
 
 export interface SignedUrl {

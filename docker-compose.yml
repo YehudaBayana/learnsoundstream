@@ -12,7 +12,7 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "127.0.0.1:${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -42,6 +42,9 @@ services:
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
       - R2_BUCKET=${R2_BUCKET}
+      - R2_ENDPOINT=${R2_ENDPOINT:-}
+      - UPLOAD_URL_TTL=${UPLOAD_URL_TTL:-}
+      - PLAYBACK_URL_TTL=${PLAYBACK_URL_TTL:-}
       - MAX_UPLOAD_BYTES=${MAX_UPLOAD_BYTES:-21474836480}
 
 volumes:

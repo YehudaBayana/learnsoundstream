@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+// Single source of truth: the repo-root .env (absent on Vercel, which injects env vars itself).
+try {
+  process.loadEnvFile(`${__dirname}/../.env`);
+} catch {}
+
 const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
