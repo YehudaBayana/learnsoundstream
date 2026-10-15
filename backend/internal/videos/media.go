@@ -63,10 +63,14 @@ func parseProbeOutput(output []byte) (probeResult, error) {
 
 // transcodeForPlayback writes an H.264/AAC MP4 with the moov atom first so playback can start immediately.
 func transcodeForPlayback(ctx context.Context, inputPath, outputPath string) error {
+	threads := strconv.Itoa(config.FFmpegThreads)
 	_, err := runCommand(ctx, "ffmpeg",
 		"-hide_banner", "-loglevel", "error", "-nostdin", "-y",
+		"-threads", threads,
 		"-i", inputPath,
-		"-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+		// Even width for yuv420p; the height cap bounds frame buffers so 4K clips fit in a small instance.
+		"-vf", fmt.Sprintf(`scale=-2:min(ih\,%d)`, config.PlaybackMaxHeight),
+		"-threads", threads,
 		"-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
 		"-c:a", "aac",
 		"-movflags", "+faststart",
@@ -79,6 +83,7 @@ func transcodeForPlayback(ctx context.Context, inputPath, outputPath string) err
 func extractThumbnail(ctx context.Context, inputPath, outputPath string) error {
 	_, err := runCommand(ctx, "ffmpeg",
 		"-hide_banner", "-loglevel", "error", "-nostdin", "-y",
+		"-threads", strconv.Itoa(config.FFmpegThreads),
 		"-ss", "1",
 		"-i", inputPath,
 		"-frames:v", "1",
