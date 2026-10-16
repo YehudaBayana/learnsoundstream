@@ -7,10 +7,10 @@ discovery.docker "containers" {
 discovery.relabel "containers" {
   targets = discovery.docker.containers.targets
 
-  // Only ship containers of this compose project.
+  // Only ship this stack's containers (names are fixed in docker-compose.yml).
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
-    regex         = "learn-soundstream"
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/soundstream-(db|backend)"
     action        = "keep"
   }
 

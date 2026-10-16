@@ -1,5 +1,3 @@
-name: learn-soundstream
-
 # Rotate container logs so the VM disk does not fill up.
 x-default-logging: &default-logging
   driver: json-file
