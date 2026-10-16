@@ -62,6 +62,14 @@ Never put a helper in `handler.go` or `repository.go`. If a function is not an e
 - Migrations are numbered pairs in `internal/database/migrations/`; never edit an applied one, add the next number.
 - Do not reintroduce yt-dlp, YouTube or any third-party media source.
 
+## Logging and error reporting
+
+For logging patterns in a new feature (levels, the `error` key, what never to log, Sentry, Grafana Loki, Dozzle), read `../docs/LOGGING.md`.
+
+## Long rules
+
+Do not write long rules inline in this file. Put them in a dedicated markdown file (for example `../docs/<TOPIC>.md`) and add a one-line reference here, as done for logging above.
+
 ## Adding a new feature (checklist)
 
 1. Create `internal/<feature>/` with `model.go`, `repository.go`, `service.go`, `handler.go`, plus `request.go` / `response.go` when needed.

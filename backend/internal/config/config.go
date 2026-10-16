@@ -14,6 +14,7 @@ type Config struct {
 	DatabaseURL       string
 	MaxUploadBytes    int64
 	Env               string
+	SentryDSN         string
 	R2AccountID       string
 	R2AccessKeyID     string
 	R2SecretAccessKey string
@@ -64,6 +65,7 @@ func Load() Config {
 		DatabaseURL:       dbURL,
 		MaxUploadBytes:    maxUploadBytes,
 		Env:               os.Getenv("ENV"),
+		SentryDSN:         os.Getenv("SENTRY_DSN"),
 		R2AccountID:       os.Getenv("R2_ACCOUNT_ID"),
 		R2AccessKeyID:     os.Getenv("R2_ACCESS_KEY_ID"),
 		R2SecretAccessKey: os.Getenv("R2_SECRET_ACCESS_KEY"),

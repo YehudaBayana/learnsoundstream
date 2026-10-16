@@ -15,6 +15,7 @@ import (
 	"backend/internal/database"
 	"backend/internal/health"
 	"backend/internal/liked"
+	"backend/internal/logging"
 	"backend/internal/middleware"
 	"backend/internal/storage"
 	"backend/internal/videos"
@@ -83,21 +84,24 @@ func newHTTPHandler(db *pgxpool.Pool, cfg config.Config) (http.Handler, *videos.
 	mux.Handle("GET /api/liked", protected(likedH.Handle))
 	mux.Handle("POST /api/liked", protected(likedH.HandlePost))
 
-	return middleware.CORSMiddleware(mux), videoProcessor, nil
+	return logging.Middleware(middleware.CORSMiddleware(mux)), videoProcessor, nil
 }
 
 func main() {
-	// Initialize modern structured logging (slog) using Text format for readability in development
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	slog.SetDefault(logger)
-
 	// Load configuration from environment variables
 	cfg := config.Load()
+
+	flushLogs, err := logging.Setup(cfg)
+	if err != nil {
+		slog.Error("Failed to initialize error reporting", "error", err)
+	}
+	defer flushLogs()
 
 	// Initialize database
 	db, err := database.InitDB(context.Background(), cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("Failed to initialize database", "error", err)
+		flushLogs()
 		os.Exit(1)
 	}
 	defer db.Close()
@@ -108,6 +112,7 @@ func main() {
 	handler, videoProcessor, err := newHTTPHandler(db, cfg)
 	if err != nil {
 		slog.Error("Failed to build HTTP handler", "error", err)
+		flushLogs()
 		os.Exit(1)
 	}
 	videoProcessor.Start(appContext)
@@ -156,6 +161,7 @@ func main() {
 
 	case err := <-shutdownError:
 		slog.Error("Server start-up error", "error", err)
+		flushLogs()
 		os.Exit(1)
 	}
 }

@@ -26,6 +26,9 @@ const (
 	ThumbnailRedirectMaxAge     = 5 * time.Minute
 )
 
+// Logging.
+const SentryFlushTimeout = 2 * time.Second
+
 // Video processing.
 const (
 	ProcessingTimeout    = time.Hour

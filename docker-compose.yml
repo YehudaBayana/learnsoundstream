@@ -1,7 +1,18 @@
+name: learn-soundstream
+
+# Rotate container logs so the VM disk does not fill up.
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
     image: postgres:15-alpine
     container_name: soundstream-db
+    restart: unless-stopped
+    logging: *default-logging
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -24,6 +35,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: soundstream-backend
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:${PORT}/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     ports:
       - "${PORT}:${PORT}"
     # The database hostname changes from 127.0.0.1 to 'postgres'
@@ -37,6 +56,7 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_SSLMODE=disable
       - ENV=${ENV:-development}
+      - SENTRY_DSN=${SENTRY_DSN:-}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
       - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
@@ -47,5 +67,40 @@ services:
       - PLAYBACK_URL_TTL=${PLAYBACK_URL_TTL:-}
       - MAX_UPLOAD_BYTES=${MAX_UPLOAD_BYTES:-21474836480}
 
+  # Ships container logs to Grafana Cloud Loki. Enable with: docker compose --profile observability up -d
+  alloy:
+    profiles: [observability]
+    image: grafana/alloy:latest
+    container_name: soundstream-alloy
+    restart: unless-stopped
+    logging: *default-logging
+    command:
+      - run
+      - --server.http.listen-addr=127.0.0.1:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      - ENV=${ENV:-development}
+      - GRAFANA_LOKI_URL=${GRAFANA_LOKI_URL:-}
+      - GRAFANA_LOKI_USER=${GRAFANA_LOKI_USER:-}
+      - GRAFANA_LOKI_TOKEN=${GRAFANA_LOKI_TOKEN:-}
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy_data:/var/lib/alloy/data
+
+  # Live log viewer. Bound to localhost; reach it through an SSH tunnel (see docs/LOGGING.md).
+  dozzle:
+    profiles: [observability]
+    image: amir20/dozzle:latest
+    container_name: soundstream-dozzle
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - "127.0.0.1:8888:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
 volumes:
   postgres_data:
+  alloy_data:
