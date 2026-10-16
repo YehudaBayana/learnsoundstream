@@ -27,18 +27,20 @@ docker run -d \
 
 # Postgres data lives in a Docker named volume. Run these on the remote machine:
 
-docker volume ls
-docker volume inspect soundstream_postgres_data --format '{{ .Mountpoint }}'
+`docker volume ls docker volume inspect soundstream_postgres_data --format '{{ .Mountpoint }}'`
 
 # The mountpoint is typically /var/lib/docker/volumes/soundstream_postgres_data/\_data. It's owned by root, so list it with:
 
-sudo ls -la /var/lib/docker/volumes/soundstream_postgres_data/\_data
+`sudo ls -la /var/lib/docker/volumes/soundstream_postgres_data/\_data`
 
 # To check how much space it uses and how much disk is free:
 
-sudo du -sh /var/lib/docker/volumes/soundstream_postgres_data/\_data
-df -h /
+`sudo du -sh /var/lib/docker/volumes/soundstream_postgres_data/\_data df -h /`
 
 # To confirm the mount from the container's side:
 
-docker inspect soundstream-db --format '{{ json .Mounts }}'
+`docker inspect soundstream-db --format '{{ json .Mounts }}'`
+
+#
+
+`docker compose --profile observability up -d --build`
