@@ -8,7 +8,6 @@ x-default-logging: &default-logging
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: soundstream-db
     restart: unless-stopped
     logging: *default-logging
     environment:
@@ -20,8 +19,6 @@ services:
       interval: 2s
       timeout: 5s
       retries: 10
-    ports:
-      - "127.0.0.1:${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -32,7 +29,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: soundstream-backend
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
@@ -47,12 +43,11 @@ services:
     # when running inside the Docker network.
     environment:
       - PORT=${PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=postgres
+      - DB_PORT=5432
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - DB_SSLMODE=disable
       - ENV=${ENV:-development}
       - SENTRY_DSN=${SENTRY_DSN:-}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
@@ -69,7 +64,6 @@ services:
   alloy:
     profiles: [observability]
     image: grafana/alloy:latest
-    container_name: soundstream-alloy
     restart: unless-stopped
     logging: *default-logging
     command:
@@ -91,7 +85,6 @@ services:
   dozzle:
     profiles: [observability]
     image: amir20/dozzle:latest
-    container_name: soundstream-dozzle
     restart: unless-stopped
     logging: *default-logging
     ports:

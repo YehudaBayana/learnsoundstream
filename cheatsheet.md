@@ -44,3 +44,13 @@ docker run -d \
 #
 
 `docker compose --profile observability up -d --build`
+
+# From the VM, in the directory containing your Compose file, run:
+
+`docker compose exec postgres sh -c 'exec psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'`
+
+# At the psql prompt, use \dt to list tables, then inspect rows with a query such as:
+
+`SELECT * FROM your_table LIMIT 20;`
+
+# Use \q to exit. This works without publishing the database port because docker compose exec runs the database client inside the container.
